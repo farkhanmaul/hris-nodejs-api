@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 07, 2023 at 01:58 AM
+-- Generation Time: Jun 09, 2023 at 03:21 PM
 -- Server version: 10.4.24-MariaDB
 -- PHP Version: 8.1.6
 
@@ -29,6 +29,8 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `history` (
   `id` int(3) NOT NULL,
+  `userId` int(3) NOT NULL,
+  `informationId` int(3) NOT NULL,
   `urlImage` text NOT NULL,
   `createdDate` date NOT NULL,
   `isFavorite` tinyint(1) NOT NULL
@@ -38,8 +40,13 @@ CREATE TABLE `history` (
 -- Dumping data for table `history`
 --
 
-INSERT INTO `history` (`id`, `urlImage`, `createdDate`, `isFavorite`) VALUES
-(6, 'maulanaa@adaf.csd', '2023-06-06', 0);
+INSERT INTO `history` (`id`, `userId`, `informationId`, `urlImage`, `createdDate`, `isFavorite`) VALUES
+(7, 63, 3, '222.com', '2023-06-07', 1),
+(11, 63, 3, '222.com', '2023-06-07', 1),
+(12, 63, 3, '222.com', '2023-06-08', 1),
+(13, 63, 3, '222.com', '2023-06-08', 1),
+(14, 63, 3, '222.com', '2023-06-08', 1),
+(15, 63, 3, '222.com', '2023-06-09', 1);
 
 -- --------------------------------------------------------
 
@@ -107,7 +114,8 @@ CREATE TABLE `user` (
 INSERT INTO `user` (`id`, `name`, `email`, `password`) VALUES
 (63, 'Farkhan', 'abcdef@adaf.csd', '$2b$10$fV62OnIRAkGFxluRlrwjjeFFDzZczGZaENv16GMynHWv6/JcqEKTe'),
 (64, 'Maulana', 'maulana@adaf.csd', '$2b$10$y5ZQ.EGA0zDuupGanf5pceY/til8PDtWwWv0lOSjNG2Uq71SXFy6a'),
-(65, 'Maulanaa', 'maulanaa@adaf.csd', '$2b$10$lhQ8AH9E6kaYLKhVNp286O7MHBlEdIhqe6ZkBW8V4xL5iLAi3vklm');
+(65, 'Maulanaa', 'maulanaa@adaf.csd', '$2b$10$lhQ8AH9E6kaYLKhVNp286O7MHBlEdIhqe6ZkBW8V4xL5iLAi3vklm'),
+(66, 'Maulanaa', 'maulanaaa@adaf.csd', '$2b$10$O5yDijcp30D0fvHC6LtvJuozaSdPPfrEdJ0pKMxU2HtFGXwIpcUIO');
 
 --
 -- Indexes for dumped tables
@@ -117,7 +125,9 @@ INSERT INTO `user` (`id`, `name`, `email`, `password`) VALUES
 -- Indexes for table `history`
 --
 ALTER TABLE `history`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `FK_userID` (`userId`),
+  ADD KEY `FK_informationID` (`informationId`);
 
 --
 -- Indexes for table `information`
@@ -139,7 +149,7 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `history`
 --
 ALTER TABLE `history`
-  MODIFY `id` int(3) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(3) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `information`
@@ -151,7 +161,18 @@ ALTER TABLE `information`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int(3) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=66;
+  MODIFY `id` int(3) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=67;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `history`
+--
+ALTER TABLE `history`
+  ADD CONSTRAINT `FK_informationID` FOREIGN KEY (`informationId`) REFERENCES `information` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `FK_userID` FOREIGN KEY (`userId`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

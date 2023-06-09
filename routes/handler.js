@@ -128,24 +128,75 @@ async function getSpecificBuahHandler(req, res) {
    }
 }
 
-// TO DO : Bikin validasi user ID & informationID
 // History handler
 async function addHistory(req, res) {
    try {
-      const { userId, informationId, urlImage, isFavorite } = req.body;
-      const createdDate = new Date().toISOString();
+      const isFavorite = 0;
+      const { informationName, urlImage } = req.body;
+      const createdDate = new Date().toLocaleString("en-US", {
+         timeZone: "Asia/Jakarta",
+         hour12: false,
+      });
 
-      const query = `INSERT INTO history ( userId,	informationId,	urlImage, isFavorite, createdDate) VALUES ( ${db.escape(
-         userId
-      )},${db.escape(informationId)},${db.escape(urlImage)},${db.escape(
-         isFavorite
-      )}, ${db.escape(createdDate)})`;
-      await db.query(query);
+      const query = `INSERT INTO history (userEmail, informationName, urlImage, createdDate, isFavorite) VALUES (?, ?, ?, ?, ?)`;
+      const params = [
+         req.email,
+         informationName,
+         urlImage,
+         createdDate,
+         isFavorite,
+      ];
+
+      await db.query(query, params);
 
       res.status(201).json({ message: "History added successfully" });
    } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Internal server error" });
+   }
+}
+
+async function getHistory(req, res) {
+   try {
+      const sql = `SELECT * FROM history WHERE userEmail = '${req.email}'`;
+      const [rows, fields] = await db.query(sql);
+      response(200, rows, "get history user", res);
+   } catch (error) {
+      return res.status(500);
+   }
+}
+
+// Favorite handler
+async function addFavorite(req, res) {
+   try {
+      const { createdDate } = req.body;
+      const query = `SELECT * FROM history WHERE userEmail = '${req.email}'`;
+      const [rows, fields] = await db.query(query);
+      if (!rows || !rows.length) {
+         res.status(401).send("Tidak ada history");
+      } else {
+         const favoriteQuery = `UPDATE history SET isFavorite = 1 WHERE userEmail = ? AND createdDate = ?`;
+         const params = [req.email, createdDate];
+         await db.query(favoriteQuery, params);
+         res.status(200).json({ message: "Berhasil menambahkan favorite" });
+      }
+   } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
+   }
+}
+
+async function getFavorite(req, res) {
+   try {
+      const query = `SELECT * FROM history WHERE userEmail = '${req.email}' AND isFavorite = 1`;
+      const [rows, fields] = await db.query(query);
+      if (!rows || !rows.length) {
+         res.status(401).send("Tidak ada favorite");
+      } else {
+         response(200, rows, "get favorite history", res);
+      }
+   } catch (error) {
+      return res.status(500);
    }
 }
 
@@ -158,4 +209,7 @@ module.exports = {
    findBenefitHandler,
    getSpecificBuahHandler,
    addHistory,
+   getHistory,
+   addFavorite,
+   getFavorite,
 };

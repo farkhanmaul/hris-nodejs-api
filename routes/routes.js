@@ -14,6 +14,9 @@ const {
    findBenefitHandler,
    getSpecificBuahHandler,
    addHistory,
+   getHistory,
+   addFavorite,
+   getFavorite,
 } = require("./handler");
 
 // Register Endpoint
@@ -30,6 +33,11 @@ router.get("/find", verifyToken, findBenefitHandler);
 router.get("/buah/:name", verifyToken, getSpecificBuahHandler);
 
 // History Endpoint
-router.post("/history", verifyToken, addHistory);
+router.post("/addhistory", verifyToken, addHistory);
+router.get("/gethistory", verifyToken, getHistory);
+
+// Favorite Endpoint
+router.post("/addfavorite", verifyToken, addFavorite);
+router.get("/getfavorite", verifyToken, getFavorite);
 
 module.exports = router;

@@ -9,7 +9,7 @@ async function registerHandler(req, res) {
    if (password !== confPassword) {
       return res
          .status(400)
-         .json({ msg: "Password dan Confirm Password tidak cocok" });
+         .json({ message: "Password dan Confirm Password tidak cocok" });
    }
 
    try {
@@ -128,6 +128,9 @@ async function getSpecificBuahHandler(req, res) {
    }
 }
 
+// TODO: Tambahkan Get Specific History buat lihat detail info + hasil predict
+// TODO: Tambahkan kolom hasil prediksi(fresh/rotten) dan presentase di tabel history
+
 // History handler
 async function addHistory(req, res) {
    try {
@@ -186,6 +189,25 @@ async function addFavorite(req, res) {
    }
 }
 
+async function deleteFavorite(req, res) {
+   try {
+      const { createdDate } = req.body;
+      const query = `SELECT * FROM history WHERE userEmail = '${req.email}'`;
+      const [rows, fields] = await db.query(query);
+      if (!rows || !rows.length) {
+         res.status(401).send("Tidak ada history");
+      } else {
+         const favoriteQuery = `UPDATE history SET isFavorite = 0 WHERE userEmail = ? AND createdDate = ?`;
+         const params = [req.email, createdDate];
+         await db.query(favoriteQuery, params);
+         res.status(200).json({ message: "Berhasil menambahkan favorite" });
+      }
+   } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
+   }
+}
+
 async function getFavorite(req, res) {
    try {
       const query = `SELECT * FROM history WHERE userEmail = '${req.email}' AND isFavorite = 1`;
@@ -211,5 +233,6 @@ module.exports = {
    addHistory,
    getHistory,
    addFavorite,
+   deleteFavorite,
    getFavorite,
 };

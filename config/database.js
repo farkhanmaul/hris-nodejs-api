@@ -2,9 +2,10 @@ const mysql = require("mysql2");
 
 // Create the pool
 const pool = mysql.createPool({
-   host: "localhost",
+   host: "34.70.225.8",
    user: "root",
    database: "capstone_v1",
+   password: "freshcan23",
 });
 
 // Get a Promise wrapped instance of that pool

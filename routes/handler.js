@@ -147,7 +147,8 @@ async function getHistory(req, res) {
 
 async function getSpecificHistory(req, res) {
    try {
-      const { id, informationName } = req.body;
+      const id = req.params.id;
+      const informationName = req.params.InformationName;
       const sql = `SELECT * FROM history WHERE userEmail = '${req.email}' AND id = '${id}'`;
       const [rows, fields] = await db.query(sql);
 

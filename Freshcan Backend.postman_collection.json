@@ -88,7 +88,7 @@
 			"response": []
 		},
 		{
-			"name": "Datalogin",
+			"name": "Data User",
 			"request": {
 				"method": "GET",
 				"header": [
@@ -164,7 +164,7 @@
 			"response": []
 		},
 		{
-			"name": "Add History",
+			"name": "Upload Image to GCS and ML Model",
 			"request": {
 				"method": "POST",
 				"header": [
@@ -175,23 +175,31 @@
 					}
 				],
 				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"informationName\": \"apel\",\r\n    \"urlImage\": \"2242.com\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/C:/Users/farkh/Downloads/JuaraGCPSeason9Checklist.xls",
+							"disabled": true
+						},
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/C:/Users/farkh/Downloads/fatir.png"
 						}
-					}
+					]
 				},
 				"url": {
-					"raw": "http://localhost:3030/addhistory",
+					"raw": "http://localhost:3030/upload/image",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "3030",
 					"path": [
-						"addhistory"
+						"upload",
+						"image"
 					]
 				}
 			},
@@ -223,41 +231,10 @@
 			"response": []
 		},
 		{
-			"name": "Add Favorite",
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im1hdWxhbmFhYUBhZGFmLmNzZCIsImlhdCI6MTY4NjMxOTUzMCwiZXhwIjoxNjg2OTI0MzMwfQ.49UubVTiLj75vCCplMwrl7-1OchlQY0AhDoz0tL1ewk",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"createdDate\": \"6/9/2023, 21:28:15\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:3030/addfavorite",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "3030",
-					"path": [
-						"addfavorite"
-					]
-				}
+			"name": "Get Specific History",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
 			},
-			"response": []
-		},
-		{
-			"name": "Get Favorite",
 			"request": {
 				"method": "GET",
 				"header": [
@@ -267,15 +244,24 @@
 						"type": "text"
 					}
 				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": 50,\r\n    \"informationName\" : \"Orange\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
 				"url": {
-					"raw": "http://localhost:3030/getfavorite",
+					"raw": "http://localhost:3030/getspecifichistory",
 					"protocol": "http",
 					"host": [
 						"localhost"
 					],
 					"port": "3030",
 					"path": [
-						"getfavorite"
+						"getspecifichistory"
 					]
 				}
 			},

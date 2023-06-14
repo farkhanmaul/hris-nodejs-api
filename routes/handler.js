@@ -229,17 +229,17 @@ async function uploadImage(req, res) {
                publicUrl,
                createdDate,
             ];
-            await db.query(query, params);
-
-            return res.status(200).send({
-               message: `Uploaded the file successfully: ${req.file.originalname}`,
-               url: publicUrl,
-               image: req.file.originalname,
-               data: responseAI.data,
-               condition: kondisi,
-               name: buah,
-               percentage: persen,
-            });
+            const [rows, fields2] = await db.query(query, params);
+            const hasil = {
+               id: rows.insertId,
+               informationName: buah,
+            };
+            response(
+               200,
+               hasil,
+               `Uploaded the file successfully: ${req.file.originalname}`,
+               res
+            );
          });
    } catch (error) {
       console.error("Error uploading file:", error);

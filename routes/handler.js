@@ -219,7 +219,8 @@ async function uploadImage(req, res) {
                hour12: false,
             });
 
-            const query = `INSERT INTO history (userEmail, informationName, condition, percentage, urlImage, createdDate) VALUES (?, ?, ?, ?, ?, ?)`;
+            const query =
+               "INSERT INTO history (userEmail, informationName, `condition`, percentage, urlImage, createdDate) VALUES (?, ?, ?, ?, ?, ?)";
             const params = [
                req.email,
                buah,

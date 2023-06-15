@@ -171,12 +171,12 @@ const axios = require("axios");
 const { Storage } = require("@google-cloud/storage");
 const FormData = require("form-data");
 const storage = new Storage({
-   projectId: "c131dsx0880-2023", // Replace with your GCP project ID
+   projectId: "freshcan-388215", // Replace with your GCP project ID
    keyFilename: "freshcan-storage.json", // Replace with the path to your service account key file
 });
-const bucketName = "freshcancoba1"; // Replace with the name of your Google Cloud Storage bucket
+const bucketName = "freshcan-bucket"; // Replace with the name of your Google Cloud Storage bucket
 const bucket = storage.bucket(bucketName);
-const url = process.env.URL_ML;
+const url = "https://machine-learning-uoe2wkvxla-uc.a.run.app/predict/image";
 
 async function uploadImage(req, res) {
    const file = req.file;

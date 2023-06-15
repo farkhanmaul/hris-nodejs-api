@@ -5,6 +5,7 @@ const pool = mysql.createPool({
    host: "localhost",
    user: "root",
    database: "capstone_v1",
+   // password: process.env.DB_PASS,
 });
 
 // Get a Promise wrapped instance of that pool

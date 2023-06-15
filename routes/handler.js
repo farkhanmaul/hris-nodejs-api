@@ -176,7 +176,7 @@ const storage = new Storage({
 });
 const bucketName = "freshcancoba1"; // Replace with the name of your Google Cloud Storage bucket
 const bucket = storage.bucket(bucketName);
-const url = "https://machine-learningnew-va2i63hfta-uc.a.run.app/predict/image";
+const url = process.env.URL_ML;
 
 async function uploadImage(req, res) {
    const file = req.file;

@@ -187,10 +187,15 @@ Creating RESTful APIs and deploying to Google Cloud Platform using Google Cloud 
 }
 ```
 
-⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
-
 ---
 
-```
+# Deploying to GCP
 
-```
+GCP services used:
+
+-  Cloud Run
+-  Cloud SQL
+-  Artifact Registry
+-  Cloud Storage
+
+## GCP architecture

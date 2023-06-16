@@ -1,6 +1,8 @@
-# Project: Freshcan API Test
+# API Documentation
 
-## End-point: Register
+Creating RESTful APIs and deploying to Google Cloud Platform using Google Cloud Run for communication between Machine Learning Model and Mobile Development. Creating database in Google Cloud SQL.
+
+## 1. End-point: Register User
 
 ### Method: POST
 
@@ -8,7 +10,7 @@
 > /register
 > ```
 
-### Body (**raw**)
+### Body Request (**raw**)
 
 ```json
 {
@@ -19,139 +21,176 @@
 }
 ```
 
-⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
-
-## End-point: Login
-
-### Method: POST
-
-> ```
-> https://cc-backend-uoe2wkvxla-uc.a.run.app/login
-> ```
-
-### Body (**raw**)
+### Example Response
 
 ```json
 {
-   "email": "freshcan@mail.com",
-   "password": "111111"
+   "message": "Register successed",
+   "token": "<your_token>"
 }
 ```
 
 ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
 
-## End-point: Logout
-
-### Method: GET
-
-> ```
-> undefined
-> ```
-
-⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
-
-## End-point: Datalogin
-
-### Method: GET
-
-> ```
-> https://cc-backend-uoe2wkvxla-uc.a.run.app/datauser
-> ```
-
-### Headers
-
-| Content-Type  | Value                                                                                                                                                                        |
-| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Authorization | Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImZyZXNoY2FuQG1haWwuY29tIiwiaWF0IjoxNjg2ODkyNjY5LCJleHAiOjE2ODc0OTc0Njl9.xXFIGgv6r7bx_Le2axIcumv1zo2AhxPMJntVaTwW1FU |
-
-⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
-
-## End-point: Get All Information
-
-### Method: GET
-
-> ```
-> https://cc-backend-uoe2wkvxla-uc.a.run.app/
-> ```
-
-### Headers
-
-| Content-Type  | Value                                                                                                                                                                        |
-| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Authorization | Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImZyZXNoY2FuQG1haWwuY29tIiwiaWF0IjoxNjg2ODkyNjY5LCJleHAiOjE2ODc0OTc0Njl9.xXFIGgv6r7bx_Le2axIcumv1zo2AhxPMJntVaTwW1FU |
-
-⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
-
-## End-point: Get Specific Information
-
-### Method: GET
-
-> ```
-> https://cc-backend-uoe2wkvxla-uc.a.run.app/buah/guava
-> ```
-
-### Headers
-
-| Content-Type  | Value                                                                                                                                                                        |
-| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Authorization | Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImZyZXNoY2FuQG1haWwuY29tIiwiaWF0IjoxNjg2ODkyNjY5LCJleHAiOjE2ODc0OTc0Njl9.xXFIGgv6r7bx_Le2axIcumv1zo2AhxPMJntVaTwW1FU |
-
-⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
-
-## End-point: Get History
-
-### Method: GET
-
-> ```
-> https://cc-backend-uoe2wkvxla-uc.a.run.app/gethistory
-> ```
-
-### Headers
-
-| Content-Type  | Value                                                                                                                                                                        |
-| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Authorization | Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImZyZXNoY2FuQG1haWwuY29tIiwiaWF0IjoxNjg2ODkyNjY5LCJleHAiOjE2ODc0OTc0Njl9.xXFIGgv6r7bx_Le2axIcumv1zo2AhxPMJntVaTwW1FU |
-
-⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
-
-## End-point: Get Specify History
-
-### Method: GET
-
-> ```
-> https://cc-backend-uoe2wkvxla-uc.a.run.app/getspecifichistory
-> ```
-
-### Headers
-
-| Content-Type  | Value                                                                                                                                                                        |
-| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Authorization | Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImZyZXNoY2FuQG1haWwuY29tIiwiaWF0IjoxNjg2ODkyNjY5LCJleHAiOjE2ODc0OTc0Njl9.xXFIGgv6r7bx_Le2axIcumv1zo2AhxPMJntVaTwW1FU |
-
-⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
-
-## End-point: Upload Image
+## 2. End-point: Login User
 
 ### Method: POST
 
 > ```
-> https://cc-backend-uoe2wkvxla-uc.a.run.app/upload/image
+> /login
 > ```
 
-### Headers
+### Body Request(**raw**)
 
-| Content-Type  | Value                                                                                                                                                                        |
-| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Authorization | Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImZyZXNoY2FuQG1haWwuY29tIiwiaWF0IjoxNjg2ODkyNjY5LCJleHAiOjE2ODc0OTc0Njl9.xXFIGgv6r7bx_Le2axIcumv1zo2AhxPMJntVaTwW1FU |
+```json
+{
+   "email": "user@gmail.com",
+   "password": "123456"
+}
+```
 
-### Body formdata
+### Example Response
 
-| Param | value                                   | Type |
-| ----- | --------------------------------------- | ---- |
-| file  | /C:/Users/ACER/Downloads/apel busuk.jpg | file |
+```json
+{
+   "accessToken": "<your_token>",
+   "email": "user@gmail.com"
+}
+```
+
+⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
+
+## 3. End-point: Get History From User
+
+### Method: GET
+
+> ```
+> /gethistory
+> ```
+
+### Headers Request
+
+| Content-Type  | Value                      |
+| ------------- | -------------------------- |
+| Authorization | Bearer <your_access_token> |
+
+### Example Response
+
+```json
+{
+   "status_code": 200,
+   "message": "get history user",
+   "payload": [
+      {
+         "id": 106,
+         "userEmail": "user@gmail.com",
+         "informationName": "Banana",
+         "condition": "Fresh",
+         "percentage": "100.0%",
+         "urlImage": "https://storage.googleapis.com/freshcan-bucket/file_image.jpg",
+         "createdDate": "6/16/2023, 21:02:41"
+      }
+   ]
+}
+```
+
+⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
+
+## 4. End-point: Get Specify History
+
+### Method: GET
+
+> ```
+> /getspecifichistory?id=<id_history>&InformationName=<information_name>
+> ```
+
+### Headers Request
+
+| Content-Type  | Value                      |
+| ------------- | -------------------------- |
+| Authorization | Bearer <your_access_token> |
+
+### Example Response
+
+```json
+{
+   "status_code": 200,
+   "message": "get specific history",
+   "payload": {
+      "queryHistory": [
+         {
+            "id": 106,
+            "userEmail": "user@gmail.com",
+            "informationName": "Banana",
+            "condition": "Fresh",
+            "percentage": "100.0%",
+            "urlImage": "https://storage.googleapis.com/freshcan-bucket/file_image.jpg",
+            "createdDate": "6/16/2023, 21:02:41"
+         }
+      ],
+      "queryInformation": [
+         {
+            "id": 3,
+            "name": "Banana",
+            "botanical_name": "Musa paradisicum",
+            "description": "Pisang adalah buah yang rasanya manis dengan sentuhan keasaman ringan. Bentuknya panjang dan silindris berwarna kuning saat matang dengan ukuran hingga 20 cm atau lebih. Dalam beberapa budaya, pisang memiliki makna simbolis seperti dalam kepercayaan Hindu di mana pisang dianggap sebagai simbol kesuburan dan kelimpahan.",
+            "benefit": "Pisang mengandung triptofan (asam amino esensial) yang membantu produksi serotonin dalam tubuh sehingga dapat meningkatkan mood dan membantu mengatasi depresi ringan.",
+            "funfact": "Pisang sebenarnya adalah buah beri. Meskipun ukurannya besar dan bentuknya berbeda dari buah beri tradisional, seperti blueberry atau strawberry, secara botani, pisang termasuk dalam keluarga buah beri.",
+            "allergy": "Banana Allergy",
+            "energy": "89/371",
+            "water": 74.91,
+            "protein": 1.09,
+            "total_fat": 0.33,
+            "carbohydrates": 22.84,
+            "fiber": 2.6,
+            "sugars": 12.23,
+            "calsium": 5,
+            "iron": 0.26
+         }
+      ]
+   }
+}
+```
+
+⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
+
+## 5. End-point: Upload Image to ML model and GCS
+
+### Method: POST
+
+> ```
+> /upload/image
+> ```
+
+### Headers Request
+
+| Content-Type  | Value                      |
+| ------------- | -------------------------- |
+| Authorization | Bearer <your_access_token> |
+
+### Body Formdata
+
+| Param | value          | Type |
+| ----- | -------------- | ---- |
+| file  | your_image.jpg | file |
+
+### Example Response
+
+```json
+{
+   "status_code": 200,
+   "message": "Uploaded the file successfully: Bananass-large.jpg",
+   "payload": {
+      "id": 106,
+      "informationName": "Banana"
+   }
+}
+```
 
 ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
 
 ---
 
-Powered By: [postman-to-markdown](https://github.com/bautistaj/postman-to-markdown/)
+```
+
+```

@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const { loginUser, getemail } = require("./handler");
+const { loginUser, handleSendOTP, handleVerifyOTP } = require("./handler");
 
 router.post("/login", loginUser);
-
-router.post("/getemail", getemail);
+router.post("/handleSendOTP", handleSendOTP);
+router.post("/handleVerifyOTP", handleVerifyOTP);
 
 module.exports = router;

@@ -1,4 +1,7 @@
 const db = require("../config/database");
+const nodemailer = require("nodemailer");
+const Mailgen = require("mailgen");
+const randomstring = require("randomstring");
 
 // Login Handler
 async function loginUser(req, res) {
@@ -22,71 +25,122 @@ async function loginUser(req, res) {
    }
 }
 
-// =================================================================
-const nodemailer = require("nodemailer");
-const Mailgen = require("mailgen");
+const otpStore = {};
 
-/** send mail from real gmail account */
-const getemail = (req, res) => {
-   const { userEmail } = req.body;
+// Generate OTP
+function generateOTP() {
+   const otp = randomstring.generate({
+      length: 6,
+      charset: "numeric",
+   });
+   return otp;
+}
 
-   let config = {
+// Kirim OTP ke alamat email
+async function sendOTP(receiver, otp) {
+   // Configuration for the transporter to send emails using nodemailer
+   const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
          user: process.env.EMAIL,
          pass: process.env.PASSWORD,
       },
-   };
+   });
 
-   let transporter = nodemailer.createTransport(config);
-
-   let MailGenerator = new Mailgen({
+   // Configuration for mailgen
+   const mailGenerator = new Mailgen({
       theme: "default",
       product: {
-         name: "Mailgen",
-         link: "https://mailgen.js/",
+         name: "Your App",
+         link: "https://yourapp.com/",
+         // Optional logo URL
+         // logo: "https://yourapp.com/logo.png"
       },
    });
 
-   let response = {
+   // Generate the email body
+   const email = {
       body: {
-         name: "OTP",
-         intro: "INI OTP",
+         name: receiver,
+         intro: "Welcome to Aplikasi Hasil Buatan Kami! Here is your OTP:",
          table: {
             data: [
                {
-                  item: "TESTING",
-                  description: "Digunakan untuk login",
-                  price: "$999",
+                  OTP: otp,
                },
             ],
+            columns: {
+               // Optionally define column widths
+               customWidth: {
+                  OTP: "20%",
+               },
+               // Optionally define colors for the table headers
+               customColors: {
+                  OTP: "#2F4F4F",
+               },
+            },
          },
-         outro: "Jangan sampai lewat batas waktu",
+         outro: "Thank you for using Our App!",
       },
    };
 
-   let mail = MailGenerator.generate(response);
+   // Generate the email content
+   const emailBody = mailGenerator.generate(email);
 
-   let message = {
-      from: process.env.EMAIL,
-      to: userEmail,
-      subject: "Mari Pulang",
-      html: mail,
+   // Configuration for the email
+   const mailOptions = {
+      from: "OTP@gmail.com",
+      to: receiver,
+      subject: "OTP Verification",
+      html: emailBody,
    };
 
-   transporter
-      .sendMail(message)
-      .then(() => {
-         return res.status(201).json({
-            msg: "you should receive an email",
-         });
-      })
-      .catch((error) => {
-         return res.status(500).json({ error });
-      });
-};
+   // Send the email
+   await transporter.sendMail(mailOptions);
+}
+
+async function handleSendOTP(req, res) {
+   try {
+      const { receiver } = req.body;
+
+      if (!receiver) {
+         throw new Error("Receiver email is required");
+      }
+
+      const otp = generateOTP();
+      otpStore[receiver] = otp;
+
+      await sendOTP(receiver, otp);
+
+      res.json({ message: "OTP has been sent successfully" });
+   } catch (error) {
+      res.status(400).json({ error: error.message });
+   }
+}
+
+function handleVerifyOTP(req, res) {
+   try {
+      const { receiver, otp } = req.body;
+
+      if (!receiver || !otp) {
+         throw new Error("Receiver email and OTP are required");
+      }
+
+      const storedOTP = otpStore[receiver];
+
+      if (storedOTP && storedOTP === otp) {
+         delete otpStore[receiver];
+         res.json({ message: "OTP verification successful" });
+      } else {
+         res.json({ message: "Invalid OTP" });
+      }
+   } catch (error) {
+      res.status(400).json({ error: error.message });
+   }
+}
 
 module.exports = {
    loginUser,
-   getemail,
+   handleSendOTP,
+   handleVerifyOTP,
 };

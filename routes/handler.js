@@ -1,4 +1,5 @@
 const db = require("../config/database");
+const db2 = require("../config/database2");
 const nodemailer = require("nodemailer");
 const Mailgen = require("mailgen");
 const randomstring = require("randomstring");
@@ -139,8 +140,22 @@ function handleVerifyOTP(req, res) {
    }
 }
 
+async function connectToSQLServer(req, res) {
+   try {
+      await db2();
+      res.send("Connected to SQL Server");
+   } catch (error) {
+      console.error("Failed to connect to SQL Server:", error);
+      res.status(500).send({
+         msg: "Failed to connect to SQL Server",
+         error: error.message,
+      });
+   }
+}
+
 module.exports = {
    loginUser,
    handleSendOTP,
    handleVerifyOTP,
+   connectToSQLServer,
 };

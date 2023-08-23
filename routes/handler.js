@@ -50,18 +50,18 @@ const getemail = (req, res) => {
 
    let response = {
       body: {
-         name: "Sudah jam pulang",
-         intro: "Lesgo pulang!",
+         name: "OTP",
+         intro: "INI OTP",
          table: {
             data: [
                {
-                  item: "Tiket Pulang",
-                  description: "Digunakan kalo pulang",
+                  item: "TESTING",
+                  description: "Digunakan untuk login",
                   price: "$999",
                },
             ],
          },
-         outro: "Jangan sampai telat pulang",
+         outro: "Jangan sampai lewat batas waktu",
       },
    };
 

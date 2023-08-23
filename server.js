@@ -10,6 +10,7 @@ app.use(bodyParser.json());
 const routes = require("./routes/routes.js");
 app.use("/", routes);
 
+// Test
 const port = 3030;
 
 // server:3000/

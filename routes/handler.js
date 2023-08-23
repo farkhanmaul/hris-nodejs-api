@@ -140,6 +140,7 @@ function handleVerifyOTP(req, res) {
    }
 }
 
+// masih error
 async function connectToSQLServer(req, res) {
    try {
       await db2();

@@ -4,29 +4,36 @@ const nodemailer = require("nodemailer");
 const Mailgen = require("mailgen");
 const randomstring = require("randomstring");
 
-// Login Handler
-async function loginUser(req, res) {
-   const { employee_id, password } = req.body;
+async function login(req, res) {
+   const { employeeId } = req.body;
 
-   // Check if the user exists in the database
-   const query = `SELECT * FROM user WHERE employee_id = '${employee_id}'`;
-   const [rows, fields] = await db.query(query);
-   if (!rows || !rows.length) {
-      res.status(401).send("Invalid employee ID or password");
-   } else {
-      // Check if the password is correct
-      const storedPassword = rows[0].password;
-
-      // Compare the provided password with the stored password
-      if (password === storedPassword) {
-         res.status(201).json({ message: "Login succeeded", employee_id });
+   try {
+      const query = `SELECT PrimaryEmail FROM dbo.HrEmployee WHERE EmployeeId = '${employeeId}'`;
+      const result = await db2(query);
+      if (!result.recordset || !result.recordset.length) {
+         res.status(404).send("User not found");
       } else {
-         res.status(401).send("Invalid employee ID or password");
+         const email = result.recordset[0].PrimaryEmail;
+         const response = {
+            respCode: "00",
+            respMsg: "Employee Found, OTP Sent to Email",
+            data: {
+               employeeEmail: email,
+            },
+         };
+
+         const otp = generateOTP();
+         const expiredAt = generateExpirationDate(); // Get the expiration datetime
+
+         await sendOTP(email, otp, expiredAt, employeeId); // Pass the expiredAt datetime to the sendOTP function
+
+         res.status(200).json(response);
       }
+   } catch (error) {
+      console.error("Failed to retrieve user email:", error);
+      res.status(500).send("Internal Server Error");
    }
 }
-
-const otpStore = {};
 
 // Generate OTP
 function generateOTP() {
@@ -37,8 +44,18 @@ function generateOTP() {
    return otp;
 }
 
+// Generate expiration datetime
+function generateExpirationDate() {
+   const currentTime = new Date();
+   const expirationTime = new Date(
+      currentTime.getTime() + 3 * 30 * 24 * 60 * 60 * 1000
+   ); // Set expiration time to 3 months from current time
+   return expirationTime;
+}
+
 // Kirim OTP ke alamat email
-async function sendOTP(receiver, otp) {
+async function sendOTP(receiver, otp, expiredAt, employeeId) {
+   // Add expiredAt parameter
    // Configuration for the transporter to send emails using nodemailer
    const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -98,65 +115,58 @@ async function sendOTP(receiver, otp) {
 
    // Send the email
    await transporter.sendMail(mailOptions);
-}
 
-async function handleSendOTP(req, res) {
-   try {
-      const { receiver } = req.body;
-
-      if (!receiver) {
-         throw new Error("Receiver email is required");
-      }
-
-      const otp = generateOTP();
-      otpStore[receiver] = otp;
-
-      await sendOTP(receiver, otp);
-
-      res.json({ message: "OTP has been sent successfully" });
-   } catch (error) {
-      res.status(400).json({ error: error.message });
-   }
-}
-
-function handleVerifyOTP(req, res) {
-   try {
-      const { receiver, otp } = req.body;
-
-      if (!receiver || !otp) {
-         throw new Error("Receiver email and OTP are required");
-      }
-
-      const storedOTP = otpStore[receiver];
-
-      if (storedOTP && storedOTP === otp) {
-         delete otpStore[receiver];
-         res.json({ message: "OTP verification successful" });
+   const query = `INSERT INTO user_otp (email, otp, expiredAt, employeeId) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE otp = VALUES(otp), expiredAt = VALUES(expiredAt)`;
+   db.query(query, [receiver, otp, expiredAt, employeeId], (error, results) => {
+      if (error) {
+         console.error("Error storing OTP in database:", error);
       } else {
-         res.json({ message: "Invalid OTP" });
+         console.log("OTP stored in database");
       }
-   } catch (error) {
-      res.status(400).json({ error: error.message });
-   }
+   });
 }
 
-// masih error
-async function connectToSQLServer(req, res) {
-   try {
-      await db2();
-      res.send("Connected to SQL Server");
-   } catch (error) {
-      console.error("Failed to connect to SQL Server:", error);
-      res.status(500).send({
-         msg: "Failed to connect to SQL Server",
-         error: error.message,
-      });
-   }
+async function verifyOTP(req, res) {
+   const { employeeId, otp } = req.body;
+
+   const query = `SELECT * FROM user_otp WHERE employeeId = ? LIMIT 1`;
+
+   db.query(query, [employeeId], async (error, results) => {
+      if (error) {
+         console.error("Error retrieving OTP from the database:", error);
+         return res.status(500).json({ error: "Internal server error" });
+      }
+
+      if (results.length === 0) {
+         console.log("OTP not found for the given employeeId");
+         return res.status(404).json({ error: "OTP not found" });
+      }
+
+      const storedOTP = results[0].otp;
+      const expiredAt = results[0].expiredAt;
+
+      // Compare the provided OTP with the stored OTP
+      if (otp === storedOTP) {
+         // Check if the OTP has expired
+         const currentDateTime = new Date();
+         const otpExpiredDateTime = new Date(expiredAt);
+
+         if (currentDateTime > otpExpiredDateTime) {
+            console.log("OTP has expired");
+            return res.status(400).json({ error: "OTP has expired" });
+         }
+
+         // OTP is valid and not expired
+         console.log("OTP verified successfully");
+         return res.status(200).json({ message: "OTP verified successfully" });
+      } else {
+         console.log("Invalid OTP");
+         return res.status(400).json({ error: "Invalid OTP" });
+      }
+   });
 }
 
 module.exports = {
-   loginUser,
-   handleSendOTP,
-   handleVerifyOTP,
-   connectToSQLServer,
+   login,
+   verifyOTP,
 };

@@ -1,20 +1,23 @@
 const sql = require("mssql");
 
-async function db2() {
+async function db2(query) {
    try {
-      await sql.connect({
+      const pool = await sql.connect({
          user: "admin",
          password: "admin",
          server: "WARZONE",
          database: "LiteErp",
+         port: 1433,
          options: {
-            encrypt: true, // If using Azure SQL Database, set to true
+            encrypt: false, // If using Azure SQL Database, set to true
          },
       });
-      console.log("Connected to SQL Server");
+
+      const result = await pool.request().query(query);
+      return result;
    } catch (error) {
-      console.error("Failed to connect to SQL Server:", error);
-      throw error; // Rethrow the error to be caught by the caller
+      console.error("Failed to execute SQL query:", error);
+      throw error;
    }
 }
 

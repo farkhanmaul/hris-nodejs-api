@@ -1,15 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const {
-   loginUser,
-   handleSendOTP,
-   handleVerifyOTP,
-   connectToSQLServer,
-} = require("./handler");
+const { login, verifyOTP } = require("./handler");
 
-router.post("/login", loginUser);
-router.post("/handleSendOTP", handleSendOTP);
-router.post("/handleVerifyOTP", handleVerifyOTP);
-router.get("/connectToSQLServer", connectToSQLServer);
+router.post("/login", login);
+router.post("/otp", verifyOTP);
 
 module.exports = router;

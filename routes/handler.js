@@ -11,7 +11,12 @@ async function login(req, res) {
       const query = `SELECT PrimaryEmail FROM dbo.HrEmployee WHERE EmployeeId = '${employeeId}'`;
       const result = await db2(query);
       if (!result.recordset || !result.recordset.length) {
-         res.status(404).send("User not found");
+         const response = {
+            respCode: "00",
+            respMsg: "User not found",
+            data: {},
+         };
+         res.status(404).json(response);
       } else {
          const email = result.recordset[0].PrimaryEmail;
          const response = {
@@ -116,7 +121,7 @@ async function sendOTP(receiver, otp, expiredAt, employeeId) {
    // Send the email
    await transporter.sendMail(mailOptions);
 
-   const query = `INSERT INTO user_otp (email, otp, expiredAt, employeeId) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE otp = VALUES(otp), expiredAt = VALUES(expiredAt)`;
+   const query = `INSERT INTO user_otp (email, otp, expiredAt, employeeId) VALUES (?, ?, ?, ?)`;
    db.query(query, [receiver, otp, expiredAt, employeeId], (error, results) => {
       if (error) {
          console.error("Error storing OTP in database:", error);
@@ -133,17 +138,24 @@ async function verifyOTP(req, res) {
       const query = `SELECT otp, expiredAt FROM user_otp WHERE employeeId = '${employeeId}'`;
       const result = await db.query(query);
 
-      if (!result || !result.length) {
-         res.status(404).send("OTP not found");
+      if (result.length === 0) {
+         // Employee ID not found in user_otp table
+         res.status(404).json({
+            respCode: "01",
+            respMsg: "Employee ID not found",
+         });
       } else {
-         const { otp, expiredAt } = result[0];
+         const { otp: storedOTP, expiredAt } = result[0];
 
          // Check if OTP is expired
          if (new Date() > new Date(expiredAt)) {
-            res.status(400).send("OTP has expired");
+            res.status(400).json({
+               respCode: "02",
+               respMsg: "OTP has expired",
+            });
          } else {
             // Verify the OTP
-            if (otp === result[0].otp) {
+            if (otp === storedOTP) {
                // OTP is correct
                // Generate a random 30-digit string token
                const token = generateRandomToken();
@@ -156,26 +168,39 @@ async function verifyOTP(req, res) {
                await db.query(insertQuery, [employeeId, token, expiredAt]);
 
                res.status(200).json({
-                  token: token,
-                  expiredAt: expiredAt,
+                  respCode: "00",
+                  respMsg: "OTP verified",
+                  data: {
+                     token: token,
+                     expiredAt: expiredAt,
+                  },
                });
             } else {
                // OTP is incorrect
-               res.status(400).send("Invalid OTP");
+               res.status(400).json({
+                  respCode: "03",
+                  respMsg: "Invalid OTP",
+               });
             }
          }
       }
    } catch (error) {
       console.error("Failed to verify OTP:", error);
-      res.status(500).send("Internal Server Error");
+      res.status(500).json({
+         respCode: "99",
+         respMsg: "Internal Server Error",
+      });
    }
 }
-
 // Generate a random 30-digit string token
 function generateRandomToken() {
-   const token = Array.from({ length: 30 }, () =>
-      Math.floor(Math.random() * 10)
-   ).join("");
+   const characters =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+   let token = "";
+   for (let i = 0; i < 30; i++) {
+      const randomIndex = Math.floor(Math.random() * characters.length);
+      token += characters.charAt(randomIndex);
+   }
    return token;
 }
 

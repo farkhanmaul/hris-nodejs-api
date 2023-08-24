@@ -129,41 +129,54 @@ async function sendOTP(receiver, otp, expiredAt, employeeId) {
 async function verifyOTP(req, res) {
    const { employeeId, otp } = req.body;
 
-   const query = `SELECT * FROM user_otp WHERE employeeId = ? LIMIT 1`;
+   try {
+      const query = `SELECT otp, expiredAt FROM user_otp WHERE employeeId = '${employeeId}'`;
+      const result = await db.query(query);
 
-   db.query(query, [employeeId], async (error, results) => {
-      if (error) {
-         console.error("Error retrieving OTP from the database:", error);
-         return res.status(500).json({ error: "Internal server error" });
-      }
-
-      if (results.length === 0) {
-         console.log("OTP not found for the given employeeId");
-         return res.status(404).json({ error: "OTP not found" });
-      }
-
-      const storedOTP = results[0].otp;
-      const expiredAt = results[0].expiredAt;
-
-      // Compare the provided OTP with the stored OTP
-      if (otp === storedOTP) {
-         // Check if the OTP has expired
-         const currentDateTime = new Date();
-         const otpExpiredDateTime = new Date(expiredAt);
-
-         if (currentDateTime > otpExpiredDateTime) {
-            console.log("OTP has expired");
-            return res.status(400).json({ error: "OTP has expired" });
-         }
-
-         // OTP is valid and not expired
-         console.log("OTP verified successfully");
-         return res.status(200).json({ message: "OTP verified successfully" });
+      if (!result || !result.length) {
+         res.status(404).send("OTP not found");
       } else {
-         console.log("Invalid OTP");
-         return res.status(400).json({ error: "Invalid OTP" });
+         const { otp, expiredAt } = result[0];
+
+         // Check if OTP is expired
+         if (new Date() > new Date(expiredAt)) {
+            res.status(400).send("OTP has expired");
+         } else {
+            // Verify the OTP
+            if (otp === result[0].otp) {
+               // OTP is correct
+               // Generate a random 30-digit string token
+               const token = generateRandomToken();
+
+               // Generate the expiration date (3 months from the current date)
+               const expiredAt = generateExpirationDate();
+
+               // Store the employeeId, token, and expiration date in the database
+               const insertQuery = `INSERT INTO user_token (employeeId, token, expiredAt) VALUES (?, ?, ?)`;
+               await db.query(insertQuery, [employeeId, token, expiredAt]);
+
+               res.status(200).json({
+                  token: token,
+                  expiredAt: expiredAt,
+               });
+            } else {
+               // OTP is incorrect
+               res.status(400).send("Invalid OTP");
+            }
+         }
       }
-   });
+   } catch (error) {
+      console.error("Failed to verify OTP:", error);
+      res.status(500).send("Internal Server Error");
+   }
+}
+
+// Generate a random 30-digit string token
+function generateRandomToken() {
+   const token = Array.from({ length: 30 }, () =>
+      Math.floor(Math.random() * 10)
+   ).join("");
+   return token;
 }
 
 module.exports = {

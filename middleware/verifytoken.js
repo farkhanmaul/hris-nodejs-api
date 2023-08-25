@@ -1,9 +1,10 @@
 const db = require("../config/database");
+const response = require("../middleware/response");
 
 async function verifyToken(req, res, next) {
    const apiKey = req.headers["x-api-key"];
    if (!apiKey) {
-      return res.sendStatus(401);
+      return response(401, "01", "Unauthorized", {}, res);
    }
 
    try {
@@ -11,20 +12,20 @@ async function verifyToken(req, res, next) {
       const result = await db.query(query);
 
       if (!result || !result.length || !result[0].length) {
-         return res.sendStatus(403);
+         return response(403, "02", "Forbidden", {}, res);
       }
 
       const { employeeId, expiredAt } = result[0][0];
 
       if (new Date() > new Date(expiredAt)) {
-         return res.sendStatus(403);
+         return response(403, "03", "Token has expired", {}, res);
       }
 
       req.employeeId = employeeId;
       next();
    } catch (error) {
       console.error("Failed to verify token:", error);
-      return res.sendStatus(500);
+      return response(500, "99", "Internal Server Error", {}, res);
    }
 }
 

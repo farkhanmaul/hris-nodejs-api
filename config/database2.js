@@ -3,13 +3,13 @@ const sql = require("mssql");
 async function db2(query) {
    try {
       const pool = await sql.connect({
-         user: "admin",
-         password: "admin",
-         server: "WARZONE",
-         database: "LiteErp",
-         port: 1433,
+         user: process.env.DB_USER_ERP,
+         password: process.env.DB_PASSWORD_ERP,
+         server: process.env.DB_SERVER_ERP,
+         database: process.env.DB_DATABASE_ERP,
+         port: parseInt(process.env.DB_PORT_ERP, 10),
          options: {
-            encrypt: false, // If using Azure SQL Database, set to true
+            encrypt: false,
          },
       });
 

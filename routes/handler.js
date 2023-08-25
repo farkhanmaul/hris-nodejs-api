@@ -5,6 +5,7 @@ const nodemailer = require("nodemailer");
 const Mailgen = require("mailgen");
 const randomstring = require("randomstring");
 
+// login with ERP database
 async function login(req, res) {
    const { employeeId } = req.body;
 
@@ -15,6 +16,37 @@ async function login(req, res) {
          response(404, "00", "User not found", {}, res);
       } else {
          const email = result.recordset[0].PrimaryEmail;
+
+         const otp = generateOTP();
+         const expiredAt = generateExpirationDate(); // Get the expiration datetime
+
+         await sendOTP(email, otp, expiredAt, employeeId); // Pass the expiredAt datetime to the sendOTP function
+
+         response(
+            200,
+            "00",
+            "Employee Found, OTP Sent to Email",
+            { employeeEmail: email },
+            res
+         );
+      }
+   } catch (error) {
+      console.error("Failed to retrieve user email:", error);
+      res.status(500).send("Internal Server Error");
+   }
+}
+
+// login with mysql database
+async function loginDummy(req, res) {
+   const { employeeId } = req.body;
+
+   try {
+      const query = `SELECT PrimaryEmail FROM user_dummy WHERE employeeId = '${employeeId}'`;
+      const result = await db.query(query);
+      if (!result || result.length === 0 || result[0].length === 0) {
+         response(404, "00", "User not found", {}, res);
+      } else {
+         const email = result[0][0].PrimaryEmail;
 
          const otp = generateOTP();
          const expiredAt = generateExpirationDate(); // Get the expiration datetime
@@ -210,8 +242,32 @@ async function getProfile(req, res) {
    }
 }
 
+async function employeePresence(req, res) {
+   const { employeeId, longitude, latitude, datetime, locationName } = req.body;
+
+   try {
+      const query = `INSERT INTO employee_presence (employeeId, longitude, latitude, datetime, location_name) 
+                    VALUES (?, ?, ?, ?, ?)`;
+      await db.query(query, [
+         employeeId,
+         longitude,
+         latitude,
+         datetime,
+         locationName,
+      ]);
+
+      // If the insertion is successful, you can send a success response
+      response(200, "00", "Employee presence recorded successfully", {}, res);
+   } catch (error) {
+      console.error("Failed to record employee presence:", error);
+      response(500, "99", "Failed to record employee presence", {}, res);
+   }
+}
+
 module.exports = {
    login,
+   loginDummy,
    verifyOTP,
    getProfile,
+   employeePresence,
 };

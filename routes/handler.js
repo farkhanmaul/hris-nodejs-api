@@ -261,7 +261,7 @@ async function employeePresence(req, res) {
 
 async function verifyTokenHandler(req, res, next) {
    try {
-      await verifyToken(req, res); // Pass the `next` parameter
+      await verifyToken(req, res); // Pass req, res, and next as separate arguments
    } catch (error) {
       console.error("Failed to verify token:", error);
       return response(500, "99", "Internal Server Error", {}, res);

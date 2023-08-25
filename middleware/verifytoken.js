@@ -21,7 +21,15 @@ async function verifyToken(req, res, next) {
          return response(403, "03", "Token has expired", {}, res);
       }
 
-      req.employeeId = employeeId;
+      // if (employeeId !== req.employeeId) {
+      //    return response(
+      //       403,
+      //       "04",
+      //       "Token does not match employee ID",
+      //       {},
+      //       res
+      //    );
+      // }
 
       if (typeof next === "function") {
          next();

@@ -11,5 +11,13 @@ const pool = mysql.createPool({
 // Get a Promise wrapped instance of that pool
 const db = pool.promise();
 
+// Test the database connection
+db.getConnection()
+   .then(() => {
+      console.log("Database connection successful");
+   })
+   .catch((err) => {
+      console.error("Error connecting to the database:", err);
+   });
 // Export the db instance for use in other modules
 module.exports = db;

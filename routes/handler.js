@@ -1,5 +1,6 @@
 const db = require("../config/database");
 const db2 = require("../config/database2");
+const response = require("../middleware/response");
 const nodemailer = require("nodemailer");
 const Mailgen = require("mailgen");
 const randomstring = require("randomstring");
@@ -11,28 +12,22 @@ async function login(req, res) {
       const query = `SELECT PrimaryEmail FROM dbo.HrEmployee WHERE EmployeeId = '${employeeId}'`;
       const result = await db2(query);
       if (!result.recordset || !result.recordset.length) {
-         const response = {
-            respCode: "00",
-            respMsg: "User not found",
-            data: {},
-         };
-         res.status(404).json(response);
+         response(404, "00", "User not found", {}, res);
       } else {
          const email = result.recordset[0].PrimaryEmail;
-         const response = {
-            respCode: "00",
-            respMsg: "Employee Found, OTP Sent to Email",
-            data: {
-               employeeEmail: email,
-            },
-         };
 
          const otp = generateOTP();
          const expiredAt = generateExpirationDate(); // Get the expiration datetime
 
          await sendOTP(email, otp, expiredAt, employeeId); // Pass the expiredAt datetime to the sendOTP function
 
-         res.status(200).json(response);
+         response(
+            200,
+            "00",
+            "Employee Found, OTP Sent to Email",
+            { employeeEmail: email },
+            res
+         );
       }
    } catch (error) {
       console.error("Failed to retrieve user email:", error);
@@ -138,24 +133,22 @@ async function verifyOTP(req, res) {
       const query = `SELECT otp, expiredAt FROM user_otp WHERE employeeId = '${employeeId}'`;
       const result = await db.query(query);
 
-      if (result.length === 0) {
+      if (!result || result.length === 0 || result[0].length === 0) {
          // Employee ID not found in user_otp table
-         res.status(404).json({
-            respCode: "01",
-            respMsg: "Employee ID not found",
-         });
+         response(404, "01", "Employee ID not found", {}, res);
       } else {
-         const { otp: storedOTP, expiredAt } = result[0];
+         const { otp: storedOTP, expiredAt } = result[0][0];
 
          // Check if OTP is expired
          if (new Date() > new Date(expiredAt)) {
-            res.status(400).json({
-               respCode: "02",
-               respMsg: "OTP has expired",
-            });
+            response(400, "02", "OTP has expired", {}, res);
          } else {
-            // Verify the OTP
-            if (otp === storedOTP) {
+            // Verify the OTP (case-insensitive and ignore leading/trailing white spaces)
+            if (
+               otp &&
+               storedOTP &&
+               otp.trim().toLowerCase() === storedOTP.trim().toLowerCase()
+            ) {
                // OTP is correct
                // Generate a random 30-digit string token
                const token = generateRandomToken();
@@ -167,31 +160,25 @@ async function verifyOTP(req, res) {
                const insertQuery = `INSERT INTO user_token (employeeId, token, expiredAt) VALUES (?, ?, ?)`;
                await db.query(insertQuery, [employeeId, token, expiredAt]);
 
-               res.status(200).json({
-                  respCode: "00",
-                  respMsg: "OTP verified",
-                  data: {
-                     token: token,
-                     expiredAt: expiredAt,
-                  },
-               });
+               response(
+                  200,
+                  "00",
+                  "OTP verified",
+                  { token: token, expiredAt: expiredAt },
+                  res
+               );
             } else {
                // OTP is incorrect
-               res.status(400).json({
-                  respCode: "03",
-                  respMsg: "Invalid OTP",
-               });
+               response(404, "03", "Invalid OTP", {}, res);
             }
          }
       }
    } catch (error) {
       console.error("Failed to verify OTP:", error);
-      res.status(500).json({
-         respCode: "99",
-         respMsg: "Internal Server Error",
-      });
+      response(500, "99", "Internal Server Error", {}, res);
    }
 }
+
 // Generate a random 30-digit string token
 function generateRandomToken() {
    const characters =

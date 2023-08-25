@@ -14,6 +14,7 @@ async function db2(query) {
       });
 
       const result = await pool.request().query(query);
+
       return result;
    } catch (error) {
       console.error("Failed to execute SQL query:", error);

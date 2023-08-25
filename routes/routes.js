@@ -7,6 +7,7 @@ const {
    verifyOTP,
    getProfile,
    employeePresence,
+   verifyTokenHandler,
 } = require("./handler");
 
 router.post("/login", login);
@@ -14,6 +15,6 @@ router.post("/login-otp", verifyOTP);
 router.post("/user", verifyToken, getProfile);
 router.post("/user-presence", verifyToken, employeePresence);
 router.post("/login-dummy", loginDummy);
-router.post("/verify-token", verifyToken);
+router.post("/verify-token", verifyTokenHandler);
 
 module.exports = router;

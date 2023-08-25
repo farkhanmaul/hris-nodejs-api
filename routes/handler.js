@@ -2,6 +2,7 @@ const db = require("../config/database");
 const db2 = require("../config/database2");
 const response = require("../middleware/response");
 const nodemailer = require("nodemailer");
+const verifyToken = require("../middleware/verifytoken.js");
 const Mailgen = require("mailgen");
 const randomstring = require("randomstring");
 
@@ -68,23 +69,15 @@ async function loginDummy(req, res) {
 }
 
 // Generate OTP
+
 function generateOTP() {
-   const otp = randomstring.generate({
-      length: 6,
-      charset: "numeric",
-   });
-   return otp;
+   return randomstring.generate({ length: 6, charset: "numeric" });
 }
 
-// Generate expiration datetime
 function generateExpirationDate() {
-   const currentTime = new Date();
-   const expirationTime = new Date(
-      currentTime.getTime() + 3 * 30 * 24 * 60 * 60 * 1000
-   ); // Set expiration time to 3 months from current time
+   const expirationTime = new Date(Date.now() + 3 * 30 * 24 * 60 * 60 * 1000);
    return expirationTime;
 }
-
 // Kirim OTP ke alamat email
 async function sendOTP(receiver, otp, expiredAt, employeeId) {
    // Add expiredAt parameter
@@ -243,11 +236,13 @@ async function getProfile(req, res) {
 }
 
 async function employeePresence(req, res) {
-   const { employeeId, longitude, latitude, datetime, locationName } = req.body;
+   const { employeeId, longitude, latitude, locationName } = req.body;
 
    try {
+      const datetime = new Date(); // Generate the current datetime
+
       const query = `INSERT INTO employee_presence (employeeId, longitude, latitude, datetime, location_name) 
-                    VALUES (?, ?, ?, ?, ?)`;
+                     VALUES (?, ?, ?, ?, ?)`;
       await db.query(query, [
          employeeId,
          longitude,
@@ -264,10 +259,20 @@ async function employeePresence(req, res) {
    }
 }
 
+async function verifyTokenHandler(req, res, next) {
+   try {
+      await verifyToken(req, res); // Pass the `next` parameter
+   } catch (error) {
+      console.error("Failed to verify token:", error);
+      return response(500, "99", "Internal Server Error", {}, res);
+   }
+}
+
 module.exports = {
    login,
    loginDummy,
    verifyOTP,
    getProfile,
    employeePresence,
+   verifyTokenHandler,
 };

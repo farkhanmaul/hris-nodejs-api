@@ -22,7 +22,12 @@ async function verifyToken(req, res, next) {
       }
 
       req.employeeId = employeeId;
-      next();
+
+      if (typeof next === "function") {
+         next();
+      } else {
+         return response(200, "00", "Success", {}, res);
+      }
    } catch (error) {
       console.error("Failed to verify token:", error);
       return response(500, "99", "Internal Server Error", {}, res);

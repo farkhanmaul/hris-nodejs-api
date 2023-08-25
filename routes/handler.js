@@ -191,7 +191,27 @@ function generateRandomToken() {
    return token;
 }
 
+async function getProfile(req, res) {
+   const { employeeId } = req.body;
+
+   try {
+      const query = `SELECT EmployeeId, EmployeeFullName, PrimaryEmail, BirthDate,JoinCompany FROM dbo.HrEmployee WHERE EmployeeId = '${employeeId}'`;
+      const result = await db2(query);
+
+      if (!result.recordset || !result.recordset.length) {
+         response(404, "01", "User not found", {}, res);
+      } else {
+         const profile = result.recordset[0];
+         response(200, "00", "Profile retrieved successfully", profile, res);
+      }
+   } catch (error) {
+      console.error("Failed to retrieve user profile:", error);
+      response(500, "02", "Internal Server Error", {}, res);
+   }
+}
+
 module.exports = {
    login,
    verifyOTP,
+   getProfile,
 };

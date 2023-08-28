@@ -15,8 +15,8 @@ router.post("/login", login);
 router.post("/login-otp", loginOTP);
 router.post("/logout", verifyToken, logout);
 router.post("/user", verifyToken, userProfile);
-router.post("/user-attendance", verifyToken, getAttendance);
 router.post("/attendance", verifyToken, attendance);
+router.post("/user-attendance", verifyToken, getAttendance);
 router.post("/verify-token", verifyTokenHandler);
 
 module.exports = router;

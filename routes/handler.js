@@ -37,37 +37,6 @@ async function login(req, res) {
    }
 }
 
-// login with mysql database
-async function loginDummy(req, res) {
-   const { employeeId } = req.body;
-
-   try {
-      const query = `SELECT PrimaryEmail FROM user_dummy WHERE employeeId = '${employeeId}'`;
-      const result = await db.query(query);
-      if (!result || result.length === 0 || result[0].length === 0) {
-         response(404, "00", "User not found", {}, res);
-      } else {
-         const email = result[0][0].PrimaryEmail;
-
-         const otp = generateOTP();
-         const expiredAt = generateExpirationDate(); // Get the expiration datetime
-
-         await sendOTP(email, otp, expiredAt, employeeId); // Pass the expiredAt datetime to the sendOTP function
-
-         response(
-            200,
-            "00",
-            "Employee Found, OTP Sent to Email",
-            { employeeEmail: email },
-            res
-         );
-      }
-   } catch (error) {
-      console.error("Failed to retrieve user email:", error);
-      res.status(500).send("Internal Server Error");
-   }
-}
-
 // Generate OTP
 
 function generateOTP() {
@@ -141,17 +110,23 @@ async function sendOTP(receiver, otp, expiredAt, employeeId) {
    // Send the email
    await transporter.sendMail(mailOptions);
 
-   const query = `INSERT INTO user_otp (email, otp, expiredAt, employeeId) VALUES (?, ?, ?, ?)`;
-   db.query(query, [receiver, otp, expiredAt, employeeId], (error, results) => {
-      if (error) {
-         console.error("Error storing OTP in database:", error);
-      } else {
-         console.log("OTP stored in database");
+   const createdAt = new Date(); // Generate the current datetime
+
+   const query = `INSERT INTO user_otp (email, otp, expiredAt, employeeId, createdAt) VALUES (?, ?, ?, ?, ?)`;
+   db.query(
+      query,
+      [receiver, otp, expiredAt, employeeId, createdAt],
+      (error, results) => {
+         if (error) {
+            console.error("Error storing OTP in database:", error);
+         } else {
+            console.log("OTP stored in database");
+         }
       }
-   });
+   );
 }
 
-async function verifyOTP(req, res) {
+async function loginOTP(req, res) {
    const { employeeId, otp } = req.body;
 
    try {
@@ -182,9 +157,17 @@ async function verifyOTP(req, res) {
                const expiredAt = generateExpirationDate();
 
                // Store the employeeId, token, and expiration date in the database
-               const insertQuery = `INSERT INTO user_token (employeeId, token, expiredAt) VALUES (?, ?, ?)`;
-               await db.query(insertQuery, [employeeId, token, expiredAt]);
+               const insertQuery = `INSERT INTO user_token (employeeId, token, expiredAt, status, createdAt) VALUES (?, ?, ?, ?, ?)`;
+               const status = "open"; // Default value for the status column
+               const createdAt = new Date(); // Current datetime value for the createdAt column
 
+               await db.query(insertQuery, [
+                  employeeId,
+                  token,
+                  expiredAt,
+                  status,
+                  createdAt,
+               ]);
                response(
                   200,
                   "00",
@@ -216,17 +199,40 @@ function generateRandomToken() {
    return token;
 }
 
-async function getProfile(req, res) {
+function formatDate(date) {
+   const options = {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+   };
+   return date.toLocaleDateString("id-ID", options);
+}
+
+async function userProfile(req, res) {
    const { employeeId } = req.body;
 
    try {
-      const query = `SELECT EmployeeId, EmployeeFullName, PrimaryEmail, BirthDate,JoinCompany FROM dbo.HrEmployee WHERE EmployeeId = '${employeeId}'`;
+      const query = `SELECT EmployeeId, EmployeeFullName, PrimaryEmail, BirthDate, JoinCompany FROM dbo.HrEmployee WHERE EmployeeId = '${employeeId}'`;
       const result = await db2(query);
 
       if (!result.recordset || !result.recordset.length) {
          response(404, "01", "User not found", {}, res);
       } else {
          const profile = result.recordset[0];
+         const birthDate = new Date(profile.BirthDate);
+         const joinCompanyDate = new Date(profile.JoinCompany);
+
+         profile.BirthDate = formatDate(birthDate); // Format BirthDate
+         profile.JoinCompany = formatDate(joinCompanyDate); // Format JoinCompany
+
+         // Add position, level, and status with (-) values
+         profile.Position = "-";
+         profile.Level = "-";
+         profile.Work = "-";
+
          response(200, "00", "Profile retrieved successfully", profile, res);
       }
    } catch (error) {
@@ -235,17 +241,53 @@ async function getProfile(req, res) {
    }
 }
 
-async function employeePresence(req, res) {
-   const { employeeId, longitude, latitude, locationName } = req.body;
+async function verifyTokenHandler(req, res, next) {
+   try {
+      await verifyToken(req, res); // Pass req, res, and next as separate arguments
+   } catch (error) {
+      console.error("Failed to verify token:", error);
+      return response(500, "99", "Internal Server Error", {}, res);
+   }
+}
+
+async function logout(req, res) {
+   const token = req.headers["x-api-key"];
+
+   try {
+      const selectQuery = `SELECT status FROM user_token WHERE token = ?`;
+      const result = await db.query(selectQuery, [token]);
+
+      if (!result || result.length === 0 || result[0].length === 0) {
+         response(404, "01", "Token not found", {}, res);
+      } else {
+         const { status } = result[0][0];
+
+         if (status === "closed") {
+            response(400, "02", "Token is already closed", {}, res);
+         } else {
+            const updateQuery = `UPDATE user_token SET status = 'closed' WHERE token = ?`;
+            await db.query(updateQuery, [token]);
+
+            response(200, "00", "Logout successful", {}, res);
+         }
+      }
+   } catch (error) {
+      console.error("Failed to logout:", error);
+      response(500, "99", "Internal Server Error", {}, res);
+   }
+}
+async function userPresence(req, res) {
+   const { employeeId, longitude, altitude, latitude, locationName } = req.body;
 
    try {
       const datetime = new Date(); // Generate the current datetime
 
-      const query = `INSERT INTO employee_presence (employeeId, longitude, latitude, datetime, location_name) 
-                     VALUES (?, ?, ?, ?, ?)`;
+      const query = `INSERT INTO user_presence (employeeId, longitude, altitude, latitude, datetime, location_name) 
+                     VALUES (?, ?, ?, ?, ?, ?)`;
       await db.query(query, [
          employeeId,
          longitude,
+         altitude,
          latitude,
          datetime,
          locationName,
@@ -259,20 +301,42 @@ async function employeePresence(req, res) {
    }
 }
 
-async function verifyTokenHandler(req, res, next) {
+async function getPresence(req, res) {
+   const { employeeId, date } = req.body;
+
    try {
-      await verifyToken(req, res); // Pass req, res, and next as separate arguments
+      const query = `SELECT * FROM user_presence WHERE employeeId = ? AND DATE(datetime) = ?`;
+      const result = await db.query(query, [employeeId, date]);
+
+      if (!result[0] || result[0].length === 0) {
+         response(
+            404,
+            "01",
+            "No presence data found for the specified date",
+            {},
+            res
+         );
+      } else {
+         response(
+            200,
+            "00",
+            "Presence data retrieved successfully",
+            result[0],
+            res
+         );
+      }
    } catch (error) {
-      console.error("Failed to verify token:", error);
-      return response(500, "99", "Internal Server Error", {}, res);
+      console.error("Failed to retrieve presence data:", error);
+      response(500, "99", "Failed to retrieve presence data", {}, res);
    }
 }
 
 module.exports = {
    login,
-   loginDummy,
-   verifyOTP,
-   getProfile,
-   employeePresence,
+   loginOTP,
+   userProfile,
+   userPresence,
    verifyTokenHandler,
+   logout,
+   getPresence,
 };

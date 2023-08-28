@@ -3,18 +3,20 @@ const router = express.Router();
 const verifyToken = require("../middleware/verifytoken.js");
 const {
    login,
-   loginDummy,
-   verifyOTP,
-   getProfile,
-   employeePresence,
+   loginOTP,
+   userProfile,
+   userPresence,
    verifyTokenHandler,
+   logout,
+   getPresence,
 } = require("./handler");
 
 router.post("/login", login);
-router.post("/login-otp", verifyOTP);
-router.post("/user", verifyToken, getProfile);
-router.post("/user-presence", verifyToken, employeePresence);
-router.post("/login-dummy", loginDummy);
+router.post("/login-otp", loginOTP);
+router.post("/logout", verifyToken, logout);
+router.post("/user", verifyToken, userProfile);
+router.post("/user-presence", verifyToken, userPresence);
+router.post("/get-presence", verifyToken, getPresence);
 router.post("/verify-token", verifyTokenHandler);
 
 module.exports = router;

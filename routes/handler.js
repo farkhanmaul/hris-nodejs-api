@@ -6,7 +6,7 @@ const verifyToken = require("../middleware/verifytoken.js");
 const Mailgen = require("mailgen");
 const randomstring = require("randomstring");
 
-// login with ERP database
+// login
 async function login(req, res) {
    const { employeeId } = req.body;
 
@@ -14,7 +14,7 @@ async function login(req, res) {
       const query = `SELECT PrimaryEmail FROM dbo.HrEmployee WHERE EmployeeId = '${employeeId}'`;
       const result = await db2(query);
       if (!result.recordset || !result.recordset.length) {
-         response(404, "00", "User not found", {}, res);
+         response(404, "01", "User not found", {}, res);
       } else {
          const email = result.recordset[0].PrimaryEmail;
 
@@ -33,7 +33,7 @@ async function login(req, res) {
       }
    } catch (error) {
       console.error("Failed to retrieve user email:", error);
-      res.status(500).send("Internal Server Error");
+      response(500, "99", "Internal Server Error", {}, res);
    }
 }
 
@@ -109,9 +109,7 @@ async function sendOTP(receiver, otp, expiredAt, employeeId) {
 
    // Send the email
    await transporter.sendMail(mailOptions);
-
    const createdAt = new Date(); // Generate the current datetime
-
    const query = `INSERT INTO user_otp (email, otp, expiredAt, employeeId, createdAt) VALUES (?, ?, ?, ?, ?)`;
    db.query(
       query,
@@ -237,7 +235,7 @@ async function userProfile(req, res) {
       }
    } catch (error) {
       console.error("Failed to retrieve user profile:", error);
-      response(500, "02", "Internal Server Error", {}, res);
+      response(500, "99", "Internal Server Error", {}, res);
    }
 }
 
@@ -276,7 +274,7 @@ async function logout(req, res) {
       response(500, "99", "Internal Server Error", {}, res);
    }
 }
-async function userPresence(req, res) {
+async function attendance(req, res) {
    const { employeeId, longitude, altitude, latitude, locationName } = req.body;
 
    try {
@@ -301,7 +299,7 @@ async function userPresence(req, res) {
    }
 }
 
-async function getPresence(req, res) {
+async function getAttendance(req, res) {
    const { employeeId, date } = req.body;
 
    try {
@@ -335,8 +333,8 @@ module.exports = {
    login,
    loginOTP,
    userProfile,
-   userPresence,
+   attendance,
    verifyTokenHandler,
    logout,
-   getPresence,
+   getAttendance,
 };

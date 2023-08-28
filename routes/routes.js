@@ -5,18 +5,18 @@ const {
    login,
    loginOTP,
    userProfile,
-   userPresence,
+   attendance,
    verifyTokenHandler,
    logout,
-   getPresence,
+   getAttendance,
 } = require("./handler");
 
 router.post("/login", login);
 router.post("/login-otp", loginOTP);
 router.post("/logout", verifyToken, logout);
 router.post("/user", verifyToken, userProfile);
-router.post("/user-presence", verifyToken, userPresence);
-router.post("/get-presence", verifyToken, getPresence);
+router.post("/user-attendance", verifyToken, getAttendance);
+router.post("/attendance", verifyToken, attendance);
 router.post("/verify-token", verifyTokenHandler);
 
 module.exports = router;

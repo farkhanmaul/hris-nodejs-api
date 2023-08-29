@@ -8,7 +8,7 @@ async function verifyToken(req, res, next) {
    }
 
    try {
-      const query = `SELECT employeeId, token, expiredAt FROM user_token WHERE token = '${apiKey}'`;
+      const query = `SELECT employeeId, token, expiredAt FROM user_token WHERE token = '${apiKey}' `;
       const result = await db.query(query);
 
       if (!result || !result.length || !result[0].length) {

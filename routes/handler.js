@@ -61,24 +61,23 @@ async function sendOTP(receiver, otp, expiredAt, employeeId) {
 
    // Configuration for mailgen
    const mailGenerator = new Mailgen({
-      theme: "default",
+      theme: "salted",
       product: {
-         name: "Your App",
-         link: "https://yourapp.com/",
+         name: "Abhimata Citra Abadi",
+         link: "http://www.abhimata.co.id/",
          // Optional logo URL
-         // logo: "https://yourapp.com/logo.png"
+         logo: "http://www.abhimata.co.id/v2.0//images/logo_aca.png",
       },
    });
 
-   // Generate the email body
    const email = {
       body: {
-         name: receiver,
-         intro: "Welcome to Aplikasi Hasil Buatan Kami! Here is your OTP:",
+         title: "Welcome to ACA Apps!",
+         intro: "For the security of your account, a one-time verification process is necessary using an OTP (One-Time Password). Here is your OTP:",
          table: {
             data: [
                {
-                  OTP: otp,
+                  OTP: `<div style="text-align: center;"><span style="font-size: 24px; font-weight: bold;">${otp}</span></div>`,
                },
             ],
             columns: {
@@ -92,7 +91,7 @@ async function sendOTP(receiver, otp, expiredAt, employeeId) {
                },
             },
          },
-         outro: "Thank you for using Our App!",
+         outro: "Thank you for using ACA Apps! Enjoy your experience with us!",
       },
    };
 
@@ -103,7 +102,7 @@ async function sendOTP(receiver, otp, expiredAt, employeeId) {
    const mailOptions = {
       from: "OTP@gmail.com",
       to: receiver,
-      subject: "OTP Verification",
+      subject: "Your OTP Code",
       html: emailBody,
    };
 
@@ -275,13 +274,14 @@ async function logout(req, res) {
    }
 }
 async function attendance(req, res) {
-   const { employeeId, longitude, altitude, latitude, locationName } = req.body;
+   const { employeeId, longitude, altitude, latitude, locationName, action } =
+      req.body;
 
    try {
       const datetime = new Date(); // Generate the current datetime
 
-      const query = `INSERT INTO user_presence (employeeId, longitude, altitude, latitude, datetime, location_name) 
-                     VALUES (?, ?, ?, ?, ?, ?)`;
+      const query = `INSERT INTO user_presence (employeeId, longitude, altitude, latitude, datetime, location_name, action) 
+                     VALUES (?, ?, ?, ?, ?, ?, ?)`;
       await db.query(query, [
          employeeId,
          longitude,
@@ -289,6 +289,7 @@ async function attendance(req, res) {
          latitude,
          datetime,
          locationName,
+         action,
       ]);
 
       // If the insertion is successful, you can send a success response

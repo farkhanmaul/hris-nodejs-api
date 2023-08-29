@@ -151,7 +151,7 @@ async function loginOTP(req, res) {
    const { employeeId, otp } = req.body;
 
    try {
-      const query = `SELECT otp, expiredAt FROM user_otp WHERE employeeId = '${employeeId}'`;
+      const query = `SELECT otp, expiredAt FROM user_otp WHERE employeeId = '${employeeId}' ORDER BY createdAt DESC`;
       const result = await db.query(query);
 
       if (!result || result.length === 0 || result[0].length === 0) {
@@ -165,11 +165,7 @@ async function loginOTP(req, res) {
             response(400, "02", "OTP has expired", {}, res);
          } else {
             // Verify the OTP (case-insensitive and ignore leading/trailing white spaces)
-            if (
-               otp &&
-               storedOTP &&
-               otp.trim().toLowerCase() === storedOTP.trim().toLowerCase()
-            ) {
+            if (otp === storedOTP) {
                // OTP is correct
                // Generate a random 30-digit string token
                const token = generateRandomToken();

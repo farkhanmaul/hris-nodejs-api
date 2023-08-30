@@ -9,6 +9,7 @@ const {
    verifyTokenHandler,
    logout,
    getAttendance,
+   getClockTime,
 } = require("./handler");
 
 router.post("/login", login);
@@ -17,6 +18,7 @@ router.post("/logout", verifyToken, logout);
 router.post("/user", verifyToken, userProfile);
 router.post("/attendance", verifyToken, attendance);
 router.post("/user-attendance", verifyToken, getAttendance);
+router.post("/user-attendance-clock", verifyToken, getClockTime);
 router.post("/verify-token", verifyTokenHandler);
 
 module.exports = router;

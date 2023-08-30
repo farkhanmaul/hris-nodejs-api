@@ -39,6 +39,15 @@ function formatDate(date) {
    };
    return date.toLocaleDateString("id-ID", options);
 }
+function logAPICall(logData) {
+   const query = "INSERT INTO api_log SET ?";
+
+   db.query(query, logData, (error, results) => {
+      if (error) {
+         console.error("Failed to write API log:", error);
+      }
+   });
+}
 
 // login endpoint
 async function login(req, res) {
@@ -47,6 +56,18 @@ async function login(req, res) {
    try {
       const query = `SELECT PrimaryEmail FROM dbo.HrEmployee WHERE EmployeeId = '${employeeId}'`;
       const result = await db2(query);
+      const logData = {
+         employeeId: employeeId,
+         timestamp: new Date().toISOString(),
+         endpoint: req.path,
+         method: req.method,
+         requestBody: JSON.stringify(req.body),
+         queryResult: JSON.stringify(result),
+      };
+      console.log(res);
+
+      await logAPICall(logData);
+
       if (!result.recordset || !result.recordset.length) {
          response(404, "01", "User not found", {}, res);
       } else {
@@ -270,14 +291,21 @@ async function logout(req, res) {
    }
 }
 async function attendance(req, res) {
-   const { employeeId, longitude, altitude, latitude, locationName, action } =
-      req.body;
+   const {
+      employeeId,
+      longitude,
+      altitude,
+      latitude,
+      locationName,
+      action,
+      notes,
+   } = req.body;
 
    try {
       const datetime = new Date(); // Generate the current datetime
 
-      const query = `INSERT INTO user_presence (employeeId, longitude, altitude, latitude, datetime, location_name, action) 
-                     VALUES (?, ?, ?, ?, ?, ?, ?)`;
+      const query = `INSERT INTO user_presence (employeeId, longitude, altitude, latitude, datetime, location_name, action,notes) 
+                     VALUES (?, ?, ?, ?, ?, ?, ?,?)`;
       await db.query(query, [
          employeeId,
          longitude,
@@ -286,6 +314,7 @@ async function attendance(req, res) {
          datetime,
          locationName,
          action,
+         notes,
       ]);
 
       // If the insertion is successful, you can send a success response
@@ -325,6 +354,43 @@ async function getAttendance(req, res) {
       response(500, "99", "Failed to retrieve presence data", {}, res);
    }
 }
+async function getClockTime(req, res) {
+   const { employeeId, date, action } = req.body;
+
+   try {
+      const query = `
+         SELECT DATE_FORMAT(datetime, '%H:%i') AS clockTime, action
+         FROM user_presence
+         WHERE employeeId = ? AND DATE(datetime) = ? AND action = ?
+         ORDER BY datetime DESC
+         LIMIT 1
+      `;
+      const result = await db.query(query, [employeeId, date, action]);
+
+      if (!result[0] || result[0].length === 0) {
+         response(
+            404,
+            "01",
+            "No clock data found for the specified date and action",
+            {},
+            res
+         );
+      } else {
+         const clockTime = result[0][0].clockTime;
+         const action = result[0][0].action;
+         response(
+            200,
+            "00",
+            "Clock time retrieved successfully",
+            { clockTime, action },
+            res
+         );
+      }
+   } catch (error) {
+      console.error("Failed to retrieve clock time:", error);
+      response(500, "99", "Failed to retrieve clock time", {}, res);
+   }
+}
 
 module.exports = {
    login,
@@ -334,4 +400,5 @@ module.exports = {
    verifyTokenHandler,
    logout,
    getAttendance,
+   getClockTime,
 };

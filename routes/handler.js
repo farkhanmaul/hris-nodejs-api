@@ -151,7 +151,7 @@ async function loginOTP(req, res) {
    const { employeeId, otp } = req.body;
 
    try {
-      const query = `SELECT otp, expiredAt FROM user_otp WHERE employeeId = '${employeeId}' ORDER BY createdAt DESC`;
+      const query = `SELECT otp, expiredAt FROM user_otp WHERE employeeId = '${employeeId}' ORDER BY createdAt DESC limit 1`;
       const result = await db.query(query);
 
       if (!result || result.length === 0 || result[0].length === 0) {

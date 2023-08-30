@@ -40,7 +40,7 @@ function formatDate(date) {
    return date.toLocaleDateString("id-ID", options);
 }
 function logAPICall(logData) {
-   const query = "INSERT INTO api_log SET ?";
+   const query = "INSERT INTO api_logs SET ?";
 
    db.query(query, logData, (error, results) => {
       if (error) {
@@ -56,17 +56,19 @@ async function login(req, res) {
    try {
       const query = `SELECT PrimaryEmail FROM dbo.HrEmployee WHERE EmployeeId = '${employeeId}'`;
       const result = await db2(query);
-      const logData = {
-         employeeId: employeeId,
-         timestamp: new Date().toISOString(),
-         endpoint: req.path,
-         method: req.method,
-         requestBody: JSON.stringify(req.body),
-         queryResult: JSON.stringify(result),
-      };
-      console.log(res);
+      // const logData = {
+      //    employeeId: employeeId,
+      //    timestamp: new Date().toISOString(),
+      //    endpoint: req.path,
+      //    method: req.method,
+      //    requestBody: JSON.stringify(req.body),
+      //    queryResult: JSON.stringify(result),
+      //    responseStatus: res.statusCode,
+      //    responseMessage: res.statusMessage,
+      // };
+      // console.log(res);
 
-      await logAPICall(logData);
+      // await logAPICall(logData);
 
       if (!result.recordset || !result.recordset.length) {
          response(404, "01", "User not found", {}, res);

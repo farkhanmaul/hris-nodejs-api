@@ -291,31 +291,53 @@ async function attendance(req, res) {
       notes,
    } = req.body;
 
+   // Define default values for longitude, altitude, and latitude
+   const defaultLongitude = 0;
+   const defaultAltitude = 0;
+   const defaultLatitude = 0;
+
    try {
       const datetime = new Date(); // Generate the current datetime
 
-      const query = `INSERT INTO user_presence (employeeId, longitude, altitude, latitude, datetime, location_name, action,notes) 
-                     VALUES (?, ?, ?, ?, ?, ?, ?,?)`;
+      const query = `INSERT INTO user_presence (employeeId, longitude, altitude, latitude, datetime, location_name, action, notes) 
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
       await db.query(query, [
          employeeId,
-         longitude,
-         altitude,
-         latitude,
+         longitude || defaultLongitude,
+         altitude || defaultAltitude,
+         latitude || defaultLatitude,
          datetime,
          locationName,
          action,
          notes,
       ]);
 
-      // If the insertion is successful, you can send a success response
-      response(
-         200,
-         "00",
-         "Employee presence recorded successfully",
-         {},
-         res,
-         req
-      );
+      // Check if any of longitude, altitude, and latitude are set to defaults
+      if (
+         longitude === defaultLongitude ||
+         altitude === defaultAltitude ||
+         latitude === defaultLatitude
+      ) {
+         // Create a separate response for default values
+         response(
+            200,
+            "01",
+            "Employee presence recorded with default location",
+            {},
+            res,
+            req
+         );
+      } else {
+         // Send the regular success response
+         response(
+            200,
+            "00",
+            "Employee presence recorded successfully",
+            {},
+            res,
+            req
+         );
+      }
    } catch (error) {
       console.error("Failed to record employee presence:", error);
       response(500, "99", "Failed to record employee presence", {}, res, req);

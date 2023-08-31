@@ -8,29 +8,32 @@ async function verifyToken(req, res, next) {
    }
 
    try {
-      const query = `SELECT employeeId, token, expiredAt FROM user_token WHERE token = '${apiKey}' `;
+      const query = `SELECT employeeId, token, expiredAt, status FROM user_token WHERE token = '${apiKey}' `;
       const result = await db.query(query);
 
       if (!result || !result.length || !result[0].length) {
          return response(403, "02", "Forbidden", {}, res, req);
       }
 
-      const { employeeId, expiredAt } = result[0][0];
+      const { employeeId, expiredAt, status } = result[0][0];
 
       if (new Date() > new Date(expiredAt)) {
          return response(403, "03", "Token has expired", {}, res, req);
       }
+      if (employeeId !== req.body.employeeId) {
+         return response(
+            403,
+            "04",
+            "Token does not match employee ID",
+            {},
+            res,
+            req
+         );
+      }
 
-      // if (employeeId !== req.employeeId) {
-      //    return response(
-      //       403,
-      //       "04",
-      //       "Token does not match employee ID",
-      //       {},
-      //       res,
-      //       req
-      //    );
-      // }
+      if (status === "closed") {
+         return response(403, "05", "Token is closed", {}, res, req);
+      }
 
       if (typeof next === "function") {
          next();

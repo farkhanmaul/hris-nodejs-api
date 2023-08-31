@@ -280,6 +280,7 @@ async function logout(req, res) {
       response(500, "99", "Internal Server Error", {}, res, req);
    }
 }
+
 async function attendance(req, res) {
    const {
       employeeId,
@@ -361,11 +362,34 @@ async function getAttendance(req, res) {
             req
          );
       } else {
+         const attendanceData = result[0].map((row) => {
+            const datetime = new Date(row.datetime);
+            const dayName = datetime.toLocaleDateString("en-US", {
+               weekday: "long",
+            });
+            const date = datetime.toLocaleDateString("en-US", {
+               day: "numeric",
+               month: "long",
+            });
+            const time = datetime.toLocaleTimeString("en-US", {
+               hour: "numeric",
+               minute: "numeric",
+               hour12: false,
+            });
+
+            return {
+               ...row,
+               dayName,
+               date,
+               time,
+            };
+         });
+
          response(
             200,
             "00",
             "Presence data retrieved successfully",
-            result[0],
+            attendanceData,
             res,
             req
          );
@@ -423,8 +447,6 @@ async function getClockTime(req, res) {
       response(500, "99", "Failed to retrieve clock time", {}, res, req);
    }
 }
-
-module.exports = getClockTime;
 
 module.exports = {
    login,

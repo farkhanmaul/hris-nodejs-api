@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 30, 2023 at 12:13 PM
+-- Generation Time: Aug 31, 2023 at 06:37 AM
 -- Server version: 10.4.24-MariaDB
 -- PHP Version: 8.1.6
 
@@ -32,26 +32,26 @@ CREATE TABLE `api_logs` (
   `timestamp` datetime NOT NULL,
   `endpoint` varchar(255) NOT NULL,
   `method` varchar(10) NOT NULL,
+  `requestHeaders` text NOT NULL,
   `requestBody` text NOT NULL,
-  `queryResult` text NOT NULL
+  `responseStatus` int(11) NOT NULL,
+  `responseMessage` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `api_logs`
 --
 
-INSERT INTO `api_logs` (`employeeId`, `timestamp`, `endpoint`, `method`, `requestBody`, `queryResult`) VALUES
-('232323232', '2023-08-30 03:52:26', '/login', 'POST', '[object Object]', '[object Object]'),
-('232323232', '2023-08-30 03:54:00', '/login', 'POST', '{\"employeeId\":\"232323232\"}', '{\"recordsets\":[[{\"PrimaryEmail\":\"farkhanmaul@gmail.com\"}]],\"recordset\":[{\"PrimaryEmail\":\"farkhanmaul@gmail.com\"}],\"output\":{},\"rowsAffected\":[1]}'),
-('232323232', '2023-08-30 04:00:54', '/login', 'POST', '{\"employeeId\":\"232323232\"}', '{\"recordsets\":[[{\"PrimaryEmail\":\"farkhanmaul@gmail.com\"}]],\"recordset\":[{\"PrimaryEmail\":\"farkhanmaul@gmail.com\"}],\"output\":{},\"rowsAffected\":[1]}'),
-('232323232', '2023-08-30 04:07:29', '/login', 'POST', '{\"employeeId\":\"232323232\"}', '{\"recordsets\":[[{\"PrimaryEmail\":\"farkhanmaul@gmail.com\"}]],\"recordset\":[{\"PrimaryEmail\":\"farkhanmaul@gmail.com\"}],\"output\":{},\"rowsAffected\":[1]}'),
-('232323232', '2023-08-30 04:08:22', '/login', 'POST', '{\"employeeId\":\"232323232\"}', '{\"recordsets\":[[{\"PrimaryEmail\":\"farkhanmaul@gmail.com\"}]],\"recordset\":[{\"PrimaryEmail\":\"farkhanmaul@gmail.com\"}],\"output\":{},\"rowsAffected\":[1]}'),
-('232323232', '2023-08-30 04:12:26', '/login', 'POST', '{\"employeeId\":\"232323232\"}', '{\"recordsets\":[[{\"PrimaryEmail\":\"farkhanmaul@gmail.com\"}]],\"recordset\":[{\"PrimaryEmail\":\"farkhanmaul@gmail.com\"}],\"output\":{},\"rowsAffected\":[1]}'),
-('232323232', '2023-08-30 04:12:57', '/login', 'POST', '{\"employeeId\":\"232323232\"}', '{\"recordsets\":[[{\"PrimaryEmail\":\"farkhanmaul@gmail.com\"}]],\"recordset\":[{\"PrimaryEmail\":\"farkhanmaul@gmail.com\"}],\"output\":{},\"rowsAffected\":[1]}'),
-('202204263', '2023-08-30 04:33:23', '/user', 'POST', '{\"employeeId\":\"202204263\"}', '{\"recordsets\":[[{\"EmployeeId\":\"202204263\",\"EmployeeFullName\":\"Arvid Theodorus\",\"PrimaryEmail\":\"\",\"BirthDate\":\"1990-09-01T00:00:00.000Z\",\"JoinCompany\":\"2022-04-01T00:00:00.000Z\"}]],\"recordset\":[{\"EmployeeId\":\"202204263\",\"EmployeeFullName\":\"Arvid Theodorus\",\"PrimaryEmail\":\"\",\"BirthDate\":\"1990-09-01T00:00:00.000Z\",\"JoinCompany\":\"2022-04-01T00:00:00.000Z\"}],\"output\":{},\"rowsAffected\":[1]}'),
-('202204263', '2023-08-30 04:33:35', '/user', 'POST', '{\"employeeId\":\"202204263\"}', '{\"recordsets\":[[{\"EmployeeId\":\"202204263\",\"EmployeeFullName\":\"Arvid Theodorus\",\"PrimaryEmail\":\"\",\"BirthDate\":\"1990-09-01T00:00:00.000Z\",\"JoinCompany\":\"2022-04-01T00:00:00.000Z\"}]],\"recordset\":[{\"EmployeeId\":\"202204263\",\"EmployeeFullName\":\"Arvid Theodorus\",\"PrimaryEmail\":\"\",\"BirthDate\":\"1990-09-01T00:00:00.000Z\",\"JoinCompany\":\"2022-04-01T00:00:00.000Z\"}],\"output\":{},\"rowsAffected\":[1]}'),
-('202204263', '2023-08-30 04:33:35', '/user', 'POST', '{\"employeeId\":\"202204263\"}', '{\"recordsets\":[[{\"EmployeeId\":\"202204263\",\"EmployeeFullName\":\"Arvid Theodorus\",\"PrimaryEmail\":\"\",\"BirthDate\":\"1990-09-01T00:00:00.000Z\",\"JoinCompany\":\"2022-04-01T00:00:00.000Z\"}]],\"recordset\":[{\"EmployeeId\":\"202204263\",\"EmployeeFullName\":\"Arvid Theodorus\",\"PrimaryEmail\":\"\",\"BirthDate\":\"1990-09-01T00:00:00.000Z\",\"JoinCompany\":\"2022-04-01T00:00:00.000Z\"}],\"output\":{},\"rowsAffected\":[1]}'),
-('202204263', '2023-08-30 04:33:35', '/user', 'POST', '{\"employeeId\":\"202204263\"}', '{\"recordsets\":[[{\"EmployeeId\":\"202204263\",\"EmployeeFullName\":\"Arvid Theodorus\",\"PrimaryEmail\":\"\",\"BirthDate\":\"1990-09-01T00:00:00.000Z\",\"JoinCompany\":\"2022-04-01T00:00:00.000Z\"}]],\"recordset\":[{\"EmployeeId\":\"202204263\",\"EmployeeFullName\":\"Arvid Theodorus\",\"PrimaryEmail\":\"\",\"BirthDate\":\"1990-09-01T00:00:00.000Z\",\"JoinCompany\":\"2022-04-01T00:00:00.000Z\"}],\"output\":{},\"rowsAffected\":[1]}');
+INSERT INTO `api_logs` (`employeeId`, `timestamp`, `endpoint`, `method`, `requestHeaders`, `requestBody`, `responseStatus`, `responseMessage`) VALUES
+('232323232', '2023-08-31 04:12:25', '/user-attendance-clock', 'POST', '{\"x-api-key\":\"nUT2fH1DFuBMf93lxmWs3nCr3qR8XX\",\"content-type\":\"application/json\",\"user-agent\":\"PostmanRuntime/7.32.3\",\"accept\":\"*/*\",\"cache-control\":\"no-cache\",\"postman-token\":\"ce285eeb-f7ec-4819-9f82-10bcad94669a\",\"host\":\"localhost:3030\",\"accept-encoding\":\"gzip, deflate, br\",\"connection\":\"keep-alive\",\"content-length\":\"86\"}', '{\"employeeId\":\"232323232\",\"date\":\"2023-08-30\",\"action\":\"Clock Out\"}', 404, '{\"respCode\":\"01\",\"respMsg\":\"No clock data found for the specified date and action\",\"data\":{}}'),
+('232323232', '2023-08-31 04:12:40', '/attendance', 'POST', '{\"x-api-key\":\"nUT2fH1DFuBMf93lxmWs3nCr3qR8XX\",\"content-type\":\"application/json\",\"user-agent\":\"PostmanRuntime/7.32.3\",\"accept\":\"*/*\",\"cache-control\":\"no-cache\",\"postman-token\":\"d22fcc74-9f85-46fb-a49c-e4a59510a211\",\"host\":\"localhost:3030\",\"accept-encoding\":\"gzip, deflate, br\",\"connection\":\"keep-alive\",\"content-length\":\"442\"}', '{\"employeeId\":\"232323232\",\"longitude\":\"dghdhdh\",\"altitude\":\"1231444\",\"latitude\":\"12.345678\",\"locationName\":\"bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hilir  bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hilir \",\"action\":\"Clock Out\",\"notes\":\"izin wfh\"}', 200, '{\"respCode\":\"00\",\"respMsg\":\"Employee presence recorded successfully\",\"data\":{}}'),
+('232323232', '2023-08-31 04:12:48', '/attendance', 'POST', '{\"x-api-key\":\"nUT2fH1DFuBMf93lxmWs3nCr3qR8XX\",\"content-type\":\"application/json\",\"user-agent\":\"PostmanRuntime/7.32.3\",\"accept\":\"*/*\",\"cache-control\":\"no-cache\",\"postman-token\":\"2372a07a-e886-4174-b6d9-477eeb66b728\",\"host\":\"localhost:3030\",\"accept-encoding\":\"gzip, deflate, br\",\"connection\":\"keep-alive\",\"content-length\":\"215\"}', '{\"employeeId\":\"232323232\",\"longitude\":\"dghdhdh\",\"altitude\":\"1231444\",\"latitude\":\"12.345678\",\"locationName\":\"bendungan hilir jakarta pusat \",\"action\":\"Clock Out\",\"notes\":\"izin wfh\"}', 200, '{\"respCode\":\"00\",\"respMsg\":\"Employee presence recorded successfully\",\"data\":{}}'),
+('202204263', '2023-08-31 04:12:51', '/user', 'POST', '{\"x-api-key\":\"zMTT3c00nYnKfKlmLAfdO9K2IE6rHn\",\"content-type\":\"application/json\",\"user-agent\":\"PostmanRuntime/7.32.3\",\"accept\":\"*/*\",\"cache-control\":\"no-cache\",\"postman-token\":\"fdecf65f-1441-44dc-a117-54f82d415171\",\"host\":\"localhost:3030\",\"accept-encoding\":\"gzip, deflate, br\",\"connection\":\"keep-alive\",\"content-length\":\"36\"}', '{\"employeeId\":\"202204263\"}', 200, '{\"respCode\":\"00\",\"respMsg\":\"Profile retrieved successfully\",\"data\":{\"EmployeeId\":\"202204263\",\"EmployeeFullName\":\"Arvid Theodorus\",\"PrimaryEmail\":\"\",\"BirthDate\":\"1 September 1990 07.00.00\",\"JoinCompany\":\"1 April 2022 07.00.00\",\"Position\":\"-\",\"Level\":\"-\",\"Work\":\"-\"}}'),
+('232323232', '2023-08-31 04:15:15', '/verify-token', 'POST', '{\"x-api-key\":\"zMTT3c00nYnKfKlmLAfdO9K2IE6rHn\",\"content-type\":\"application/json\",\"user-agent\":\"PostmanRuntime/7.32.3\",\"accept\":\"*/*\",\"cache-control\":\"no-cache\",\"postman-token\":\"36501dfe-b8f1-4f32-ab68-138fd47a8ca4\",\"host\":\"localhost:3030\",\"accept-encoding\":\"gzip, deflate, br\",\"connection\":\"keep-alive\",\"content-length\":\"36\"}', '{\"employeeId\":\"232323232\"}', 200, '{\"respCode\":\"00\",\"respMsg\":\"Success\",\"data\":{}}'),
+('200249182', '2023-08-31 04:18:51', '/logout', 'POST', '{\"x-api-key\":\"ALoC1uk2jrDo8brxNn3749tatgOSREd\",\"content-type\":\"application/json\",\"user-agent\":\"PostmanRuntime/7.32.3\",\"accept\":\"*/*\",\"cache-control\":\"no-cache\",\"postman-token\":\"a5201632-2678-43e8-8e92-a8b2152e10fe\",\"host\":\"localhost:3030\",\"accept-encoding\":\"gzip, deflate, br\",\"connection\":\"keep-alive\",\"content-length\":\"36\"}', '{\"employeeId\":\"200249182\"}', 403, '{\"respCode\":\"02\",\"respMsg\":\"Forbidden\",\"data\":{}}'),
+('200249182', '2023-08-31 04:19:05', '/logout', 'POST', '{\"x-api-key\":\"ALoC1uk2jrDo8brxNn3749tatgOSREdd\",\"content-type\":\"application/json\",\"user-agent\":\"PostmanRuntime/7.32.3\",\"accept\":\"*/*\",\"cache-control\":\"no-cache\",\"postman-token\":\"8337f3bf-ef7d-4248-bef8-3fd08b6b952c\",\"host\":\"localhost:3030\",\"accept-encoding\":\"gzip, deflate, br\",\"connection\":\"keep-alive\",\"content-length\":\"36\"}', '{\"employeeId\":\"200249182\"}', 403, '{\"respCode\":\"02\",\"respMsg\":\"Forbidden\",\"data\":{}}'),
+('200249182', '2023-08-31 04:19:16', '/logout', 'POST', '{\"x-api-key\":\"qZ7je2HXeR7BcKkWfbADO3rrE1TmAy\",\"content-type\":\"application/json\",\"user-agent\":\"PostmanRuntime/7.32.3\",\"accept\":\"*/*\",\"cache-control\":\"no-cache\",\"postman-token\":\"b8940cd1-800a-44d4-9f4b-2985c1a48c63\",\"host\":\"localhost:3030\",\"accept-encoding\":\"gzip, deflate, br\",\"connection\":\"keep-alive\",\"content-length\":\"36\"}', '{\"employeeId\":\"200249182\"}', 200, '{\"respCode\":\"00\",\"respMsg\":\"Logout successful\",\"data\":{}}'),
+('232323232', '2023-08-31 04:27:34', '/login-otp', 'POST', '{\"content-type\":\"application/json\",\"user-agent\":\"PostmanRuntime/7.32.3\",\"accept\":\"*/*\",\"cache-control\":\"no-cache\",\"postman-token\":\"0024f5b1-37bc-49a5-9652-2e9f5117372e\",\"host\":\"localhost:3030\",\"accept-encoding\":\"gzip, deflate, br\",\"connection\":\"keep-alive\",\"content-length\":\"59\"}', '{\"employeeId\":\"232323232\",\"otp\":\"8058328\"}', 404, '{\"respCode\":\"03\",\"respMsg\":\"Invalid OTP\",\"data\":{}}');
 
 -- --------------------------------------------------------
 
@@ -114,7 +114,17 @@ INSERT INTO `user_otp` (`employeeId`, `otp`, `expiredAt`, `createdAt`, `email`) 
 ('232323232', '363982', '2023-11-28 11:08:23', '2023-08-30 11:08:26', 'farkhanmaul@gmail.com'),
 ('232323232', '386105', '2023-11-28 11:12:26', '2023-08-30 11:12:29', 'farkhanmaul@gmail.com'),
 ('232323232', '517478', '2023-11-28 11:12:57', '2023-08-30 11:13:01', 'farkhanmaul@gmail.com'),
-('232323232', '142190', '2023-11-28 17:11:15', '2023-08-30 17:11:18', 'farkhanmaul@gmail.com');
+('232323232', '142190', '2023-11-28 17:11:15', '2023-08-30 17:11:18', 'farkhanmaul@gmail.com'),
+('232323232', '190274', '2023-11-29 10:13:25', '2023-08-31 10:13:28', 'farkhanmaul@gmail.com'),
+('232323232', '411925', '2023-11-29 10:15:12', '2023-08-31 10:15:15', 'farkhanmaul@gmail.com'),
+('232323232', '825586', '2023-11-29 10:25:37', '2023-08-31 10:25:41', 'farkhanmaul@gmail.com'),
+('232323232', '891436', '2023-11-29 10:29:49', '2023-08-31 10:29:51', 'farkhanmaul@gmail.com'),
+('232323232', '152778', '2023-11-29 10:32:35', '2023-08-31 10:32:38', 'farkhanmaul@gmail.com'),
+('232323232', '566400', '2023-11-29 10:32:51', '2023-08-31 10:32:53', 'farkhanmaul@gmail.com'),
+('232323232', '362005', '2023-11-29 10:33:36', '2023-08-31 10:33:39', 'farkhanmaul@gmail.com'),
+('232323232', '552790', '2023-11-29 10:34:11', '2023-08-31 10:34:14', 'farkhanmaul@gmail.com'),
+('232323232', '275677', '2023-11-29 10:35:48', '2023-08-31 10:35:50', 'farkhanmaul@gmail.com'),
+('232323232', '405636', '2023-11-29 10:40:53', '2023-08-31 10:40:56', 'farkhanmaul@gmail.com');
 
 -- --------------------------------------------------------
 
@@ -138,17 +148,8 @@ CREATE TABLE `user_presence` (
 --
 
 INSERT INTO `user_presence` (`employeeId`, `longitude`, `altitude`, `latitude`, `datetime`, `location_name`, `action`, `notes`) VALUES
-('232323232', 123.457, 1231440, 12.3457, '2023-08-29 14:09:17', 'Office Building', 'Clock In', ''),
-('232323232', 123.457, 1231440, 12.3457, '2023-08-29 14:09:17', 'Office Building', 'Clock In', ''),
-('232323232', 123.457, 1231440, 12.3457, '2023-08-29 14:09:18', 'Office Building', 'Clock In', ''),
-('232323232', 123.457, 1231440, 12.3457, '2023-08-29 16:57:20', 'Office Building', 'Clock In', ''),
-('232323232', 0, 1231440, 12.3457, '2023-08-30 15:33:18', 'Office Building', 'Clock In', ''),
-('232323232', 0, 1231440, 12.3457, '2023-08-30 15:33:37', 'Office Building', 'Clock In', ''),
-('232323232', 0, 1231440, 12.3457, '2023-08-30 16:36:43', 'Office Building', 'Clock In', 'izin wfh'),
-('232323232', 0, 1231440, 12.3457, '2023-08-30 16:38:24', 'bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hilir  bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hili', 'Clock In', 'izin wfh'),
-('232323232', 0, 1231440, 12.3457, '2023-08-30 16:49:55', 'bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hilir  bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hili', 'Clock In', 'izin wfh'),
-('232323232', 0, 1231440, 12.3457, '2023-08-30 16:55:23', 'bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hilir  bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hili', 'Clock Out', 'izin wfh'),
-('232323232', 0, 1231440, 12.3457, '2023-08-30 16:55:25', 'bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hilir  bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hili', 'Clock Out', 'izin wfh');
+('232323232', 0, 1231440, 12.3457, '2023-08-31 11:12:40', 'bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hilir  bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hilir bendungan hili', 'Clock Out', 'izin wfh'),
+('232323232', 0, 1231440, 12.3457, '2023-08-31 11:12:48', 'bendungan hilir jakarta pusat ', 'Clock Out', 'izin wfh');
 
 -- --------------------------------------------------------
 
@@ -172,7 +173,7 @@ INSERT INTO `user_token` (`employeeId`, `token`, `expiredAt`, `createdAt`, `stat
 ('232323232', 'GyBFyxY6MyzPbBeLp26Gc1ou7BZWB4', '2023-11-23 08:57:21', '0000-00-00 00:00:00', ''),
 ('232323232', 'ox83LHneL01ZgoF1qf5zDIYa543Jkc', '2023-11-23 08:57:34', '0000-00-00 00:00:00', ''),
 ('232323232', 'zjOyM0WaNjZbavfIuOCIUiLipKX58d', '2023-11-23 09:39:43', '0000-00-00 00:00:00', ''),
-('232323232', 'qZ7je2HXeR7BcKkWfbADO3rrE1TmAy', '2023-11-23 09:40:05', '0000-00-00 00:00:00', ''),
+('232323232', 'qZ7je2HXeR7BcKkWfbADO3rrE1TmAy', '2023-11-23 09:40:05', '0000-00-00 00:00:00', 'closed'),
 ('232323232', 'zMTT3c00nYnKfKlmLAfdO9K2IE6rHn', '2023-11-23 09:44:24', '0000-00-00 00:00:00', 'closed'),
 ('232323232', 'ALoC1uk2jrDo8brxNn3749tatgOSRE', '2023-11-23 11:02:14', '0000-00-00 00:00:00', 'closed'),
 ('232323232', 'nUT2fH1DFuBMf93lxmWs3nCr3qR8XX', '2023-11-23 11:02:15', '0000-00-00 00:00:00', ''),

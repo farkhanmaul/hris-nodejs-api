@@ -1,4 +1,6 @@
-const response = (status, responseCode, responseMessage, data, res) => {
+const logAPICall = require("./logs");
+
+const response = (status, responseCode, responseMessage, data, res, req) => {
    const payload = {
       respCode: responseCode,
       respMsg: responseMessage,
@@ -6,6 +8,18 @@ const response = (status, responseCode, responseMessage, data, res) => {
    };
 
    res.status(status).json(payload);
+   const logData = {
+      timestamp: new Date().toISOString(),
+      endpoint: req.path,
+      method: req.method,
+      requestHeaders: req.headers ? JSON.stringify(req.headers) : "", // Check if req.header exists
+      requestBody: JSON.stringify(req.body),
+      responseStatus: status,
+      responseMessage: JSON.stringify(payload), // Convert payload to JSON string
+      employeeId: req.body.employeeId,
+   };
+
+   logAPICall(logData);
 };
 
 module.exports = response;

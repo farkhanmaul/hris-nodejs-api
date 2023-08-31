@@ -39,15 +39,6 @@ function formatDate(date) {
    };
    return date.toLocaleDateString("id-ID", options);
 }
-function logAPICall(logData) {
-   const query = "INSERT INTO api_logs SET ?";
-
-   db.query(query, logData, (error, results) => {
-      if (error) {
-         console.error("Failed to write API log:", error);
-      }
-   });
-}
 
 // login endpoint
 async function login(req, res) {
@@ -56,22 +47,9 @@ async function login(req, res) {
    try {
       const query = `SELECT PrimaryEmail FROM dbo.HrEmployee WHERE EmployeeId = '${employeeId}'`;
       const result = await db2(query);
-      // const logData = {
-      //    employeeId: employeeId,
-      //    timestamp: new Date().toISOString(),
-      //    endpoint: req.path,
-      //    method: req.method,
-      //    requestBody: JSON.stringify(req.body),
-      //    queryResult: JSON.stringify(result),
-      //    responseStatus: res.statusCode,
-      //    responseMessage: res.statusMessage,
-      // };
-      // console.log(res);
-
-      // await logAPICall(logData);
 
       if (!result.recordset || !result.recordset.length) {
-         response(404, "01", "User not found", {}, res);
+         response(404, "01", "User not found", {}, res, req);
       } else {
          const email = result.recordset[0].PrimaryEmail;
 
@@ -85,12 +63,13 @@ async function login(req, res) {
             "00",
             "Employee Found, OTP Sent to Email",
             { employeeEmail: email },
-            res
+            res,
+            req
          );
       }
    } catch (error) {
       console.error("Failed to retrieve user email:", error);
-      response(500, "99", "Internal Server Error", {}, res);
+      response(500, "99", "Internal Server Error", {}, res, req);
    }
 }
 
@@ -179,13 +158,13 @@ async function loginOTP(req, res) {
 
       if (!result || result.length === 0 || result[0].length === 0) {
          // Employee ID not found in user_otp table
-         response(404, "01", "Employee ID not found", {}, res);
+         response(404, "01", "Employee ID not found", {}, res, req);
       } else {
          const { otp: storedOTP, expiredAt } = result[0][0];
 
          // Check if OTP is expired
          if (new Date() > new Date(expiredAt)) {
-            response(400, "02", "OTP has expired", {}, res);
+            response(400, "02", "OTP has expired", {}, res, req);
          } else {
             // Verify the OTP (case-insensitive and ignore leading/trailing white spaces)
             if (otp === storedOTP) {
@@ -213,17 +192,18 @@ async function loginOTP(req, res) {
                   "00",
                   "OTP verified",
                   { token: token, expiredAt: expiredAt },
-                  res
+                  res,
+                  req
                );
             } else {
                // OTP is incorrect
-               response(404, "03", "Invalid OTP", {}, res);
+               response(404, "03", "Invalid OTP", {}, res, req);
             }
          }
       }
    } catch (error) {
       console.error("Failed to verify OTP:", error);
-      response(500, "99", "Internal Server Error", {}, res);
+      response(500, "99", "Internal Server Error", {}, res, req);
    }
 }
 
@@ -235,7 +215,7 @@ async function userProfile(req, res) {
       const result = await db2(query);
 
       if (!result.recordset || !result.recordset.length) {
-         response(404, "01", "User not found", {}, res);
+         response(404, "01", "User not found", {}, res, req);
       } else {
          const profile = result.recordset[0];
          const birthDate = new Date(profile.BirthDate);
@@ -249,11 +229,18 @@ async function userProfile(req, res) {
          profile.Level = "-";
          profile.Work = "-";
 
-         response(200, "00", "Profile retrieved successfully", profile, res);
+         response(
+            200,
+            "00",
+            "Profile retrieved successfully",
+            profile,
+            res,
+            req
+         );
       }
    } catch (error) {
       console.error("Failed to retrieve user profile:", error);
-      response(500, "99", "Internal Server Error", {}, res);
+      response(500, "99", "Internal Server Error", {}, res, req);
    }
 }
 
@@ -262,34 +249,35 @@ async function verifyTokenHandler(req, res, next) {
       await verifyToken(req, res); // Pass req, res, and next as separate arguments
    } catch (error) {
       console.error("Failed to verify token:", error);
-      return response(500, "99", "Internal Server Error", {}, res);
+      return response(500, "99", "Internal Server Error", {}, res, req);
    }
 }
 
 async function logout(req, res) {
    const token = req.headers["x-api-key"];
+   const { employeeId } = req.body;
 
    try {
       const selectQuery = `SELECT status FROM user_token WHERE token = ?`;
       const result = await db.query(selectQuery, [token]);
 
       if (!result || result.length === 0 || result[0].length === 0) {
-         response(404, "01", "Token not found", {}, res);
+         response(404, "01", "Token not found", {}, res, req);
       } else {
          const { status } = result[0][0];
 
          if (status === "closed") {
-            response(400, "02", "Token is already closed", {}, res);
+            response(400, "02", "Token is already closed", {}, res, req);
          } else {
             const updateQuery = `UPDATE user_token SET status = 'closed' WHERE token = ?`;
             await db.query(updateQuery, [token]);
 
-            response(200, "00", "Logout successful", {}, res);
+            response(200, "00", "Logout successful", {}, res, req);
          }
       }
    } catch (error) {
       console.error("Failed to logout:", error);
-      response(500, "99", "Internal Server Error", {}, res);
+      response(500, "99", "Internal Server Error", {}, res, req);
    }
 }
 async function attendance(req, res) {
@@ -320,10 +308,17 @@ async function attendance(req, res) {
       ]);
 
       // If the insertion is successful, you can send a success response
-      response(200, "00", "Employee presence recorded successfully", {}, res);
+      response(
+         200,
+         "00",
+         "Employee presence recorded successfully",
+         {},
+         res,
+         req
+      );
    } catch (error) {
       console.error("Failed to record employee presence:", error);
-      response(500, "99", "Failed to record employee presence", {}, res);
+      response(500, "99", "Failed to record employee presence", {}, res, req);
    }
 }
 
@@ -340,7 +335,8 @@ async function getAttendance(req, res) {
             "01",
             "No presence data found for the specified date",
             {},
-            res
+            res,
+            req
          );
       } else {
          response(
@@ -348,12 +344,13 @@ async function getAttendance(req, res) {
             "00",
             "Presence data retrieved successfully",
             result[0],
-            res
+            res,
+            req
          );
       }
    } catch (error) {
       console.error("Failed to retrieve presence data:", error);
-      response(500, "99", "Failed to retrieve presence data", {}, res);
+      response(500, "99", "Failed to retrieve presence data", {}, res, req);
    }
 }
 async function getClockTime(req, res) {
@@ -375,7 +372,8 @@ async function getClockTime(req, res) {
             "01",
             "No clock data found for the specified date and action",
             {},
-            res
+            res,
+            req
          );
       } else {
          const clockTime = result[0][0].clockTime;
@@ -385,12 +383,13 @@ async function getClockTime(req, res) {
             "00",
             "Clock time retrieved successfully",
             { clockTime, action },
-            res
+            res,
+            req
          );
       }
    } catch (error) {
       console.error("Failed to retrieve clock time:", error);
-      response(500, "99", "Failed to retrieve clock time", {}, res);
+      response(500, "99", "Failed to retrieve clock time", {}, res, req);
    }
 }
 

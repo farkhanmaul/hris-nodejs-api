@@ -4,7 +4,7 @@ const response = require("../middleware/response");
 async function verifyToken(req, res, next) {
    const apiKey = req.headers["x-api-key"];
    if (!apiKey) {
-      return response(401, "01", "Unauthorized", {}, res);
+      return response(401, "01", "Unauthorized", {}, res, req);
    }
 
    try {
@@ -12,13 +12,13 @@ async function verifyToken(req, res, next) {
       const result = await db.query(query);
 
       if (!result || !result.length || !result[0].length) {
-         return response(403, "02", "Forbidden", {}, res);
+         return response(403, "02", "Forbidden", {}, res, req);
       }
 
       const { employeeId, expiredAt } = result[0][0];
 
       if (new Date() > new Date(expiredAt)) {
-         return response(403, "03", "Token has expired", {}, res);
+         return response(403, "03", "Token has expired", {}, res, req);
       }
 
       // if (employeeId !== req.employeeId) {
@@ -27,18 +27,19 @@ async function verifyToken(req, res, next) {
       //       "04",
       //       "Token does not match employee ID",
       //       {},
-      //       res
+      //       res,
+      //       req
       //    );
       // }
 
       if (typeof next === "function") {
          next();
       } else {
-         return response(200, "00", "Success", {}, res);
+         return response(200, "00", "Success", {}, res, req);
       }
    } catch (error) {
       console.error("Failed to verify token:", error);
-      return response(500, "99", "Internal Server Error", {}, res);
+      return response(500, "99", "Internal Server Error", {}, res, req);
    }
 }
 

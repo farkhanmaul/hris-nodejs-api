@@ -19,5 +19,6 @@ db.getConnection()
    .catch((err) => {
       console.error("Error connecting to the database:", err);
    });
+
 // Export the db instance for use in other modules
 module.exports = db;

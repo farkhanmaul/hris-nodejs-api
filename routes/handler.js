@@ -358,7 +358,7 @@ async function getClockTime(req, res) {
 
    try {
       const query = `
-         SELECT DATE_FORMAT(datetime, '%H:%i') AS clockTime, action
+         SELECT DATE_FORMAT(datetime, '%H:%i') AS clockTime, action, DATE(datetime) AS clockDate
          FROM user_presence
          WHERE employeeId = ? AND DATE(datetime) = ? AND action = ?
          ORDER BY datetime DESC
@@ -377,12 +377,21 @@ async function getClockTime(req, res) {
          );
       } else {
          const clockTime = result[0][0].clockTime;
+         const clockDate = new Date(result[0][0].clockDate).toLocaleDateString(
+            "id-ID",
+            {
+               day: "numeric",
+               month: "long",
+               year: "numeric",
+            }
+         );
+
          const action = result[0][0].action;
          response(
             200,
             "00",
             "Clock time retrieved successfully",
-            { clockTime, action },
+            { clockTime, clockDate, action },
             res,
             req
          );
@@ -392,6 +401,8 @@ async function getClockTime(req, res) {
       response(500, "99", "Failed to retrieve clock time", {}, res, req);
    }
 }
+
+module.exports = getClockTime;
 
 module.exports = {
    login,

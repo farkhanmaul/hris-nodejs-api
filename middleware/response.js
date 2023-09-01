@@ -9,7 +9,7 @@ const response = (status, responseCode, responseMessage, data, res, req) => {
 
    res.status(status).json(payload);
    const logData = {
-      timestamp: new Date().toISOString(),
+      timestamp: new Date().toISOString().slice(0, 19).replace("T", " "),
       endpoint: req.path,
       method: req.method,
       requestHeaders: req.headers ? JSON.stringify(req.headers) : "", // Check if req.header exists

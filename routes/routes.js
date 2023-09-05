@@ -3,6 +3,7 @@ const router = express.Router();
 const verifyToken = require("../middleware/verifytoken.js");
 const {
    login,
+   login2,
    loginOTP,
    userProfile,
    attendance,
@@ -13,6 +14,7 @@ const {
 } = require("./handler");
 
 router.post("/login", login);
+router.post("/login2", login2);
 router.post("/login-otp", loginOTP);
 router.post("/logout", verifyToken, logout);
 router.post("/user", verifyToken, userProfile);

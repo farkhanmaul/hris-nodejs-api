@@ -5,6 +5,7 @@ const nodemailer = require("nodemailer");
 const verifyToken = require("../middleware/verifytoken.js");
 const Mailgen = require("mailgen");
 const randomstring = require("randomstring");
+const axios = require("axios");
 
 // Generate OTP
 function generateOTP() {
@@ -38,6 +39,63 @@ function formatDate(date) {
       second: "numeric",
    };
    return date.toLocaleDateString("id-ID", options);
+}
+
+// login WA
+async function login2(req, res) {
+   const { employeeId } = req.body;
+
+   try {
+      const query = `SELECT MobilePhone1, MobilePhone2 FROM dbo.HrEmployee WHERE EmployeeId = '${employeeId}'`;
+      const result = await db2(query);
+
+      if (!result.recordset || !result.recordset.length) {
+         response(404, "01", "User not found", {}, res, req);
+      } else {
+         const mobilePhone1 = result.recordset[0].MobilePhone1;
+         const mobilePhone2 = result.recordset[0].MobilePhone2;
+
+         let destination = "";
+
+         if (mobilePhone1) {
+            destination = mobilePhone1;
+         } else if (mobilePhone2) {
+            destination = mobilePhone2;
+         } else {
+            // Mobile phone not found
+            response(404, "02", "Mobile phone not found", {}, res, req);
+            return;
+         }
+
+         const otp = generateOTP();
+         const expiredAt = generateExpirationDate(); // Get the expiration datetime
+
+         // Send WhatsApp message
+         const headers = {
+            Accept: "application/json",
+            APIKey: "YOUR_API_KEY",
+         };
+         const data = {
+            destination,
+            message: `Gunakan OTP ${otp} untuk login akun ACA Anda. OTP akan kadaluarsa dalam waktu 5 menit.`, // Customize the message content as desired
+         };
+         const url = "https://api.nusasms.com/nusasms_api/1.0/whatsapp/message";
+
+         axios
+            .post(url, data, { headers })
+            .then((response) => {
+               console.log(response.data);
+               response(200, "00", "OTP Sent to WhatsApp", {}, res, req);
+            })
+            .catch((error) => {
+               console.error("Failed to send WhatsApp message:", error);
+               response(500, "99", "Internal Server Error", {}, res, req);
+            });
+      }
+   } catch (error) {
+      console.error("Failed to retrieve user mobile phone:", error);
+      response(500, "99", "Internal Server Error", {}, res, req);
+   }
 }
 
 // login endpoint
@@ -450,6 +508,7 @@ async function getClockTime(req, res) {
 
 module.exports = {
    login,
+   login2,
    loginOTP,
    userProfile,
    attendance,

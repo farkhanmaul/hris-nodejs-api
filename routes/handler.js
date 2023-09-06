@@ -407,7 +407,7 @@ async function getAttendance(req, res) {
    const { employeeId, date } = req.body;
 
    try {
-      const query = `SELECT * FROM user_presence WHERE employeeId = ? AND DATE(datetime) = ?`;
+      const query = `SELECT * FROM user_presence WHERE employeeId = ? AND DATE(datetime) = ? ORDER BY datetime DESC`;
       const result = await db.query(query, [employeeId, date]);
 
       if (!result[0] || result[0].length === 0) {

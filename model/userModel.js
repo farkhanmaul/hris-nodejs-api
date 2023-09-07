@@ -120,7 +120,52 @@ async function closeToken(token) {
    await db.query(updateQuery, [token]);
 }
 
+async function recordEmployeePresence(
+   employeeId,
+   longitude,
+   altitude,
+   latitude,
+   datetime,
+   locationName,
+   action,
+   notes
+) {
+   const query = `INSERT INTO user_presence (employeeId, longitude, altitude, latitude, datetime, location_name, action, notes) 
+                  VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+   await db.query(query, [
+      employeeId,
+      longitude,
+      altitude,
+      latitude,
+      datetime,
+      locationName,
+      action,
+      notes,
+   ]);
+}
+
+async function getPresenceData(employeeId, date) {
+   const query = `SELECT * FROM user_presence WHERE employeeId = ? AND DATE(datetime) = ? ORDER BY datetime DESC`;
+   const result = await db.query(query, [employeeId, date]);
+   return result[0];
+}
+
+async function getClockTimeData(employeeId, date, action) {
+   const query = `
+      SELECT DATE_FORMAT(datetime, '%H:%i') AS clockTime, action, DATE(datetime) AS clockDate
+      FROM user_presence
+      WHERE employeeId = ? AND DATE(datetime) = ? AND action = ?
+      ORDER BY datetime DESC
+      LIMIT 1
+   `;
+   const result = await db.query(query, [employeeId, date, action]);
+   return result[0];
+}
+
 module.exports = {
+   getClockTimeData,
+   getPresenceData,
+   recordEmployeePresence,
    getUserEmail,
    sendOTP,
    getUserOTP,

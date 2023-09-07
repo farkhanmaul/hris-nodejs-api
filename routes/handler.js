@@ -314,15 +314,6 @@ async function userProfile(req, res) {
    }
 }
 
-async function verifyTokenHandler(req, res, next) {
-   try {
-      await verifyToken(req, res); // Pass req, res, and next as separate arguments
-   } catch (error) {
-      console.error("Failed to verify token:", error);
-      return response(500, "99", "Internal Server Error", {}, res, req);
-   }
-}
-
 async function logout(req, res) {
    const token = req.headers["x-api-key"];
    const { employeeId } = req.body;
@@ -527,6 +518,15 @@ async function getClockTime(req, res) {
          res,
          req
       ); // Added hasClockToday field with value false
+   }
+}
+
+async function verifyTokenHandler(req, res, next) {
+   try {
+      await verifyToken(req, res); // Pass req, res, and next as separate arguments
+   } catch (error) {
+      console.error("Failed to verify token:", error);
+      return response(500, "99", "Internal Server Error", {}, res, req);
    }
 }
 

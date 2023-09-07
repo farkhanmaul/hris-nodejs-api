@@ -1,6 +1,7 @@
 const userModel = require("../model/userModel");
 const userValidation = require("../model/userValidation");
 
+const verifyToken = require("../middleware/verifyToken.js");
 const response = require("../middleware/response");
 
 // login endpoint
@@ -114,11 +115,6 @@ async function userProfile(req, res) {
          profile.Level = "-";
          profile.Work = "-";
 
-         console.log(req.socket.remoteAddress);
-         console.log(req.ip);
-         const ipAddresses = req.header("x-forwarded-for");
-         console.log(ipAddresses);
-
          response(
             200,
             "00",
@@ -160,4 +156,192 @@ async function logout(req, res) {
    }
 }
 
-module.exports = { login, loginOTP, userProfile, logout };
+async function attendance(req, res) {
+   const {
+      employeeId,
+      longitude,
+      altitude,
+      latitude,
+      locationName,
+      action,
+      notes,
+   } = req.body;
+
+   // Define default values for longitude, altitude, and latitude
+   const defaultLongitude = 0;
+   const defaultAltitude = 0;
+   const defaultLatitude = 0;
+
+   try {
+      const datetime = new Date(); // Generate the current datetime
+
+      await userModel.recordEmployeePresence(
+         employeeId,
+         longitude || defaultLongitude,
+         altitude || defaultAltitude,
+         latitude || defaultLatitude,
+         datetime,
+         locationName,
+         action,
+         notes
+      );
+
+      // Check if any of longitude, altitude, and latitude are set to defaults
+      if (
+         longitude === defaultLongitude ||
+         altitude === defaultAltitude ||
+         latitude === defaultLatitude
+      ) {
+         // Create a separate response for default values
+         response(
+            200,
+            "01",
+            "Employee presence recorded with default location",
+            {},
+            res,
+            req
+         );
+      } else {
+         // Send the regular success response
+         response(
+            200,
+            "00",
+            "Employee presence recorded successfully",
+            {},
+            res,
+            req
+         );
+      }
+   } catch (error) {
+      console.error("Failed to record employee presence:", error);
+      response(500, "99", "Failed to record employee presence", {}, res, req);
+   }
+}
+
+async function getAttendance(req, res) {
+   const { employeeId, date } = req.body;
+
+   try {
+      const result = await userModel.getPresenceData(employeeId, date);
+
+      if (!result || result.length === 0) {
+         response(
+            404,
+            "01",
+            "No presence data found for the specified date",
+            {},
+            res,
+            req
+         );
+      } else {
+         const attendanceData = result.map((row) => {
+            const datetime = new Date(row.datetime);
+            const dayName = datetime.toLocaleDateString("en-US", {
+               weekday: "long",
+            });
+            const formattedDate = datetime.toLocaleDateString("en-US", {
+               day: "numeric",
+               month: "long",
+            });
+            const formattedTime = datetime.toLocaleTimeString("en-US", {
+               hour: "numeric",
+               minute: "numeric",
+               hour12: false,
+            });
+
+            return {
+               ...row,
+               dayName,
+               formattedDate,
+               formattedTime,
+            };
+         });
+
+         response(
+            200,
+            "00",
+            "Presence data retrieved successfully",
+            attendanceData,
+            res,
+            req
+         );
+      }
+   } catch (error) {
+      console.error("Failed to retrieve presence data:", error);
+      response(500, "99", "Failed to retrieve presence data", {}, res, req);
+   }
+}
+
+async function getClockTime(req, res) {
+   const { employeeId, date, action } = req.body;
+
+   try {
+      const result = await userModel.getClockTimeData(employeeId, date, action);
+
+      if (!result || result.length === 0) {
+         response(
+            404,
+            "01",
+            "No clock data found for the specified date and action",
+            { hasClockToday: false },
+            res,
+            req
+         );
+      } else {
+         const clockTime = result[0].clockTime;
+         const clockDate = new Date(result[0].clockDate).toLocaleDateString(
+            "id-ID",
+            {
+               day: "numeric",
+               month: "long",
+               year: "numeric",
+            }
+         );
+
+         const action = result[0].action;
+         response(
+            200,
+            "00",
+            "Clock time retrieved successfully",
+            {
+               clockTime,
+               clockDate,
+               action,
+               hasClockToday: true,
+            },
+            res,
+            req
+         );
+      }
+   } catch (error) {
+      console.error("Failed to retrieve clock time:", error);
+      response(
+         500,
+         "99",
+         "Failed to retrieve clock time",
+         { hasClockToday: false },
+         res,
+         req
+      );
+   }
+}
+
+async function verifyTokenHandler(req, res, next) {
+   try {
+      await verifyToken(req, res); // Pass req, res, and next as separate arguments
+   } catch (error) {
+      console.error("Failed to verify token:", error);
+      return response(500, "99", "Internal Server Error", {}, res, req);
+   }
+}
+
+module.exports = {
+   verifyTokenHandler,
+   getClockTime,
+   getAttendance,
+   attendance,
+   login,
+   loginOTP,
+   userProfile,
+   logout,
+};

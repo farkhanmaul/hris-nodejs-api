@@ -1,10 +1,10 @@
 const db = require("../config/database");
 const db2 = require("../config/database2");
 const response = require("../middleware/response");
-const nodemailer = require("nodemailer");
-const verifyToken = require("../middleware/verifytoken.js");
-const Mailgen = require("mailgen");
+const verifyToken = require("../middleware/verifyToken.js");
 const randomstring = require("randomstring");
+const Mailgen = require("mailgen");
+const nodemailer = require("nodemailer");
 const axios = require("axios");
 
 // Generate OTP
@@ -73,7 +73,7 @@ async function login2(req, res) {
          // Send WhatsApp message
          const headers = {
             Accept: "application/json",
-            APIKey: "YOUR_API_KEY",
+            APIKey: "process.env.YOUR_API_KEY", // belom ada
          };
          const data = {
             destination,
@@ -91,6 +91,18 @@ async function login2(req, res) {
                console.error("Failed to send WhatsApp message:", error);
                response(500, "99", "Internal Server Error", {}, res, req);
             });
+         // const query = `INSERT INTO user_otp (email, otp, expiredAt, employeeId, createdAt) VALUES (?, ?, ?, ?, ?)`;
+         // db.query(
+         //    query,
+         //    [receiver, otp, expiredAt, employeeId, createdAt],
+         //    (error, results) => {
+         //       if (error) {
+         //          console.error("Error storing OTP in database:", error);
+         //       } else {
+         //          console.log("OTP stored in database");
+         //       }
+         //    }
+         // );
       }
    } catch (error) {
       console.error("Failed to retrieve user mobile phone:", error);
@@ -117,9 +129,9 @@ async function login(req, res) {
          await sendOTP(email, otp, expiredAt, employeeId); // Pass the expiredAt datetime to the sendOTP function
 
          response(
-            200,
-            "00",
-            "Employee Found, OTP Sent to Email",
+            200, //RC.HTTP.SUCCESS
+            "00", // RC.SUCCESS
+            "Employee Found, OTP Sent to Email", // RC.SUCCESS.MSG
             { employeeEmail: email },
             res,
             req
@@ -475,7 +487,7 @@ async function getClockTime(req, res) {
             404,
             "01",
             "No clock data found for the specified date and action",
-            {},
+            { hasClockToday: false }, // Added hasClockToday field with value false
             res,
             req
          );
@@ -495,14 +507,26 @@ async function getClockTime(req, res) {
             200,
             "00",
             "Clock time retrieved successfully",
-            { clockTime, clockDate, action },
+            {
+               clockTime,
+               clockDate,
+               action,
+               hasClockToday: true, // Added hasClockToday field with value true
+            },
             res,
             req
          );
       }
    } catch (error) {
       console.error("Failed to retrieve clock time:", error);
-      response(500, "99", "Failed to retrieve clock time", {}, res, req);
+      response(
+         500,
+         "99",
+         "Failed to retrieve clock time",
+         { hasClockToday: false },
+         res,
+         req
+      ); // Added hasClockToday field with value false
    }
 }
 

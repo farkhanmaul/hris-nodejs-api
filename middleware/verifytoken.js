@@ -1,5 +1,5 @@
 const db = require("../config/database");
-const response = require("../middleware/response");
+const response = require("./response");
 
 async function verifyToken(req, res, next) {
    const apiKey = req.headers["x-api-key"];

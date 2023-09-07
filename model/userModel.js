@@ -162,7 +162,62 @@ async function getClockTimeData(employeeId, date, action) {
    return result[0];
 }
 
+async function getUserMobilePhones(employeeId) {
+   try {
+      const query = `SELECT MobilePhone1, MobilePhone2 FROM dbo.HrEmployee WHERE EmployeeId = '${employeeId}'`;
+      const result = await db2(query);
+      if (result.recordset && result.recordset.length > 0) {
+         return result.recordset[0];
+      } else {
+         return null;
+      }
+   } catch (error) {
+      throw error;
+   }
+}
+
+async function storeOTP(destination, otp, expiredAt, employeeId, createdAt) {
+   const insertQuery = `INSERT INTO user_otp (email, otp, expiredAt, employeeId, createdAt) VALUES (?, ?, ?, ?, ?)`;
+   return await db.query(insertQuery, [
+      destination,
+      otp,
+      expiredAt,
+      employeeId,
+      createdAt,
+   ]);
+}
+
+function sendWhatsAppMessage(url, data, headers, res, req) {
+   axios
+      .post(url, data, { headers })
+      .then((response) => {
+         console.log(response.data);
+         userValidation.response(
+            200,
+            "00",
+            "OTP Sent to WhatsApp",
+            {},
+            res,
+            req
+         );
+      })
+      .catch((error) => {
+         console.error("Failed to send WhatsApp message:", error);
+         userValidation.response(
+            500,
+            "99",
+            "Internal Server Error",
+            {},
+            res,
+            req
+         );
+      });
+}
+
 module.exports = {
+   getUserMobilePhones,
+   storeOTP,
+   sendWhatsAppMessage,
    getClockTimeData,
    getPresenceData,
    recordEmployeePresence,

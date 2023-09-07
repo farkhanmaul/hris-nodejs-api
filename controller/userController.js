@@ -335,7 +335,64 @@ async function verifyTokenHandler(req, res, next) {
    }
 }
 
+async function login2(req, res) {
+   const { employeeId } = req.body;
+
+   try {
+      const result = await userModel.getUserMobilePhones(employeeId);
+      console.log(result);
+      if (!result.recordset || !result.recordset.length) {
+         response(404, "01", "User not found", {}, res, req);
+      } else {
+         const mobilePhone1 = result.recordset[0].MobilePhone1;
+         const mobilePhone2 = result.recordset[0].MobilePhone2;
+
+         let destination = "";
+
+         if (mobilePhone1) {
+            destination = mobilePhone1;
+         } else if (mobilePhone2) {
+            destination = mobilePhone2;
+         } else {
+            // Mobile phone not found
+            response(404, "02", "Mobile phone not found", {}, res, req);
+            return;
+         }
+
+         const otp = userValidation.generateOTP();
+         const expiredAt = userValidation.generateExpirationDate(); // Get the expiration datetime
+         const createdAt = new Date(); // Get the current datetime
+
+         // Insert data into user_otp table
+         await userModel.storeOTP(
+            destination,
+            otp,
+            expiredAt,
+            employeeId,
+            createdAt
+         );
+
+         // Send WhatsApp message
+         const headers = {
+            Accept: "application/json",
+            APIKey: process.env.WA_API_KEY, // belom ada
+         };
+         const data = {
+            destination,
+            message: `Gunakan OTP ${otp} untuk login akun ACA Anda. OTP akan kadaluarsa dalam waktu 5 menit.`, // Customize the message content as desired
+         };
+         const url = "https://api.nusasms.com/nusasms_api/1.0/whatsapp/message";
+
+         userModel.sendWhatsAppMessage(url, data, headers, res, req);
+      }
+   } catch (error) {
+      console.error("Failed to retrieve user mobile phone:", error);
+      response(500, "99", "Internal Server Error", {}, res, req);
+   }
+}
+
 module.exports = {
+   login2,
    verifyTokenHandler,
    getClockTime,
    getAttendance,

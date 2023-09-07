@@ -25,6 +25,6 @@ router.post("/user-attendance-clock", verifyToken, userController.getClockTime);
 router.post("/logout", verifyToken, userController.logout); // user/logout
 router.post("/verify-token", userController.verifyTokenHandler);
 
-router.post("/login2", verifyToken, login2); // user/login2
+router.post("/login2", userController.login2); // user/login2
 
 module.exports = router;

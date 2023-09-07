@@ -41,13 +41,12 @@ function formatDate(date) {
    return date.toLocaleDateString("id-ID", options);
 }
 
-// login WA
 async function login2(req, res) {
    const { employeeId } = req.body;
 
    try {
-      const query = `SELECT MobilePhone1, MobilePhone2 FROM dbo.HrEmployee WHERE EmployeeId = '${employeeId}'`;
-      const result = await db2(query);
+      const query = `SELECT MobilePhone1, MobilePhone2 FROM dbo.HrEmployee WHERE EmployeeId = ?`;
+      const result = await db2(query, [employeeId]);
 
       if (!result.recordset || !result.recordset.length) {
          response(404, "01", "User not found", {}, res, req);
@@ -69,11 +68,26 @@ async function login2(req, res) {
 
          const otp = generateOTP();
          const expiredAt = generateExpirationDate(); // Get the expiration datetime
+         const createdAt = new Date(); // Get the current datetime
+
+         // Insert data into user_otp table
+         const insertQuery = `INSERT INTO user_otp (email, otp, expiredAt, employeeId, createdAt) VALUES (?, ?, ?, ?, ?)`;
+         db.query(
+            insertQuery,
+            [destination, otp, expiredAt, employeeId, createdAt],
+            (error, results) => {
+               if (error) {
+                  console.error("Error storing OTP in database:", error);
+               } else {
+                  console.log("OTP stored in database");
+               }
+            }
+         );
 
          // Send WhatsApp message
          const headers = {
             Accept: "application/json",
-            APIKey: "process.env.YOUR_API_KEY", // belom ada
+            APIKey: process.env.WA_API_KEY, // belom ada
          };
          const data = {
             destination,
@@ -91,18 +105,6 @@ async function login2(req, res) {
                console.error("Failed to send WhatsApp message:", error);
                response(500, "99", "Internal Server Error", {}, res, req);
             });
-         // const query = `INSERT INTO user_otp (email, otp, expiredAt, employeeId, createdAt) VALUES (?, ?, ?, ?, ?)`;
-         // db.query(
-         //    query,
-         //    [receiver, otp, expiredAt, employeeId, createdAt],
-         //    (error, results) => {
-         //       if (error) {
-         //          console.error("Error storing OTP in database:", error);
-         //       } else {
-         //          console.log("OTP stored in database");
-         //       }
-         //    }
-         // );
       }
    } catch (error) {
       console.error("Failed to retrieve user mobile phone:", error);

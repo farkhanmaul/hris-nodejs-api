@@ -340,12 +340,14 @@ async function login2(req, res) {
 
    try {
       const result = await userModel.getUserMobilePhones(employeeId);
+
       console.log(result);
-      if (!result.recordset || !result.recordset.length) {
+
+      if (!result) {
          response(404, "01", "User not found", {}, res, req);
       } else {
-         const mobilePhone1 = result.recordset[0].MobilePhone1;
-         const mobilePhone2 = result.recordset[0].MobilePhone2;
+         const mobilePhone1 = result.MobilePhone1;
+         const mobilePhone2 = result.MobilePhone2;
 
          let destination = "";
 

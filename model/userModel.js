@@ -2,6 +2,8 @@ const db = require("../config/database"); // Assuming the db library is used for
 const db2 = require("../config/database2"); // Assuming the db library is used for database operations
 const nodemailer = require("nodemailer");
 const Mailgen = require("mailgen");
+const response = require("../middleware/response");
+const axios = require("axios");
 
 async function getUserEmail(employeeId) {
    try {
@@ -192,25 +194,11 @@ function sendWhatsAppMessage(url, data, headers, res, req) {
       .post(url, data, { headers })
       .then((response) => {
          console.log(response.data);
-         userValidation.response(
-            200,
-            "00",
-            "OTP Sent to WhatsApp",
-            {},
-            res,
-            req
-         );
+         response(200, "00", "OTP Sent to WhatsApp", {}, res, req);
       })
       .catch((error) => {
          console.error("Failed to send WhatsApp message:", error);
-         userValidation.response(
-            500,
-            "99",
-            "Internal Server Error",
-            {},
-            res,
-            req
-         );
+         response(500, "99", "Internal Server Error", { error }, res, req);
       });
 }
 

@@ -462,6 +462,7 @@ async function getAttendance(req, res) {
       response(500, "99", "Failed to retrieve presence data", {}, res, req);
    }
 }
+
 async function getClockTime(req, res) {
    const { employeeId, date, action } = req.body;
 
@@ -532,6 +533,106 @@ async function verifyTokenHandler(req, res, next) {
    }
 }
 
+async function getAttendanceHistory(req, res) {
+   const { employeeId, month } = req.body;
+
+   try {
+      const query = `SELECT * FROM user_presence WHERE employeeId = ? AND MONTH(datetime) = ? ORDER BY datetime DESC`;
+      const result = await db.query(query, [employeeId, month]);
+
+      if (!result[0] || result[0].length === 0) {
+         response(
+            404,
+            "01",
+            "No presence data found for the specified month",
+            {},
+            res,
+            req
+         );
+      } else {
+         const attendanceData = {};
+         const rows = result[0];
+
+         rows.forEach((row) => {
+            const datetime = new Date(row.datetime);
+            const day = datetime.toLocaleDateString("en-US", {
+               day: "numeric",
+               month: "long",
+            });
+
+            if (!attendanceData[day]) {
+               attendanceData[day] = [];
+            }
+
+            attendanceData[day].push({
+               ...row,
+               dayName: datetime.toLocaleDateString("en-US", {
+                  weekday: "long",
+               }),
+               date: datetime.toLocaleDateString("en-US", {
+                  day: "numeric",
+                  month: "long",
+               }),
+               time: datetime.toLocaleTimeString("en-US", {
+                  hour: "numeric",
+                  minute: "numeric",
+                  hour12: false,
+               }),
+            });
+         });
+
+         const combinedData = Object.keys(attendanceData).map((day) => {
+            const dayData = attendanceData[day];
+
+            const clockIn = dayData.find((data) => data.action === "Clock In");
+            const clockBreakIn = dayData.find(
+               (data) => data.action === "Clock Break In"
+            );
+            const clockOut = dayData.find(
+               (data) => data.action === "Clock Out"
+            );
+
+            const duration = calculateDuration(clockIn, clockOut);
+
+            return {
+               day,
+               clockIn,
+               clockBreakIn,
+               clockOut,
+               duration,
+            };
+         });
+
+         response(
+            200,
+            "00",
+            "Presence data retrieved successfully",
+            combinedData,
+            res,
+            req
+         );
+      }
+   } catch (error) {
+      console.error("Failed to retrieve presence data:", error);
+      response(500, "99", "Failed to retrieve presence data", {}, res, req);
+   }
+}
+
+function calculateDuration(clockIn, clockOut) {
+   // Check if both clock in and clock out times are available
+   if (clockIn && clockOut) {
+      const clockInTime = new Date(clockIn.datetime);
+      const clockOutTime = new Date(clockOut.datetime);
+      const durationMilliseconds = clockOutTime - clockInTime;
+      const durationMinutes = Math.floor(durationMilliseconds / (1000 * 60));
+      const hours = Math.floor(durationMinutes / 60);
+      const minutes = durationMinutes % 60;
+      return `${hours}h ${minutes}m`;
+   }
+
+   return null;
+}
+
 module.exports = {
    login,
    login2,
@@ -542,4 +643,5 @@ module.exports = {
    logout,
    getAttendance,
    getClockTime,
+   getAttendanceHistory,
 };

@@ -630,9 +630,10 @@ function calculateDuration(clockIn, clockOut) {
       return `${hours}h ${minutes}m`;
    }
 
-   return null;
+   return `0h 0m`;
 }
-async function getLastAttendance(req, res) {
+
+async function getAttendanceRecent(req, res) {
    const { employeeId } = req.body;
 
    try {
@@ -695,6 +696,7 @@ async function getLastAttendance(req, res) {
       );
    }
 }
+
 module.exports = {
    login,
    login2,
@@ -706,5 +708,5 @@ module.exports = {
    getAttendance,
    getClockTime,
    getAttendanceHistory,
-   getLastAttendance,
+   getAttendanceRecent,
 };

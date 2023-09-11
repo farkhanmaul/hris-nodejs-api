@@ -5,7 +5,7 @@ const verifyToken = require("../middlewares/verify_token.js");
 const response = require("../middlewares/response");
 
 // login endpoint
-async function login(req, res) {
+async function loginEmail(req, res) {
    const { employeeId } = req.body;
 
    // Validate the user input
@@ -42,7 +42,7 @@ async function login(req, res) {
    }
 }
 
-async function loginOTP(req, res) {
+async function verifyOTP(req, res) {
    const { employeeId, otp } = req.body;
 
    try {
@@ -94,7 +94,7 @@ async function loginOTP(req, res) {
    }
 }
 
-async function userProfile(req, res) {
+async function getProfile(req, res) {
    const { employeeId } = req.body;
 
    try {
@@ -218,7 +218,7 @@ async function attendance(req, res) {
    }
 }
 
-async function getAttendance(req, res) {
+async function getAttendanceToday(req, res) {
    const { employeeId, date } = req.body;
 
    try {
@@ -272,7 +272,7 @@ async function getAttendance(req, res) {
    }
 }
 
-async function getClockTime(req, res) {
+async function getAttendanceClock(req, res) {
    const { employeeId, date, action } = req.body;
 
    try {
@@ -335,7 +335,7 @@ async function verifyTokenHandler(req, res, next) {
    }
 }
 
-async function login2(req, res) {
+async function loginWA(req, res) {
    const { employeeId } = req.body;
 
    try {
@@ -393,14 +393,167 @@ async function login2(req, res) {
    }
 }
 
+async function getAttendanceRecent(req, res) {
+   const { employeeId } = req.body;
+
+   try {
+      const lastAttendance = await userModel.getLastAttendance(employeeId);
+
+      if (!lastAttendance) {
+         response(404, "01", "No presence data found", {}, res, req);
+      } else {
+         const { datetime, action } = lastAttendance;
+
+         const formattedDateTime = new Date(datetime);
+         const dayName = formattedDateTime.toLocaleDateString("en-US", {
+            weekday: "long",
+         });
+         const date = formattedDateTime.toLocaleDateString("en-US", {
+            day: "numeric",
+            month: "long",
+         });
+         const time = formattedDateTime.toLocaleTimeString("en-US", {
+            hour: "numeric",
+            minute: "numeric",
+            hour12: false,
+         });
+
+         let nextAction = "";
+         if (action === "Clock In") {
+            nextAction = "Clock Break In";
+         } else if (action === "Clock Break In") {
+            nextAction = "Clock Out";
+         } else if (action === "Clock Out") {
+            nextAction = "Clock In";
+         }
+
+         const responsePayload = {
+            ...lastAttendance,
+            dayName,
+            date,
+            time,
+            nextAction,
+         };
+
+         response(
+            200,
+            "00",
+            "Last attendance data retrieved successfully",
+            responsePayload,
+            res,
+            req
+         );
+      }
+   } catch (error) {
+      console.error("Failed to retrieve last attendance data:", error);
+      response(
+         500,
+         "99",
+         "Failed to retrieve last attendance data",
+         {},
+         res,
+         req
+      );
+   }
+}
+
+async function getAttendanceHistory(req, res) {
+   const { employeeId, month } = req.body;
+
+   try {
+      const attendanceData = await userModel.getAttendanceHistory(
+         employeeId,
+         month
+      );
+
+      if (!attendanceData || attendanceData.length === 0) {
+         response(
+            404,
+            "01",
+            "No presence data found for the specified month",
+            {},
+            res,
+            req
+         );
+      } else {
+         const attendanceByDay = {};
+
+         for (const row of attendanceData) {
+            const datetime = new Date(row.datetime);
+            const day = datetime.toLocaleDateString("en-US", {
+               day: "numeric",
+               month: "long",
+            });
+
+            if (!attendanceByDay[day]) {
+               attendanceByDay[day] = [];
+            }
+
+            attendanceByDay[day].push({
+               ...row,
+               dayName: datetime.toLocaleDateString("en-US", {
+                  weekday: "long",
+               }),
+               date: datetime.toLocaleDateString("en-US", {
+                  day: "numeric",
+                  month: "long",
+               }),
+               time: datetime.toLocaleTimeString("en-US", {
+                  hour: "numeric",
+                  minute: "numeric",
+                  hour12: false,
+               }),
+            });
+         }
+
+         const combinedData = [];
+         for (const day in attendanceByDay) {
+            const dayData = attendanceByDay[day];
+
+            const clockIn = dayData.find((data) => data.action === "Clock In");
+            const clockBreakIn = dayData.find(
+               (data) => data.action === "Clock Break In"
+            );
+            const clockOut = dayData.find(
+               (data) => data.action === "Clock Out"
+            );
+
+            const duration = userModel.calculateDuration(clockIn, clockOut);
+
+            combinedData.push({
+               day,
+               clockIn,
+               clockBreakIn,
+               clockOut,
+               duration,
+            });
+         }
+
+         response(
+            200,
+            "00",
+            "Presence data retrieved successfully",
+            combinedData,
+            res,
+            req
+         );
+      }
+   } catch (error) {
+      console.error("Failed to retrieve presence data:", error);
+      response(500, "99", "Failed to retrieve presence data", {}, res, req);
+   }
+}
+
 module.exports = {
-   login2,
-   verifyTokenHandler,
-   getClockTime,
-   getAttendance,
-   attendance,
-   login,
-   loginOTP,
-   userProfile,
+   getAttendanceHistory,
+   getAttendanceRecent,
+   loginEmail,
+   loginWA,
    logout,
+   verifyOTP,
+   verifyTokenHandler,
+   getProfile,
+   attendance,
+   getAttendanceClock,
+   getAttendanceToday,
 };

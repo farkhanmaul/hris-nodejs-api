@@ -206,18 +206,47 @@ function sendWhatsAppMessage(url, data, headers, res, req) {
       });
 }
 
+function getLastAttendance(employeeId) {
+   const query = `SELECT * FROM user_presence WHERE employeeId = ? ORDER BY datetime DESC LIMIT 1`;
+   return db.query(query, [employeeId]).then((result) => result[0][0]);
+}
+
+async function getAttendanceHistory(employeeId, month) {
+   const query = `SELECT * FROM user_presence WHERE employeeId = ? AND MONTH(datetime) = ? ORDER BY datetime DESC`;
+   const result = await db.query(query, [employeeId, month]);
+   return result[0];
+}
+
+function calculateDuration(clockIn, clockOut) {
+   // Check if both clock in and clock out times are available
+   if (clockIn && clockOut) {
+      const clockInTime = new Date(clockIn.datetime);
+      const clockOutTime = new Date(clockOut.datetime);
+      const durationMilliseconds = clockOutTime - clockInTime;
+      const durationMinutes = Math.floor(durationMilliseconds / (1000 * 60));
+      const hours = Math.floor(durationMinutes / 60);
+      const minutes = durationMinutes % 60;
+      return `${hours}h ${minutes}m`;
+   }
+
+   return `0h 0m`;
+}
+
 module.exports = {
-   getUserMobilePhones,
+   getAttendanceHistory,
+   calculateDuration,
+   closeToken,
    storeOTP,
+   sendOTP,
+   storeUserToken,
    sendWhatsAppMessage,
+   recordEmployeePresence,
+   getLastAttendance,
+   getUserMobilePhones,
    getClockTimeData,
    getPresenceData,
-   recordEmployeePresence,
-   getUserEmail,
-   sendOTP,
-   getUserOTP,
-   storeUserToken,
-   getUserProfile,
    getTokenStatus,
-   closeToken,
+   getUserEmail,
+   getUserOTP,
+   getUserProfile,
 };

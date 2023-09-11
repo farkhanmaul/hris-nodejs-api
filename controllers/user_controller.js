@@ -1,8 +1,8 @@
-const userModel = require("../model/userModel");
-const userValidation = require("../model/userValidation");
+const userModel = require("../models/user_model");
+const userValidation = require("../models/user_validation");
 
-const verifyToken = require("../middleware/verifyToken.js");
-const response = require("../middleware/response");
+const verifyToken = require("../middlewares/verify_token.js");
+const response = require("../middlewares/response");
 
 // login endpoint
 async function login(req, res) {

@@ -1,4 +1,3 @@
-const response = require("../middleware/response");
 // Generate OTP
 const randomstring = require("randomstring");
 

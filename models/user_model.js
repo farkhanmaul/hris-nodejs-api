@@ -1,14 +1,15 @@
 const db = require("../config/database"); // Assuming the db library is used for database operations
 const db2 = require("../config/database2"); // Assuming the db library is used for database operations
+const response = require("../middlewares/response");
 const nodemailer = require("nodemailer");
-const Mailgen = require("mailgen");
-const response = require("../middleware/response");
 const axios = require("axios");
+const Mailgen = require("mailgen");
 
 async function getUserEmail(employeeId) {
    try {
-      const query = `SELECT PrimaryEmail FROM dbo.HrEmployee WHERE EmployeeId = '${employeeId}'`;
-      const result = await db2(query);
+      const query =
+         "SELECT PrimaryEmail FROM dbo.HrEmployee WHERE EmployeeId = ?";
+      const result = await db2.query(query, [employeeId]);
       if (result.recordset && result.recordset.length > 0) {
          const { PrimaryEmail } = result.recordset[0];
          return PrimaryEmail;
@@ -87,8 +88,9 @@ async function sendOTP(receiver, otp, expiredAt, employeeId) {
 }
 
 async function getUserOTP(employeeId) {
-   const query = `SELECT otp, expiredAt FROM user_otp WHERE employeeId = '${employeeId}' ORDER BY createdAt DESC LIMIT 1`;
-   const result = await db.query(query);
+   const query =
+      "SELECT otp, expiredAt FROM user_otp WHERE employeeId = ? ORDER BY createdAt DESC LIMIT 1";
+   const result = await db.query(query, [employeeId]);
    return result;
 }
 
@@ -107,8 +109,9 @@ async function storeUserToken(employeeId, token, expirationDate) {
 }
 
 async function getUserProfile(employeeId) {
-   const query = `SELECT EmployeeId, EmployeeFullName, PrimaryEmail, BirthDate, JoinCompany FROM dbo.HrEmployee WHERE EmployeeId = '${employeeId}'`;
-   const result = await db2(query);
+   const query =
+      "SELECT EmployeeId, EmployeeFullName, PrimaryEmail, BirthDate, JoinCompany FROM dbo.HrEmployee WHERE EmployeeId = ?";
+   const result = await db2.query(query, [employeeId]);
    return result;
 }
 async function getTokenStatus(token) {
@@ -166,8 +169,9 @@ async function getClockTimeData(employeeId, date, action) {
 
 async function getUserMobilePhones(employeeId) {
    try {
-      const query = `SELECT MobilePhone1, MobilePhone2 FROM dbo.HrEmployee WHERE EmployeeId = '${employeeId}'`;
-      const result = await db2(query);
+      const query =
+         "SELECT MobilePhone1, MobilePhone2 FROM dbo.HrEmployee WHERE EmployeeId = ?";
+      const result = await db2.query(query, [employeeId]);
       if (result.recordset && result.recordset.length > 0) {
          return result.recordset[0];
       } else {

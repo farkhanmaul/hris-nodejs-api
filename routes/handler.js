@@ -1,7 +1,7 @@
 const db = require("../config/database");
 const db2 = require("../config/database2");
-const response = require("../middleware/response");
-const verifyToken = require("../middleware/verifyToken.js");
+const response = require("../middlewares/response");
+const verifyToken = require("../middlewares/verify_token.js");
 const randomstring = require("randomstring");
 const Mailgen = require("mailgen");
 const nodemailer = require("nodemailer");
@@ -632,7 +632,69 @@ function calculateDuration(clockIn, clockOut) {
 
    return null;
 }
+async function getLastAttendance(req, res) {
+   const { employeeId } = req.body;
 
+   try {
+      const query = `SELECT * FROM user_presence WHERE employeeId = ? ORDER BY datetime DESC LIMIT 1`;
+      const result = await db.query(query, [employeeId]);
+
+      if (!result[0] || result[0].length === 0) {
+         response(404, "01", "No presence data found", {}, res, req);
+      } else {
+         const lastAttendance = result[0][0];
+         const datetime = new Date(lastAttendance.datetime);
+         const dayName = datetime.toLocaleDateString("en-US", {
+            weekday: "long",
+         });
+         const date = datetime.toLocaleDateString("en-US", {
+            day: "numeric",
+            month: "long",
+         });
+         const time = datetime.toLocaleTimeString("en-US", {
+            hour: "numeric",
+            minute: "numeric",
+            hour12: false,
+         });
+
+         let nextAction = "";
+         if (lastAttendance.action === "Clock In") {
+            nextAction = "Clock Break In";
+         } else if (lastAttendance.action === "Clock Break In") {
+            nextAction = "Clock Out";
+         } else if (lastAttendance.action === "Clock Out") {
+            nextAction = "Clock In";
+         }
+
+         const responsePayload = {
+            ...lastAttendance,
+            dayName,
+            date,
+            time,
+            nextAction,
+         };
+
+         response(
+            200,
+            "00",
+            "Last attendance data retrieved successfully",
+            responsePayload,
+            res,
+            req
+         );
+      }
+   } catch (error) {
+      console.error("Failed to retrieve last attendance data:", error);
+      response(
+         500,
+         "99",
+         "Failed to retrieve last attendance data",
+         {},
+         res,
+         req
+      );
+   }
+}
 module.exports = {
    login,
    login2,
@@ -644,4 +706,5 @@ module.exports = {
    getAttendance,
    getClockTime,
    getAttendanceHistory,
+   getLastAttendance,
 };

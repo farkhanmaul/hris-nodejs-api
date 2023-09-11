@@ -215,9 +215,9 @@ function getLastAttendance(employeeId) {
    return db.query(query, [employeeId]).then((result) => result[0][0]);
 }
 
-async function getAttendanceHistory(employeeId, month) {
-   const query = `SELECT * FROM user_presence WHERE employeeId = ? AND MONTH(datetime) = ? ORDER BY datetime DESC`;
-   const result = await db.query(query, [employeeId, month]);
+async function getAttendanceHistory(employeeId, startDate, endDate) {
+   const query = `SELECT * FROM user_presence WHERE employeeId = ? AND datetime >= ? AND datetime <= ? ORDER BY datetime DESC`;
+   const result = await db.query(query, [employeeId, startDate, endDate]);
    return result[0];
 }
 

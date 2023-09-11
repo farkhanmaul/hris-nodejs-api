@@ -12,7 +12,7 @@ async function loginEmail(req, res) {
    const isInputValid = userValidation.validateUserInput(employeeId);
 
    if (!isInputValid) {
-      response(400, "99", "Invalid user input", {}, res, req);
+      response(400, "98", "Invalid user input", {}, res, req);
       return;
    }
 
@@ -44,7 +44,13 @@ async function loginEmail(req, res) {
 
 async function verifyOTP(req, res) {
    const { employeeId, otp } = req.body;
-
+   if (
+      !userValidation.validateUserInput(employeeId) ||
+      !userValidation.validateUserInput(otp)
+   ) {
+      response(400, "04", "Invalid input", {}, res, req);
+      return;
+   }
    try {
       const result = await userModel.getUserOTP(employeeId);
 
@@ -458,19 +464,20 @@ async function getAttendanceRecent(req, res) {
 }
 
 async function getAttendanceHistory(req, res) {
-   const { employeeId, month } = req.body;
+   const { employeeId, startDate, endDate } = req.body;
 
    try {
       const attendanceData = await userModel.getAttendanceHistory(
          employeeId,
-         month
+         startDate,
+         endDate
       );
 
       if (!attendanceData || attendanceData.length === 0) {
          response(
             404,
             "01",
-            "No presence data found for the specified month",
+            "No presencedata found for the specified date range",
             {},
             res,
             req

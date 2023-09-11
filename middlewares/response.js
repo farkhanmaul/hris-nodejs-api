@@ -1,4 +1,5 @@
 const logAPICall = require("./logs");
+const moment = require("moment");
 
 const response = (status, responseCode, responseMessage, data, res, req) => {
    const payload = {
@@ -9,7 +10,7 @@ const response = (status, responseCode, responseMessage, data, res, req) => {
 
    res.status(status).json(payload);
    const logData = {
-      timestamp: new Date().toISOString().slice(0, 19).replace("T", " "),
+      timestamp: moment().format("YYYY-MM-DD HH:mm:ss"),
       endpoint: req.path,
       method: req.method,
       requestHeaders: req.headers ? JSON.stringify(req.headers) : "", // Check if req.header exists

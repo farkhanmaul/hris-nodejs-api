@@ -102,7 +102,13 @@ async function verifyOTP(req, res) {
 
 async function getProfile(req, res) {
    const { employeeId } = req.body;
+   // Validate the user input
+   const isInputValid = userValidation.validateUserInput(employeeId);
 
+   if (!isInputValid) {
+      response(400, "98", "Invalid user input", {}, res, req);
+      return;
+   }
    try {
       const result = await userModel.getUserProfile(employeeId);
 
@@ -139,7 +145,13 @@ async function getProfile(req, res) {
 async function logout(req, res) {
    const token = req.headers["x-api-key"];
    const { employeeId } = req.body;
+   // Validate the user input
+   const isInputValid = userValidation.validateUserInput(employeeId);
 
+   if (!isInputValid) {
+      response(400, "98", "Invalid user input", {}, res, req);
+      return;
+   }
    try {
       const result = await userModel.getTokenStatus(token);
 
@@ -172,7 +184,28 @@ async function attendance(req, res) {
       action,
       notes,
    } = req.body;
+   // Validate employeeId, longitude, altitude, latitude, locationName, action, and notes
+   const employeeIdValid = userValidation.validateUserInput(employeeId);
+   const longitudeValid = userValidation.validateUserInput(longitude);
+   const altitudeValid = userValidation.validateUserInput(altitude);
+   const latitudeValid = userValidation.validateUserInput(latitude);
+   const locationNameValid = userValidation.validateUserInput(locationName);
+   const actionValid = userValidation.validateUserInput(action);
+   const notesValid = userValidation.validateUserInput(notes);
 
+   if (
+      !employeeIdValid ||
+      !longitudeValid ||
+      !altitudeValid ||
+      !latitudeValid ||
+      !locationNameValid ||
+      !actionValid ||
+      !notesValid
+   ) {
+      // Handle the case where any of the user inputs are potentially malicious
+      response(400, "02", "Invalid user input", {}, res, req);
+      return; // Return early to prevent further processing
+   }
    // Define default values for longitude, altitude, and latitude
    const defaultLongitude = 0;
    const defaultAltitude = 0;
@@ -226,7 +259,13 @@ async function attendance(req, res) {
 
 async function getAttendanceToday(req, res) {
    const { employeeId, date } = req.body;
-
+   if (
+      !userValidation.validateUserInput(employeeId) ||
+      !userValidation.validateUserInput(date)
+   ) {
+      response(400, "04", "Invalid input", {}, res, req);
+      return;
+   }
    try {
       const result = await userModel.getPresenceData(employeeId, date);
 
@@ -344,6 +383,13 @@ async function verifyTokenHandler(req, res, next) {
 async function loginWA(req, res) {
    const { employeeId } = req.body;
 
+   // Validate the user input
+   const isInputValid = userValidation.validateUserInput(employeeId);
+
+   if (!isInputValid) {
+      response(400, "98", "Invalid user input", {}, res, req);
+      return;
+   }
    try {
       const result = await userModel.getUserMobilePhones(employeeId);
 
@@ -401,7 +447,13 @@ async function loginWA(req, res) {
 
 async function getAttendanceRecent(req, res) {
    const { employeeId } = req.body;
+   // Validate the user input
+   const isInputValid = userValidation.validateUserInput(employeeId);
 
+   if (!isInputValid) {
+      response(400, "98", "Invalid user input", {}, res, req);
+      return;
+   }
    try {
       const lastAttendance = await userModel.getLastAttendance(employeeId);
 
@@ -558,9 +610,9 @@ module.exports = {
    verifyOTP,
    verifyTokenHandler,
    getProfile,
-   attendance,
+   attendance, // to do
+   getAttendanceClock, // to do
+   getAttendanceHistory, // to do
    getAttendanceToday,
-   getAttendanceClock,
-   getAttendanceHistory,
    getAttendanceRecent,
 };

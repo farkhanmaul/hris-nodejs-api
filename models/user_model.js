@@ -7,9 +7,9 @@ const Mailgen = require("mailgen");
 
 async function getUserEmail(employeeId) {
    try {
-      const query =
-         "SELECT PrimaryEmail FROM dbo.HrEmployee WHERE EmployeeId = ?";
-      const result = await db2.query(query, [employeeId]);
+      const query = `SELECT PrimaryEmail FROM dbo.HrEmployee WHERE EmployeeId = '${employeeId}'`;
+      const result = await db2(query);
+
       if (result.recordset && result.recordset.length > 0) {
          const { PrimaryEmail } = result.recordset[0];
          return PrimaryEmail;
@@ -109,11 +109,15 @@ async function storeUserToken(employeeId, token, expirationDate) {
 }
 
 async function getUserProfile(employeeId) {
-   const query =
-      "SELECT EmployeeId, EmployeeFullName, PrimaryEmail, BirthDate, JoinCompany FROM dbo.HrEmployee WHERE EmployeeId = ?";
-   const result = await db2.query(query, [employeeId]);
-   return result;
+   try {
+      const query = `SELECT EmployeeId, EmployeeFullName, PrimaryEmail, BirthDate, JoinCompany FROM dbo.HrEmployee WHERE EmployeeId = '${employeeId}'`;
+      const result = await db2(query);
+      return result;
+   } catch (error) {
+      throw error;
+   }
 }
+
 async function getTokenStatus(token) {
    const selectQuery = `SELECT status FROM user_token WHERE token = ?`;
    const result = await db.query(selectQuery, [token]);
@@ -169,9 +173,9 @@ async function getClockTimeData(employeeId, date, action) {
 
 async function getUserMobilePhones(employeeId) {
    try {
-      const query =
-         "SELECT MobilePhone1, MobilePhone2 FROM dbo.HrEmployee WHERE EmployeeId = ?";
-      const result = await db2.query(query, [employeeId]);
+      const query = `SELECT MobilePhone1, MobilePhone2 FROM dbo.HrEmployee WHERE EmployeeId = '${employeeId}'`;
+      const result = await db2(query);
+
       if (result.recordset && result.recordset.length > 0) {
          return result.recordset[0];
       } else {

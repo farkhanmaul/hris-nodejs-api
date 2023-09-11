@@ -545,8 +545,6 @@ async function getAttendanceHistory(req, res) {
 }
 
 module.exports = {
-   getAttendanceHistory,
-   getAttendanceRecent,
    loginEmail,
    loginWA,
    logout,
@@ -554,6 +552,8 @@ module.exports = {
    verifyTokenHandler,
    getProfile,
    attendance,
-   getAttendanceClock,
    getAttendanceToday,
+   getAttendanceClock,
+   getAttendanceHistory,
+   getAttendanceRecent,
 };

@@ -233,14 +233,13 @@ function calculateDuration(clockIn, clockOut) {
 }
 
 module.exports = {
-   getAttendanceHistory,
-   calculateDuration,
    closeToken,
    storeOTP,
    sendOTP,
    storeUserToken,
    sendWhatsAppMessage,
    recordEmployeePresence,
+   calculateDuration,
    getLastAttendance,
    getUserMobilePhones,
    getClockTimeData,
@@ -249,4 +248,5 @@ module.exports = {
    getUserEmail,
    getUserOTP,
    getUserProfile,
+   getAttendanceHistory,
 };

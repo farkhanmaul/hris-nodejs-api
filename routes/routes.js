@@ -3,8 +3,6 @@ const router = express.Router();
 const verifyToken = require("../middlewares/verify_token.js");
 const userController = require("../controllers/user_controller.js");
 
-const { getAttendanceHistory } = require("./handler");
-
 router.get("/", (req, res) => {
    res.send("API is running");
 });

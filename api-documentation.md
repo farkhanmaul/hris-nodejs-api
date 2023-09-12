@@ -22,7 +22,7 @@ API is running
 > /user/login-email
 > ```
 
-### Body (**raw**)
+### Request Body (**raw**)
 
 ```json
 {
@@ -49,13 +49,7 @@ API is running
 > {{local}}/user/login-wa
 > ```
 
-### Headers
-
-| Content-Type  | Value     |
-| ------------- | --------- |
-| Authorization | 123456789 |
-
-### Body (**raw**)
+### Request Body (**raw**)
 
 ```json
 {
@@ -65,19 +59,13 @@ API is running
 
 ### Response
 
-{
+```json
 
-}
+```
 
 ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
 
 ## 4. Logout
-
-### Response
-
-{
-
-}
 
 ### Method: POST
 
@@ -85,17 +73,27 @@ API is running
 > {{local}}/user/logout
 > ```
 
-### Headers
+### Request Headers
 
 | Content-Type | Value      |
 | ------------ | ---------- |
 | x-api-key    | your-token |
 
-### Body (**raw**)
+### Request Body (**raw**)
 
 ```json
 {
    "employeeId": "123456789"
+}
+```
+
+### Response
+
+```json
+{
+   "respCode": "00",
+   "respMsg": "Logout successful",
+   "data": {}
 }
 ```
 
@@ -103,30 +101,31 @@ API is running
 
 ## 5. Verify OTP
 
-### Response
-
-{
-
-}
-
 ### Method: POST
 
 > ```
 > {{local}}/user/verify-otp
 > ```
 
-### Headers
-
-| Content-Type  | Value            |
-| ------------- | ---------------- |
-| Authorization | Bearer 123456789 |
-
-### Body (**raw**)
+### Request Body (**raw**)
 
 ```json
 {
    "employeeId": "123456789",
-   "otp": "197927"
+   "otp": "123456"
+}
+```
+
+### Response
+
+```json
+{
+   "respCode": "00",
+   "respMsg": "OTP verified",
+   "data": {
+      "token": "yourtoken",
+      "expirationDate": "YYYY-MM-DDT24:60:60.354Z"
+   }
 }
 ```
 
@@ -134,29 +133,33 @@ API is running
 
 ## 6. Verify Token
 
-### Response
-
-{
-
-}
-
 ### Method: POST
 
 > ```
 > {{local}}/user/verify-token
 > ```
 
-### Headers
+### Request Headers
 
 | Content-Type | Value      |
 | ------------ | ---------- |
 | x-api-key    | your-token |
 
-### Body (**raw**)
+### Request Body (**raw**)
 
 ```json
 {
    "employeeId": "123456789"
+}
+```
+
+### Response
+
+```json
+{
+   "respCode": "00",
+   "respMsg": "Success",
+   "data": {}
 }
 ```
 
@@ -164,25 +167,19 @@ API is running
 
 ## 7. Get Profile
 
-### Response
-
-{
-
-}
-
 ### Method: POST
 
 > ```
 > {{local}}/user/get-profile
 > ```
 
-### Headers
+### Request Headers
 
 | Content-Type | Value      |
 | ------------ | ---------- |
 | x-api-key    | your-token |
 
-### Body (**raw**)
+### Request Body (**raw**)
 
 ```json
 {
@@ -190,15 +187,28 @@ API is running
 }
 ```
 
+### Response
+
+```json
+{
+   "respCode": "00",
+   "respMsg": "Profile retrieved successfully",
+   "data": {
+      "EmployeeId": "123456789",
+      "EmployeeFullName": "your name",
+      "PrimaryEmail": "youremail@email.com",
+      "BirthDate": "1 September 1990 07.00.00",
+      "JoinCompany": "1 April 2022 07.00.00",
+      "Position": "-",
+      "Level": "-",
+      "Work": "-"
+   }
+}
+```
+
 ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
 
 ## 8. Attendance
-
-### Response
-
-{
-
-}
 
 ### Method: POST
 
@@ -206,35 +216,35 @@ API is running
 > {{local}}/user/attendance
 > ```
 
-### Headers
+### Request Headers
 
 | Content-Type | Value      |
 | ------------ | ---------- |
 | x-api-key    | your-token |
 
-### Body (**raw**)
+### Request Body (**raw**)
 
 ```json
 {
    "employeeId": "123456789",
-   "longitude": "342423",
-   "altitude": "1231445",
+   "longitude": "123456789",
+   "altitude": "123456789",
    "action": "Clock In",
-   "latitude": "12345678",
-   "locationName": "bendungan ",
-   "notes": "izin wfh"
+   "latitude": "123456789",
+   "locationName": "Nama Lokasi",
+   "notes": "Mohon Izin wfh"
 }
+```
+
+### Response
+
+```json
+
 ```
 
 ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
 
 ## 9. Get Attendance Today
-
-### Response
-
-{
-
-}
 
 ### Method: POST
 
@@ -242,13 +252,13 @@ API is running
 > {{local}}/user/get-attendance-today
 > ```
 
-### Headers
+### Request Headers
 
 | Content-Type | Value      |
 | ------------ | ---------- |
 | x-api-key    | your-token |
 
-### Body (**raw**)
+### Request Body (**raw**)
 
 ```json
 {
@@ -257,15 +267,15 @@ API is running
 }
 ```
 
+### Response
+
+```json
+
+```
+
 ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
 
 ## 10. Get Attendance Clock
-
-### Response
-
-{
-
-}
 
 ### Method: POST
 
@@ -273,13 +283,13 @@ API is running
 > {{local}}/user/get-attendance-clock
 > ```
 
-### Headers
+### Request Headers
 
 | Content-Type | Value      |
 | ------------ | ---------- |
 | x-api-key    | your-token |
 
-### Body (**raw**)
+### Request Body (**raw**)
 
 ```json
 {
@@ -289,15 +299,15 @@ API is running
 }
 ```
 
+### Response
+
+```json
+
+```
+
 ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
 
 ## 11. Get Attendance History
-
-### Response
-
-{
-
-}
 
 ### Method: POST
 
@@ -305,13 +315,13 @@ API is running
 > {{local}}/user/get-attendance-history
 > ```
 
-### Headers
+### Request Headers
 
 | Content-Type | Value      |
 | ------------ | ---------- |
 | x-api-key    | your-token |
 
-### Body (**raw**)
+### Request Body (**raw**)
 
 ```json
 {
@@ -321,15 +331,15 @@ API is running
 }
 ```
 
+### Response
+
+```json
+
+```
+
 ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
 
 ## 12. Get Attendance Recent
-
-### Response
-
-{
-
-}
 
 ### Method: POST
 
@@ -337,18 +347,24 @@ API is running
 > {{local}}/user/get-attendance-recent
 > ```
 
-### Headers
+### Request Headers
 
 | Content-Type | Value      |
 | ------------ | ---------- |
 | x-api-key    | your-token |
 
-### Body (**raw**)
+### Request Body (**raw**)
 
 ```json
 {
    "employeeId": "123456789"
 }
+```
+
+### Response
+
+```json
+
 ```
 
 ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃

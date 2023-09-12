@@ -319,7 +319,21 @@ async function getAttendanceToday(req, res) {
 
 async function getAttendanceClock(req, res) {
    const { employeeId, date, action } = req.body;
-
+   if (
+      !userValidation.validateUserInput(employeeId) ||
+      !userValidation.validateUserInput(date) ||
+      !userValidation.validateUserInput(action)
+   ) {
+      response(
+         400,
+         "Invalid user input",
+         "User input contains potentially malicious characters",
+         null,
+         res,
+         req
+      );
+      return; // Exit the function if input is invalid
+   }
    try {
       const result = await userModel.getClockTimeData(employeeId, date, action);
 
@@ -518,53 +532,77 @@ async function getAttendanceRecent(req, res) {
 async function getAttendanceHistory(req, res) {
    const { employeeId, startDate, endDate } = req.body;
 
+   if (
+      !userValidation.validateUserInput(employeeId) ||
+      !userValidation.validateUserInput(startDate) ||
+      !userValidation.validateUserInput(endDate)
+   ) {
+      response(
+         400,
+         "Invalid user input",
+         "User input contains potentially malicious characters",
+         null,
+         res,
+         req
+      );
+      return; // Exit the function if input is invalid
+   }
+
    try {
+      const endDatePlusOneDay = new Date(endDate);
+      endDatePlusOneDay.setDate(endDatePlusOneDay.getDate() + 1);
+
       const attendanceData = await userModel.getAttendanceHistory(
          employeeId,
          startDate,
-         endDate
+         endDatePlusOneDay
       );
 
       if (!attendanceData || attendanceData.length === 0) {
          response(
             404,
             "01",
-            "No presencedata found for the specified date range",
+            "No presence data found for the specified date range",
             {},
             res,
             req
          );
-      } else {
-         const attendanceByDay = {};
+         return; // Exit the function if no data found
+      }
 
-         for (const row of attendanceData) {
-            const datetime = new Date(row.datetime);
-            const day = datetime.toLocaleDateString("en-US", {
-               day: "numeric",
-               month: "long",
-            });
+      const attendanceByDay = {};
 
-            if (!attendanceByDay[day]) {
-               attendanceByDay[day] = [];
-            }
+      for (const row of attendanceData) {
+         const datetime = new Date(row.datetime);
+         const day = datetime.toLocaleDateString("en-US", {
+            day: "numeric",
+            month: "long",
+         });
 
-            attendanceByDay[day].push({
-               ...row,
-               dayName: datetime.toLocaleDateString("en-US", {
-                  weekday: "long",
-               }),
-               date: datetime.toLocaleDateString("en-US", {
-                  day: "numeric",
-                  month: "long",
-               }),
-               time: datetime.toLocaleTimeString("en-US", {
-                  hour: "numeric",
-                  minute: "numeric",
-                  hour12: false,
-               }),
-            });
+         if (!attendanceByDay[day]) {
+            attendanceByDay[day] = [];
          }
 
+         attendanceByDay[day].push({
+            ...row,
+            dayName: datetime.toLocaleDateString("en-US", {
+               weekday: "long",
+            }),
+            date: day,
+            time: datetime.toLocaleTimeString("en-US", {
+               hour: "numeric",
+               minute: "numeric",
+               hour12: false,
+            }),
+         });
+      }
+
+      let responsePayload;
+      if (startDate === endDate && attendanceByDay[startDate]) {
+         // If start date and end date are the same and data is available for that day
+         responsePayload = attendanceByDay[startDate];
+      } else {
+         // Process data for multiple days
          const combinedData = [];
          for (const day in attendanceByDay) {
             const dayData = attendanceByDay[day];
@@ -581,6 +619,7 @@ async function getAttendanceHistory(req, res) {
 
             combinedData.push({
                day,
+               dayName: dayData[0].dayName,
                clockIn,
                clockBreakIn,
                clockOut,
@@ -588,15 +627,17 @@ async function getAttendanceHistory(req, res) {
             });
          }
 
-         response(
-            200,
-            "00",
-            "Presence data retrieved successfully",
-            combinedData,
-            res,
-            req
-         );
+         responsePayload = combinedData;
       }
+
+      response(
+         200,
+         "00",
+         "Presence data retrieved successfully",
+         responsePayload,
+         res,
+         req
+      );
    } catch (error) {
       console.error("Failed to retrieve presence data:", error);
       response(500, "99", "Failed to retrieve presence data", {}, res, req);
@@ -610,9 +651,9 @@ module.exports = {
    verifyOTP,
    verifyTokenHandler,
    getProfile,
-   attendance, // to do
-   getAttendanceClock, // to do
-   getAttendanceHistory, // to do
+   attendance,
+   getAttendanceClock,
+   getAttendanceHistory,
    getAttendanceToday,
    getAttendanceRecent,
 };

@@ -206,7 +206,7 @@ function sendWhatsAppMessage(url, data, headers, res, req) {
       })
       .catch((error) => {
          console.error("Failed to send WhatsApp message:", error);
-         response(500, "99", "Internal Server Error", { error }, res, req);
+         response(500, "99", "Internal Server Error", {}, res, req);
       });
 }
 

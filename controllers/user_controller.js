@@ -576,7 +576,7 @@ async function getAttendanceHistory(req, res) {
          const datetime = new Date(row.datetime);
          const day = datetime.toLocaleDateString("en-US", {
             day: "numeric",
-            month: "long",
+            month: "short",
          });
 
          if (!attendanceByDay[day]) {

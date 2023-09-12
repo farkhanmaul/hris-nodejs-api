@@ -8,7 +8,7 @@
 > /
 > ```
 
-### Response
+### Response Success
 
 ```
 API is running
@@ -30,7 +30,7 @@ API is running
 }
 ```
 
-### Response
+### Response Success
 
 ```json
 {
@@ -57,7 +57,7 @@ API is running
 }
 ```
 
-### Response
+### Response Success
 
 ```json
 
@@ -87,7 +87,7 @@ API is running
 }
 ```
 
-### Response
+### Response Success
 
 ```json
 {
@@ -116,7 +116,7 @@ API is running
 }
 ```
 
-### Response
+### Response Success
 
 ```json
 {
@@ -153,7 +153,7 @@ API is running
 }
 ```
 
-### Response
+### Response Success
 
 ```json
 {
@@ -187,7 +187,7 @@ API is running
 }
 ```
 
-### Response
+### Response Success
 
 ```json
 {
@@ -236,10 +236,14 @@ API is running
 }
 ```
 
-### Response
+### Response Success
 
 ```json
-
+{
+   "respCode": "00",
+   "respMsg": "Employee presence recorded successfully",
+   "data": {}
+}
 ```
 
 ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
@@ -267,10 +271,54 @@ API is running
 }
 ```
 
-### Response
+### Response Success
 
 ```json
-
+{
+    "respCode": "00",
+    "respMsg": "Presence data retrieved successfully",
+    "data": [
+        {
+            "employeeId": "123456789",
+            "longitude": 1234567890,
+            "altitude": 1234567890,
+            "latitude": 1234567890,
+            "datetime": "2023-12-28T24:60:60.000Z",
+            "location_name": "Location Name",
+            "action": "Clock In",
+            "notes": "Izin WFH",
+            "dayName": "Friday",
+            "formattedDate": "September 8",
+            "formattedTime": "09:38"
+        },
+        {
+            "employeeId": "123456789",
+            "longitude": 1234567890,
+            "altitude": 1234567890,
+            "latitude": 1234567890,
+            "datetime": "2023-12-28T24:60:60.000Z",
+            "location_name": "Location Name",
+            "action": "Clock Break In",
+            "notes": "izin wfh",
+            "dayName": "Friday",
+            "formattedDate": "September 8",
+            "formattedTime": "11:19"
+        }
+        {
+            "employeeId": "123456789",
+            "longitude": 1234567890,
+            "altitude": 1234567890,
+            "latitude": 1234567890,
+            "datetime": "2023-12-28T24:60:60.000Z",
+            "location_name": "Location Name",
+            "action": "Clock Out",
+            "notes": "izin wfh",
+            "dayName": "Friday",
+            "formattedDate": "September 8",
+            "formattedTime": "16:37"
+        },
+    ]
+}
 ```
 
 ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
@@ -294,15 +342,24 @@ API is running
 ```json
 {
    "employeeId": "123456789",
-   "date": "2023-08-31",
-   "action": "Clock out"
+   "date": "2023-09-09",
+   "action": "Clock In"
 }
 ```
 
-### Response
+### Response Success
 
 ```json
-
+{
+   "respCode": "00",
+   "respMsg": "Clock time retrieved successfully",
+   "data": {
+      "clockTime": "11:19",
+      "clockDate": "9 September 2023",
+      "action": "Clock In",
+      "hasClockToday": true
+   }
+}
 ```
 
 ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
@@ -331,10 +388,59 @@ API is running
 }
 ```
 
-### Response
+### Response Success
 
 ```json
-
+{
+   "respCode": "00",
+   "respMsg": "Presence data retrieved successfully",
+   "data": [
+      {
+         "day": "September 8",
+         "dayName": "Friday",
+         "clockIn": {
+            "employeeId": "232323232",
+            "longitude": 342423,
+            "altitude": 1231440,
+            "latitude": 12345700,
+            "datetime": "2023-09-08T06:38:11.000Z",
+            "location_name": "bendungan hilir jakarta pusat",
+            "action": "Clock In",
+            "notes": "izin wfh",
+            "dayName": "Friday",
+            "date": "September 8",
+            "time": "09:00"
+         },
+         "clockBreakIn": {
+            "employeeId": "232323232",
+            "longitude": 342423,
+            "altitude": 1231440,
+            "latitude": 12345700,
+            "datetime": "2023-09-08T04:19:29.000Z",
+            "location_name": "bendungan hilir jakarta pusat",
+            "action": "Clock Break In",
+            "notes": "izin wfh",
+            "dayName": "Friday",
+            "date": "September 8",
+            "time": "12:00"
+         },
+         "clockOut": {
+            "employeeId": "232323232",
+            "longitude": 342423,
+            "altitude": 1231440,
+            "latitude": 12345700,
+            "datetime": "2023-09-08T06:37:51.000Z",
+            "location_name": "bendungan hilir jakarta pusat",
+            "action": "Clock Out",
+            "notes": "izin wfh",
+            "dayName": "Friday",
+            "date": "September 8",
+            "time": "17:00"
+         },
+         "duration": "8h 0m"
+      }
+   ]
+}
 ```
 
 ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
@@ -361,10 +467,27 @@ API is running
 }
 ```
 
-### Response
+### Response Success
 
 ```json
-
+{
+   "respCode": "00",
+   "respMsg": "Last attendance data retrieved successfully",
+   "data": {
+      "employeeId": "123456789",
+      "longitude": 1234567890,
+      "altitude": 1234567890,
+      "latitude": 1234567890,
+      "datetime": "2023-12-28T24:60:60.000Z",
+      "location_name": "Location Name",
+      "action": "Clock Out",
+      "notes": "Izin WFH",
+      "dayName": "Tuesday",
+      "date": "September 12",
+      "time": "17:46",
+      "nextAction": "Clock In"
+   }
+}
 ```
 
 ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃

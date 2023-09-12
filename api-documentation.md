@@ -4,9 +4,9 @@
 
 ### Method: `GET`
 
-```
-/
-```
+> ```
+> /
+> ```
 
 ### Response
 
@@ -16,7 +16,7 @@ API is running
 
 ## 2. **Login - Email**
 
-### Method: POST
+### Method: `POST`
 
 > ```
 > /user/login-email
@@ -37,7 +37,7 @@ API is running
 "respCode": "00",
 "respMsg": "Employee Found, OTP Sent to Email",
 "data": {
-"employeeEmail": "farkhanmaul@gmail.com"
+"employeeEmail": "your-email@email.com"
 }
 ```
 
@@ -59,7 +59,7 @@ API is running
 
 ```json
 {
-   "employeeId": "202204263"
+   "employeeId": "123456789"
 }
 ```
 
@@ -71,9 +71,9 @@ API is running
 
 ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
 
-## End-point: Logout
+## 4. Logout
 
-Response
+### Response
 
 {
 
@@ -87,23 +87,23 @@ Response
 
 ### Headers
 
-| Content-Type | Value                          |
-| ------------ | ------------------------------ |
-| x-api-key    | qZ7je2HXeR7BcKkWfbADO3rrE1TmAy |
+| Content-Type | Value      |
+| ------------ | ---------- |
+| x-api-key    | your-token |
 
 ### Body (**raw**)
 
 ```json
 {
-   "employeeId": "232323232"
+   "employeeId": "123456789"
 }
 ```
 
 ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
 
-## End-point: Verify OTP
+## 5. Verify OTP
 
-Response
+### Response
 
 {
 
@@ -125,16 +125,16 @@ Response
 
 ```json
 {
-   "employeeId": "232323232",
+   "employeeId": "123456789",
    "otp": "197927"
 }
 ```
 
 ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
 
-## End-point: Verify Token
+## 6. Verify Token
 
-Response
+### Response
 
 {
 
@@ -148,23 +148,23 @@ Response
 
 ### Headers
 
-| Content-Type | Value                          |
-| ------------ | ------------------------------ |
-| x-api-key    | GyBFyxY6MyzPbBeLp26Gc1ou7BZWB4 |
+| Content-Type | Value      |
+| ------------ | ---------- |
+| x-api-key    | your-token |
 
 ### Body (**raw**)
 
 ```json
 {
-   "employeeId": "232323232"
+   "employeeId": "123456789"
 }
 ```
 
 ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
 
-## End-point: Get Profile
+## 7. Get Profile
 
-Response
+### Response
 
 {
 
@@ -178,23 +178,23 @@ Response
 
 ### Headers
 
-| Content-Type | Value                          |
-| ------------ | ------------------------------ |
-| x-api-key    | GyBFyxY6MyzPbBeLp26Gc1ou7BZWB4 |
+| Content-Type | Value      |
+| ------------ | ---------- |
+| x-api-key    | your-token |
 
 ### Body (**raw**)
 
 ```json
 {
-   "employeeId": "232323232"
+   "employeeId": "123456789"
 }
 ```
 
 ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
 
-## End-point: Attendance
+## 8. Attendance
 
-Response
+### Response
 
 {
 
@@ -208,15 +208,15 @@ Response
 
 ### Headers
 
-| Content-Type | Value                          |
-| ------------ | ------------------------------ |
-| x-api-key    | GyBFyxY6MyzPbBeLp26Gc1ou7BZWB4 |
+| Content-Type | Value      |
+| ------------ | ---------- |
+| x-api-key    | your-token |
 
 ### Body (**raw**)
 
 ```json
 {
-   "employeeId": "232323232",
+   "employeeId": "123456789",
    "longitude": "342423",
    "altitude": "1231445",
    "action": "Clock In",
@@ -228,9 +228,9 @@ Response
 
 ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
 
-## End-point: Get Attendance Today
+## 9. Get Attendance Today
 
-Response
+### Response
 
 {
 
@@ -244,24 +244,24 @@ Response
 
 ### Headers
 
-| Content-Type | Value                          |
-| ------------ | ------------------------------ |
-| x-api-key    | GyBFyxY6MyzPbBeLp26Gc1ou7BZWB4 |
+| Content-Type | Value      |
+| ------------ | ---------- |
+| x-api-key    | your-token |
 
 ### Body (**raw**)
 
 ```json
 {
-   "employeeId": "232323232",
+   "employeeId": "123456789",
    "date": "2023-09-08"
 }
 ```
 
 ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
 
-## End-point: Get Attendance Clock
+## 10. Get Attendance Clock
 
-Response
+### Response
 
 {
 
@@ -275,15 +275,15 @@ Response
 
 ### Headers
 
-| Content-Type | Value                          |
-| ------------ | ------------------------------ |
-| x-api-key    | GyBFyxY6MyzPbBeLp26Gc1ou7BZWB4 |
+| Content-Type | Value      |
+| ------------ | ---------- |
+| x-api-key    | your-token |
 
 ### Body (**raw**)
 
 ```json
 {
-   "employeeId": "232323232",
+   "employeeId": "123456789",
    "date": "2023-08-31",
    "action": "Clock out"
 }
@@ -291,9 +291,9 @@ Response
 
 ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
 
-## End-point: Get Attendance History
+## 11. Get Attendance History
 
-Response
+### Response
 
 {
 
@@ -307,15 +307,15 @@ Response
 
 ### Headers
 
-| Content-Type | Value                          |
-| ------------ | ------------------------------ |
-| x-api-key    | GyBFyxY6MyzPbBeLp26Gc1ou7BZWB4 |
+| Content-Type | Value      |
+| ------------ | ---------- |
+| x-api-key    | your-token |
 
 ### Body (**raw**)
 
 ```json
 {
-   "employeeId": "232323232",
+   "employeeId": "123456789",
    "startDate": "2023-09-08",
    "endDate": "2023-09-08"
 }
@@ -323,9 +323,9 @@ Response
 
 ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
 
-## End-point: Get Attendance Recent
+## 12. Get Attendance Recent
 
-Response
+### Response
 
 {
 
@@ -339,20 +339,18 @@ Response
 
 ### Headers
 
-| Content-Type | Value                          |
-| ------------ | ------------------------------ |
-| x-api-key    | GyBFyxY6MyzPbBeLp26Gc1ou7BZWB4 |
+| Content-Type | Value      |
+| ------------ | ---------- |
+| x-api-key    | your-token |
 
 ### Body (**raw**)
 
 ```json
 {
-   "employeeId": "232323232"
+   "employeeId": "123456789"
 }
 ```
 
 ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃ ⁃
 
 ---
-
-Powered By: [postman-to-markdown](https://github.com/bautistaj/postman-to-markdown/)

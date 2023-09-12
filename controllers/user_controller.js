@@ -407,8 +407,6 @@ async function loginWA(req, res) {
    try {
       const result = await userModel.getUserMobilePhones(employeeId);
 
-      console.log(result);
-
       if (!result) {
          response(404, "01", "User not found", {}, res, req);
       } else {

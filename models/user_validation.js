@@ -27,15 +27,20 @@ function formatDate(date) {
       day: "numeric",
       month: "long",
       year: "numeric",
-      hour: "numeric",
-      minute: "numeric",
-      second: "numeric",
    };
    return date.toLocaleDateString("id-ID", options);
 }
 
 function validateUserInput(userInput) {
-   // Check if userInput contains any SQL keywords or characters that can be used for SQL injection
+   // Convert userInput to string
+   const userInputString = String(userInput);
+
+   // Check if userInputString is null, undefined, or empty
+   if (userInput === null || userInput === undefined || userInput === "") {
+      return false; // userInput is null, undefined, or empty, so it's not valid
+   }
+
+   // Check if userInputString contains any SQL keywords or characters that can be used for SQL injection
    const sqlKeywords = [
       "SELECT",
       "INSERT",
@@ -48,13 +53,13 @@ function validateUserInput(userInput) {
    const forbiddenCharacters = ["'", '"', ";", "--"];
 
    for (let i = 0; i < sqlKeywords.length; i++) {
-      if (userInput.toUpperCase().includes(sqlKeywords[i])) {
+      if (userInputString.toUpperCase().includes(sqlKeywords[i])) {
          return false; // userInput contains SQL keywords, so it's potentially malicious
       }
    }
 
    for (let i = 0; i < forbiddenCharacters.length; i++) {
-      if (userInput.includes(forbiddenCharacters[i])) {
+      if (userInputString.includes(forbiddenCharacters[i])) {
          return false; // userInput contains forbidden characters, so it's potentially malicious
       }
    }

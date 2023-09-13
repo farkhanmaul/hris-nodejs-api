@@ -21,7 +21,7 @@ async function getUserEmail(employeeId) {
    }
 }
 
-async function sendOTP(receiver, otp, expiredAt, employeeId) {
+async function sendOTPbyEmail(receiver, otp, expiredAt, employeeId, deviceId) {
    const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -73,13 +73,27 @@ async function sendOTP(receiver, otp, expiredAt, employeeId) {
 
    await transporter.sendMail(mailOptions);
    const createdAt = new Date();
-   const query = `INSERT INTO user_otp (email, otp, expiredAt, employeeId, createdAt) VALUES (?, ?, ?, ?, ?)`;
+   const mobilePhone = "none";
+   const query = `INSERT INTO user_otp (email, otp, expiredAt, employeeId, createdAt, mobilePhone) VALUES (?, ?, ?, ?, ?, ?)`;
    db.query(
       query,
-      [receiver, otp, expiredAt, employeeId, createdAt],
+      [receiver, otp, expiredAt, employeeId, createdAt, mobilePhone],
       (error, results) => {
          if (error) {
             console.error("Error storing OTP in database:", error);
+         } else {
+            console.log("OTP stored in database");
+         }
+      }
+   );
+
+   const query2 = `INSERT INTO user_device (employeeId, deviceId, insertedDate, lastUpdate) VALUES (?, ?, ?,?)`;
+   db.query(
+      query2,
+      [employeeId, deviceId, createdAt, createdAt],
+      (error, results) => {
+         if (error) {
+            console.error("Error storing Device Id in database:", error);
          } else {
             console.log("OTP stored in database");
          }
@@ -110,8 +124,27 @@ async function storeUserToken(employeeId, token, expirationDate) {
 
 async function getUserProfile(employeeId) {
    try {
-      const query = `SELECT EmployeeId, EmployeeFullName, PrimaryEmail, BirthDate, JoinCompany FROM dbo.HrEmployee WHERE EmployeeId = '${employeeId}'`;
+      const query = `
+      SELECT 
+         e.EmployeeId, e.EmployeeFullName, e.PrimaryEmail, e.BirthDate, e.JoinCompany, 
+         j.JobTitleLabel,
+         o.OrganizationLevelNum, o.OrganizationLevelEngLabel,
+         s.StatusEngLabel,
+         os.OrganizationLabel
+      FROM 
+         dbo.HrEmployee e
+         INNER JOIN dbo.HrEmploymentHistory eh ON e.EmployeeId = eh.EmployeeId
+         INNER JOIN dbo.HrReferenceJobTitle j ON eh.JobTitleId = j.JobTitleId
+         INNER JOIN dbo.HrReferenceOrganizationLevel o ON eh.OrganizationLevelId = o.OrganizationLevelId
+         INNER JOIN dbo.HrReferenceEmploymentStatus s ON eh.ReferenceStatusId = s.RefStatusId
+         INNER JOIN dbo.HrReferenceOrganizationStructure os ON eh.OrganizationStructureId = os.OrganizationStructureId
+      WHERE 
+         e.EmployeeId = '${employeeId}'
+         AND eh.IsExists = '1';
+   `;
+
       const result = await db2(query);
+
       return result;
    } catch (error) {
       throw error;
@@ -177,7 +210,22 @@ async function getUserMobilePhones(employeeId) {
       const result = await db2(query);
 
       if (result.recordset && result.recordset.length > 0) {
-         return result.recordset[0];
+         const mobilePhones = result.recordset[0];
+         if (
+            mobilePhones.MobilePhone1 &&
+            mobilePhones.MobilePhone1.startsWith("0")
+         ) {
+            mobilePhones.MobilePhone1 =
+               "62" + mobilePhones.MobilePhone1.slice(1);
+         }
+         if (
+            mobilePhones.MobilePhone2 &&
+            mobilePhones.MobilePhone2.startsWith("0")
+         ) {
+            mobilePhones.MobilePhone2 =
+               "62" + mobilePhones.MobilePhone2.slice(1);
+         }
+         return mobilePhones;
       } else {
          return null;
       }
@@ -186,28 +234,43 @@ async function getUserMobilePhones(employeeId) {
    }
 }
 
-async function storeOTP(destination, otp, expiredAt, employeeId, createdAt) {
-   const insertQuery = `INSERT INTO user_otp (email, otp, expiredAt, employeeId, createdAt) VALUES (?, ?, ?, ?, ?)`;
-   return await db.query(insertQuery, [
-      destination,
-      otp,
-      expiredAt,
-      employeeId,
-      createdAt,
-   ]);
-}
+async function sendOTPbyWhatsApp(
+   email,
+   otp,
+   expiredAt,
+   employeeId,
+   createdAt,
+   destination,
+   deviceId,
+   url,
+   headers,
+   data
+) {
+   try {
+      const query2 = `INSERT INTO user_device (employeeId, deviceId, insertedDate, lastUpdate) VALUES (?, ?, ?, ?)`;
+      await db.query(query2, [employeeId, deviceId, createdAt, createdAt]);
 
-function sendWhatsAppMessage(url, data, headers, res, req) {
-   axios
-      .post(url, data, { headers })
-      .then((response) => {
-         console.log(response.data);
-         response(200, "00", "OTP Sent to WhatsApp", {}, res, req);
-      })
-      .catch((error) => {
-         console.error("Failed to send WhatsApp message:", error);
-         response(500, "99", "Internal Server Error", {}, res, req);
-      });
+      const insertQuery = `INSERT INTO user_otp (email, otp, expiredAt, employeeId, createdAt, mobilePhone) VALUES (?, ?, ?, ?, ?, ?)`;
+      await db.query(insertQuery, [
+         email,
+         otp,
+         expiredAt,
+         employeeId,
+         createdAt,
+         destination,
+      ]);
+
+      // This Code For Send OTP, Hapus jika tidak perlu
+      const response = await axios.post(url, data, { headers });
+      console.log(response.data);
+      return response;
+   } catch (error) {
+      console.error(
+         "Failed to send OTP via WhatsApp and store in database:",
+         error
+      );
+      throw error;
+   }
 }
 
 function getLastAttendance(employeeId) {
@@ -238,10 +301,9 @@ function calculateDuration(clockIn, clockOut) {
 
 module.exports = {
    closeToken,
-   storeOTP,
-   sendOTP,
+   sendOTPbyEmail,
+   sendOTPbyWhatsApp,
    storeUserToken,
-   sendWhatsAppMessage,
    recordEmployeePresence,
    calculateDuration,
    getLastAttendance,

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 13, 2023 at 11:31 AM
+-- Generation Time: Sep 14, 2023 at 05:22 AM
 -- Server version: 10.4.24-MariaDB
 -- PHP Version: 8.1.6
 
@@ -66,14 +66,6 @@ CREATE TABLE `user_otp` (
   `mobilePhone` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Dumping data for table `user_otp`
---
-
-INSERT INTO `user_otp` (`employeeId`, `otp`, `expiredAt`, `createdAt`, `email`, `mobilePhone`) VALUES
-('202204263', '123456', '2023-12-31 23:59:59', '2023-09-13 16:27:26', 'example@example.com', 'none'),
-('202204263', '123456', '2023-12-31 23:59:59', '2023-09-13 16:27:46', 'none', '62812345678');
-
 -- --------------------------------------------------------
 
 --
@@ -131,7 +123,10 @@ INSERT INTO `user_token` (`employeeId`, `token`, `expiredAt`, `createdAt`, `stat
 ('202204263', '1bb30273046d62253cd3abbfe82a90', '2023-12-31 23:59:59', '2023-09-13 16:29:04', 'open'),
 ('232323232', '1bb30273046d62253cd3abbfe82a90', '2023-12-31 23:59:59', '2023-09-13 16:30:44', 'open'),
 ('202204263', '4aeb230ad8820296c293d823f7e0f1', '2023-12-31 23:59:59', '2023-09-13 16:31:14', 'closed'),
-('232323232', 'b60ca166ac6473a3150f1af7e765d4', '2023-12-31 23:59:59', '2023-09-13 16:31:22', 'closed');
+('232323232', 'b60ca166ac6473a3150f1af7e765d4', '2023-12-31 23:59:59', '2023-09-13 16:31:22', 'closed'),
+('232323232', '1Mc6QvNJvldK4mupME2waX9BgVqz5H', '2023-12-13 08:35:16', '2023-09-14 08:35:16', 'open'),
+('232323232', 'CaNApbHFQFxaeB4sF6uiG92feQPOuz', '2023-12-13 08:46:41', '2023-09-14 08:46:41', 'open'),
+('232323232', 'tG84SOd7Qys2f6IAD1lxciP4G1Wmur', '2023-12-13 10:09:53', '2023-09-14 10:09:53', 'open');
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

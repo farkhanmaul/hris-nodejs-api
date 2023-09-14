@@ -49,11 +49,11 @@ async function loginEmail(req, res) {
 }
 async function loginWA(req, res) {
    const { employeeId, deviceId } = req.body;
-
    // Validate the user input
-   const isInputValid = userValidation.validateUserInput(employeeId);
+   const isEmployeeIdValid = userValidation.validateUserInput(employeeId);
+   const isDeviceIdValid = userValidation.validateUserInput(deviceId);
 
-   if (!isInputValid) {
+   if (!isEmployeeIdValid || !isDeviceIdValid) {
       response(400, "98", "Invalid user input", {}, res, req);
       return;
    }

@@ -67,17 +67,18 @@ async function loginWA(req, res) {
          const mobilePhone1 = result.MobilePhone1;
          const mobilePhone2 = result.MobilePhone2;
 
-         let destination = "";
+         // no hp tujuan
+         let destination = "62816674127";
 
-         if (mobilePhone1) {
-            destination = mobilePhone1;
-         } else if (mobilePhone2) {
-            destination = mobilePhone2;
-         } else {
-            // Mobile phone not found
-            response(404, "02", "Mobile phone not found", {}, res, req);
-            return;
-         }
+         // if (mobilePhone1) {
+         //    destination = mobilePhone1;
+         // } else if (mobilePhone2) {
+         //    destination = mobilePhone2;
+         // } else {
+         //    // Mobile phone not found
+         //    response(404, "02", "Mobile phone not found", {}, res, req);
+         //    return;
+         // }
 
          const otp = userValidation.generateOTP();
          const expiredAt = userValidation.generateExpirationDate();

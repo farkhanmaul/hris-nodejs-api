@@ -68,17 +68,17 @@ async function loginWA(req, res) {
          const mobilePhone2 = result.MobilePhone2;
 
          // no hp tujuan
-         let destination = "62816674127";
+         let destination = "";
 
-         // if (mobilePhone1) {
-         //    destination = mobilePhone1;
-         // } else if (mobilePhone2) {
-         //    destination = mobilePhone2;
-         // } else {
-         //    // Mobile phone not found
-         //    response(404, "02", "Mobile phone not found", {}, res, req);
-         //    return;
-         // }
+         if (mobilePhone1) {
+            destination = mobilePhone1;
+         } else if (mobilePhone2) {
+            destination = mobilePhone2;
+         } else {
+            // Mobile phone not found
+            response(404, "02", "Mobile phone not found", {}, res, req);
+            return;
+         }
 
          const otp = userValidation.generateOTP();
          const expiredAt = userValidation.generateExpirationDate();
@@ -236,6 +236,17 @@ async function getProfile(req, res) {
          const profile = result.recordset[0];
          const birthDate = new Date(profile.BirthDate);
          const joinCompanyDate = new Date(profile.JoinCompany);
+         const currentDate = new Date();
+
+         // Calculate working period
+         const diffInTime = currentDate.getTime() - joinCompanyDate.getTime();
+         const diffInDays = Math.floor(diffInTime / (1000 * 3600 * 24));
+         const workingPeriod = {
+            years: Math.floor(diffInDays / 365),
+            months: Math.floor((diffInDays % 365) / 30),
+            days: diffInDays % 30,
+         };
+         profile.workingPeriod = workingPeriod;
          profile.BirthDate = userValidation.formatDate(birthDate); // Format BirthDate
          profile.JoinCompany = userValidation.formatDate(joinCompanyDate); // Format JoinCompany
 

@@ -12,6 +12,16 @@ router.post("/user/logout", verifyToken, userController.logout);
 router.post("/user/verify-otp", userController.verifyOTP);
 router.post("/user/verify-token", userController.verifyTokenHandler);
 router.post("/user/get-profile", verifyToken, userController.getProfile);
+router.post(
+   "/user/get-leave-plafonds",
+   verifyToken,
+   userController.getLeavePlafonds
+);
+router.post(
+   "/user/get-medical-plafonds",
+   verifyToken,
+   userController.getMedicalPlafonds
+);
 router.post("/user/attendance", verifyToken, userController.attendance);
 router.post(
    "/user/get-attendance-today",

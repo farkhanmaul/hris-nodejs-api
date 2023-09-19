@@ -684,7 +684,7 @@ async function getLeavePlafonds(req, res) {
       // Dummy response for plafonds
       const plafonds = {
          amount: "10 days",
-         resetDate: "2023-12-31",
+         resetDate: "1 Aug 2023",
       };
 
       const { amount, resetDate } = plafonds;

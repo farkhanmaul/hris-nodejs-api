@@ -707,6 +707,43 @@ async function getLeavePlafonds(req, res) {
       response(500, "99", "Internal Server Error", {}, res, req);
    }
 }
+
+async function getRequestData(req, res) {
+   const { employeeId } = req.body;
+
+   // Validate the user input
+   const isInputValid = userValidation.validateUserInput(employeeId);
+
+   if (!isInputValid) {
+      response(400, "98", "Invalid user input", {}, res, req);
+      return;
+   }
+
+   try {
+      const requestData = await userModel.getRequestSummary(employeeId);
+
+      if (
+         !requestData ||
+         !requestData.recordset ||
+         !requestData.recordset.length
+      ) {
+         response(404, "01", "Data not found", {}, res, req);
+      } else {
+         response(
+            200,
+            "00",
+            "Request data retrieved successfully",
+            requestData.recordset,
+            res,
+            req
+         );
+      }
+   } catch (error) {
+      console.error("Failed to retrieve request data:", error);
+      response(500, "99", "Internal Server Error", {}, res, req);
+   }
+}
+
 module.exports = {
    loginEmail,
    loginWA,
@@ -721,4 +758,5 @@ module.exports = {
    getAttendanceRecent,
    getMedicalPlafonds,
    getLeavePlafonds,
+   getRequestData,
 };

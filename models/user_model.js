@@ -299,6 +299,29 @@ function calculateDuration(clockIn, clockOut) {
    return `0h 0m`;
 }
 
+async function getRequestSummary(employeeId) {
+   try {
+      const query = `
+       SELECT TOP (1000)
+         [RefRequestTypeName],
+         [RequestFormId],
+         [ProjectFullName],
+         [NextCheckerName],
+         [CompletionName],
+         [TotalRequest],
+         [RequestDate]
+       FROM [LiteErp].[dbo].[vwCsRequestSummary]
+       WHERE [EmployeeId] = '${employeeId}';
+     `;
+
+      const result = await db2(query);
+
+      return result;
+   } catch (error) {
+      throw error;
+   }
+}
+
 module.exports = {
    closeToken,
    sendOTPbyEmail,
@@ -315,4 +338,5 @@ module.exports = {
    getUserOTP,
    getUserProfile,
    getAttendanceHistory,
+   getRequestSummary,
 };

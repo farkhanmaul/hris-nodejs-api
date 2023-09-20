@@ -309,7 +309,7 @@ async function getRequestSummary(employeeId) {
          [NextCheckerName],
          [CompletionName],
          [TotalRequest],
-         [RequestDate]
+         FORMAT([RequestDate],'dd MMMM yyyy') AS RequestDate
        FROM [LiteErp].[dbo].[vwCsRequestSummary]
        WHERE [EmployeeId] = '${employeeId}';
      `;

@@ -12,7 +12,21 @@ router.post("/user/logout", verifyToken, userController.logout);
 router.post("/user/verify-otp", userController.verifyOTP);
 router.post("/user/verify-token", userController.verifyTokenHandler);
 router.post("/user/get-profile", verifyToken, userController.getProfile);
-router.post("/user/get-request", verifyToken, userController.getRequestData);
+router.post(
+   "/user/get-request-completed",
+   verifyToken,
+   userController.getRequestCompleted
+);
+router.post(
+   "/user/get-request-rejected",
+   verifyToken,
+   userController.getRequestRejected
+);
+router.post(
+   "/user/get-request-progress",
+   verifyToken,
+   userController.getRequestProgress
+);
 router.post(
    "/user/get-leave-plafonds",
    verifyToken,

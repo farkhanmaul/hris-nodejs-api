@@ -708,7 +708,7 @@ async function getLeavePlafonds(req, res) {
    }
 }
 
-async function getRequestData(req, res) {
+async function getRequestCompleted(req, res) {
    const { employeeId } = req.body;
 
    // Validate the user input
@@ -720,7 +720,79 @@ async function getRequestData(req, res) {
    }
 
    try {
-      const requestData = await userModel.getRequestSummary(employeeId);
+      const requestData = await userModel.getRequestComp(employeeId);
+
+      if (
+         !requestData ||
+         !requestData.recordset ||
+         !requestData.recordset.length
+      ) {
+         response(404, "01", "Data not found", {}, res, req);
+      } else {
+         response(
+            200,
+            "00",
+            "Request data retrieved successfully",
+            requestData.recordset,
+            res,
+            req
+         );
+      }
+   } catch (error) {
+      console.error("Failed to retrieve request data:", error);
+      response(500, "99", "Internal Server Error", {}, res, req);
+   }
+}
+
+async function getRequestRejected(req, res) {
+   const { employeeId } = req.body;
+
+   // Validate the user input
+   const isInputValid = userValidation.validateUserInput(employeeId);
+
+   if (!isInputValid) {
+      response(400, "98", "Invalid user input", {}, res, req);
+      return;
+   }
+
+   try {
+      const requestData = await userModel.getRequestReject(employeeId);
+
+      if (
+         !requestData ||
+         !requestData.recordset ||
+         !requestData.recordset.length
+      ) {
+         response(404, "01", "Data not found", {}, res, req);
+      } else {
+         response(
+            200,
+            "00",
+            "Request data retrieved successfully",
+            requestData.recordset,
+            res,
+            req
+         );
+      }
+   } catch (error) {
+      console.error("Failed to retrieve request data:", error);
+      response(500, "99", "Internal Server Error", {}, res, req);
+   }
+}
+
+async function getRequestProgress(req, res) {
+   const { employeeId } = req.body;
+
+   // Validate the user input
+   const isInputValid = userValidation.validateUserInput(employeeId);
+
+   if (!isInputValid) {
+      response(400, "98", "Invalid user input", {}, res, req);
+      return;
+   }
+
+   try {
+      const requestData = await userModel.getRequestProg(employeeId);
 
       if (
          !requestData ||
@@ -758,5 +830,7 @@ module.exports = {
    getAttendanceRecent,
    getMedicalPlafonds,
    getLeavePlafonds,
-   getRequestData,
+   getRequestCompleted,
+   getRequestRejected,
+   getRequestProgress,
 };

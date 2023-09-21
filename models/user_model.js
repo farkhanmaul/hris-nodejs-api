@@ -298,8 +298,7 @@ function calculateDuration(clockIn, clockOut) {
 
    return `0h 0m`;
 }
-
-async function getRequestSummary(employeeId) {
+async function getRequestComp(employeeId) {
    try {
       const query = `
        SELECT TOP (1000)
@@ -308,10 +307,61 @@ async function getRequestSummary(employeeId) {
          [ProjectFullName],
          [NextCheckerName],
          [CompletionName],
-         [TotalRequest],
+         [CompletionId],
+         [TotalRequest], 
          FORMAT([RequestDate],'dd MMMM yyyy') AS RequestDate
        FROM [LiteErp].[dbo].[vwCsRequestSummary]
-       WHERE [EmployeeId] = '${employeeId}';
+       WHERE [CompletionId] IN ('20120500000007', '20120500000004', '20120500000003')
+       AND [EmployeeId] = '${employeeId}';
+     `;
+
+      const result = await db2(query);
+
+      return result;
+   } catch (error) {
+      throw error;
+   }
+}
+async function getRequestReject(employeeId) {
+   try {
+      const query = `
+       SELECT TOP (1000)
+         [RefRequestTypeName],
+         [RequestFormId],
+         [ProjectFullName],
+         [NextCheckerName],
+         [CompletionName],
+         [CompletionId],
+         [TotalRequest], 
+         FORMAT([RequestDate],'dd MMMM yyyy') AS RequestDate
+       FROM [LiteErp].[dbo].[vwCsRequestSummary]
+       WHERE [CompletionId] IN ('20120500000009', '20120500000012', '20120500000013')
+       AND [EmployeeId] = '${employeeId}';
+     `;
+
+      const result = await db2(query);
+
+      return result;
+   } catch (error) {
+      throw error;
+   }
+}
+
+async function getRequestProg(employeeId) {
+   try {
+      const query = `
+       SELECT TOP (1000)
+         [RefRequestTypeName],
+         [RequestFormId],
+         [ProjectFullName],
+         [NextCheckerName],
+         [CompletionName],
+         [CompletionId],
+         [TotalRequest], 
+         FORMAT([RequestDate],'dd MMMM yyyy') AS RequestDate
+       FROM [LiteErp].[dbo].[vwCsRequestSummary]
+       WHERE [CompletionId] = '20120500000002'
+       AND [EmployeeId] = '${employeeId}';
      `;
 
       const result = await db2(query);
@@ -338,5 +388,7 @@ module.exports = {
    getUserOTP,
    getUserProfile,
    getAttendanceHistory,
-   getRequestSummary,
+   getRequestComp,
+   getRequestReject,
+   getRequestProg,
 };

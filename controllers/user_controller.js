@@ -816,6 +816,44 @@ async function getRequestProgress(req, res) {
    }
 }
 
+async function getRequestDetail(req, res) {
+   const { employeeId, RequestFormId } = req.body;
+
+   // Validate the user input
+   const isInputValid = userValidation.validateUserInput(employeeId);
+
+   if (!isInputValid) {
+      response(400, "98", "Invalid user input", {}, res, req);
+      return;
+   }
+
+   try {
+      const requestData = await userModel.getRequestDet(
+         employeeId,
+         RequestFormId
+      );
+
+      if (
+         !requestData ||
+         !requestData.recordset ||
+         !requestData.recordset.length
+      ) {
+         response(404, "01", "Data not found", {}, res, req);
+      } else {
+         response(
+            200,
+            "00",
+            "Request data retrieved successfully",
+            requestData.recordset[0],
+            res,
+            req
+         );
+      }
+   } catch (error) {
+      console.error("Failed to retrieve request data:", error);
+      response(500, "99", "Internal Server Error", {}, res, req);
+   }
+}
 module.exports = {
    loginEmail,
    loginWA,
@@ -833,4 +871,5 @@ module.exports = {
    getRequestCompleted,
    getRequestRejected,
    getRequestProgress,
+   getRequestDetail,
 };

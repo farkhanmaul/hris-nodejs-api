@@ -13,10 +13,10 @@ const response = (status, responseCode, responseMessage, data, res, req) => {
       timestamp: moment().format("YYYY-MM-DD HH:mm:ss"),
       endpoint: req.path,
       method: req.method,
-      requestHeaders: req.headers ? JSON.stringify(req.headers) : "", // Check if req.header exists
+      requestHeaders: req.headers ? JSON.stringify(req.headers) : "",
       requestBody: JSON.stringify(req.body),
       responseStatus: status,
-      responseMessage: JSON.stringify(payload), // Convert payload to JSON string
+      responseMessage: JSON.stringify(payload),
       employeeId: req.body.employeeId,
    };
 

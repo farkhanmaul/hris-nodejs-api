@@ -18,6 +18,11 @@ router.post(
    userController.getRequestCompleted
 );
 router.post(
+   "/user/get-request-detail",
+   verifyToken,
+   userController.getRequestDetail
+);
+router.post(
    "/user/get-request-rejected",
    verifyToken,
    userController.getRequestRejected

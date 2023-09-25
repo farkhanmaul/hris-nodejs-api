@@ -7,10 +7,8 @@ const pool = mysql.createPool({
    password: process.env.DB_PASSWORD || "",
 });
 
-// Get a Promise wrapped instance of that pool
 const db = pool.promise();
 
-// Test the database connection
 db.getConnection()
    .then(() => {
       console.log("Database connection successful");
@@ -19,5 +17,4 @@ db.getConnection()
       console.error("Error connecting to the database:", err);
    });
 
-// Export the db instance for use in other modules
 module.exports = db;

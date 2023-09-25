@@ -371,6 +371,30 @@ async function getRequestProg(employeeId) {
       throw error;
    }
 }
+async function getRequestDet(employeeId, RequestFormId) {
+   try {
+      const query = `
+       SELECT TOP (1)
+         [RefRequestTypeName],
+         [RequestFormId],
+         [ProjectFullName],
+         [NextCheckerName],
+         [CompletionName],
+         [CompletionId],
+         [TotalRequest], 
+         FORMAT([RequestDate],'dd MMMM yyyy') AS RequestDate
+       FROM [LiteErp].[dbo].[vwCsRequestSummary]
+       WHERE [RequestFormId] = '${RequestFormId}'
+       AND [EmployeeId] = '${employeeId}';
+     `;
+
+      const result = await db2(query);
+
+      return result;
+   } catch (error) {
+      throw error;
+   }
+}
 
 module.exports = {
    closeToken,
@@ -391,4 +415,5 @@ module.exports = {
    getRequestComp,
    getRequestReject,
    getRequestProg,
+   getRequestDet,
 };

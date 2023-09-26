@@ -396,6 +396,22 @@ async function getRequestDet(employeeId, RequestFormId) {
    }
 }
 
+async function getLeavePlaf(employeeId) {
+   try {
+      const query = `
+      SELECT [TotalRequestCutiRegular], [LastUpdateSaldo]
+      FROM [LiteErp].[dbo].[vwHrPersonalLeavesRemaining]
+      WHERE [EmployeeId] = '${employeeId}';
+     `;
+
+      const result = await db2(query);
+
+      return result;
+   } catch (error) {
+      throw error;
+   }
+}
+
 module.exports = {
    closeToken,
    sendOTPbyEmail,
@@ -416,4 +432,5 @@ module.exports = {
    getRequestReject,
    getRequestProg,
    getRequestDet,
+   getLeavePlaf,
 };

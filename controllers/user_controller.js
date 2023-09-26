@@ -672,6 +672,7 @@ async function getMedicalPlafonds(req, res) {
 
 async function getLeavePlafonds(req, res) {
    const { employeeId } = req.body;
+
    // Validate the user input
    const isInputValid = userValidation.validateUserInput(employeeId);
 
@@ -681,29 +682,29 @@ async function getLeavePlafonds(req, res) {
    }
 
    try {
-      // Dummy response for plafonds
-      const plafonds = {
-         amount: "10 days",
-         resetDate: "1 Aug 2023",
-      };
+      const requestData = await userModel.getLeavePlaf(employeeId);
 
-      const { amount, resetDate } = plafonds;
-
-      const plafondsData = {
-         amount,
-         resetDate,
-      };
-
-      response(
-         200,
-         "00",
-         "Plafonds retrieved successfully",
-         plafondsData,
-         res,
-         req
-      );
+      if (
+         !requestData ||
+         !requestData.recordset ||
+         !requestData.recordset.length
+      ) {
+         response(404, "01", "Data not found", {}, res, req);
+      } else {
+         const lastUpdate = new Date(requestData.recordset[0].LastUpdateSaldo);
+         requestData.recordset[0].LastUpdateSaldo =
+            userValidation.formatDate(lastUpdate);
+         response(
+            200,
+            "00",
+            "Request data retrieved successfully",
+            requestData.recordset,
+            res,
+            req
+         );
+      }
    } catch (error) {
-      console.error("Failed to retrieve plafonds:", error);
+      console.error("Failed to retrieve request data:", error);
       response(500, "99", "Internal Server Error", {}, res, req);
    }
 }

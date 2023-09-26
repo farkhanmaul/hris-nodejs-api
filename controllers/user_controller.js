@@ -698,7 +698,7 @@ async function getLeavePlafonds(req, res) {
             200,
             "00",
             "Request data retrieved successfully",
-            requestData.recordset,
+            requestData.recordset[0],
             res,
             req
          );

@@ -632,143 +632,6 @@ async function getAttendanceRecent(req, res) {
    }
 }
 
-async function getMedicalPlafonds(req, res) {
-   const { employeeId } = req.body;
-   // Validate the user input
-   const isInputValid = userValidation.validateUserInput(employeeId);
-
-   if (!isInputValid) {
-      response(400, "98", "Invalid user input", {}, res, req);
-      return;
-   }
-
-   try {
-      // Dummy response for plafonds
-      const plafonds = {
-         amount: "10.000.000",
-         expiredDate: "1 Aug 2023",
-      };
-
-      const { amount, expiredDate } = plafonds;
-
-      const plafondsData = {
-         amount,
-         expiredDate,
-      };
-
-      response(
-         200,
-         "00",
-         "Plafonds retrieved successfully",
-         plafondsData,
-         res,
-         req
-      );
-   } catch (error) {
-      console.error("Failed to retrieve plafonds:", error);
-      response(500, "99", "Internal Server Error", {}, res, req);
-   }
-}
-
-async function getLeavePlafonds(req, res) {
-   const { employeeId } = req.body;
-
-   // Validate the user input
-   const isInputValid = userValidation.validateUserInput(employeeId);
-
-   if (!isInputValid) {
-      response(400, "98", "Invalid user input", {}, res, req);
-      return;
-   }
-
-   try {
-      const leaveData = await userModel.getLeavePlaf(employeeId);
-
-      if (!leaveData || !leaveData.recordset || !leaveData.recordset.length) {
-         response(404, "01", "Data not found", {}, res, req);
-      } else {
-         const lastUpdate = new Date(leaveData.recordset[0].LastUpdateSaldo);
-         leaveData.recordset[0].LastUpdateSaldo =
-            userValidation.formatDate(lastUpdate);
-         response(
-            200,
-            "00",
-            "Leave data retrieved successfully",
-            leaveData.recordset[0],
-            res,
-            req
-         );
-      }
-   } catch (error) {
-      console.error("Failed to retrieve leave data:", error);
-      response(500, "99", "Internal Server Error", {}, res, req);
-   }
-}
-
-async function getLeaveList(req, res) {
-   const { employeeId } = req.body;
-
-   // Validate the user input
-   const isInputValid = userValidation.validateUserInput(employeeId);
-
-   if (!isInputValid) {
-      response(400, "98", "Invalid user input", {}, res, req);
-      return;
-   }
-
-   try {
-      const leaveData = await userModel.getLeaveList(employeeId);
-
-      if (!leaveData || !leaveData.recordset || !leaveData.recordset.length) {
-         response(404, "01", "Data not found", {}, res, req);
-      } else {
-         response(
-            200,
-            "00",
-            "Leave data retrieved successfully",
-            leaveData.recordset,
-            res,
-            req
-         );
-      }
-   } catch (error) {
-      console.error("Failed to retrieve leave data:", error);
-      response(500, "99", "Internal Server Error", {}, res, req);
-   }
-}
-
-async function getLeaveDetail(req, res) {
-   const { employeeId, RequestFormId } = req.body;
-
-   // Validate the user input
-   const isInputValid = userValidation.validateUserInput(employeeId);
-
-   if (!isInputValid) {
-      response(400, "98", "Invalid user input", {}, res, req);
-      return;
-   }
-
-   try {
-      const leaveData = await userModel.getLeaveDet(employeeId, RequestFormId);
-
-      if (!leaveData || !leaveData.recordset || !leaveData.recordset.length) {
-         response(404, "01", "Data not found", {}, res, req);
-      } else {
-         response(
-            200,
-            "00",
-            "Leave data retrieved successfully",
-            leaveData.recordset[0],
-            res,
-            req
-         );
-      }
-   } catch (error) {
-      console.error("Failed to retrieve leave data:", error);
-      response(500, "99", "Internal Server Error", {}, res, req);
-   }
-}
-
 async function getRequestCompleted(req, res) {
    const { employeeId } = req.body;
 
@@ -916,6 +779,143 @@ async function getRequestDetail(req, res) {
    }
 }
 
+async function getLeavePlafonds(req, res) {
+   const { employeeId } = req.body;
+
+   // Validate the user input
+   const isInputValid = userValidation.validateUserInput(employeeId);
+
+   if (!isInputValid) {
+      response(400, "98", "Invalid user input", {}, res, req);
+      return;
+   }
+
+   try {
+      const leaveData = await userModel.getLeavePlaf(employeeId);
+
+      if (!leaveData || !leaveData.recordset || !leaveData.recordset.length) {
+         response(404, "01", "Data not found", {}, res, req);
+      } else {
+         const lastUpdate = new Date(leaveData.recordset[0].LastUpdateSaldo);
+         leaveData.recordset[0].LastUpdateSaldo =
+            userValidation.formatDate(lastUpdate);
+         response(
+            200,
+            "00",
+            "Leave data retrieved successfully",
+            leaveData.recordset[0],
+            res,
+            req
+         );
+      }
+   } catch (error) {
+      console.error("Failed to retrieve leave data:", error);
+      response(500, "99", "Internal Server Error", {}, res, req);
+   }
+}
+
+async function getLeaveList(req, res) {
+   const { employeeId } = req.body;
+
+   // Validate the user input
+   const isInputValid = userValidation.validateUserInput(employeeId);
+
+   if (!isInputValid) {
+      response(400, "98", "Invalid user input", {}, res, req);
+      return;
+   }
+
+   try {
+      const leaveData = await userModel.getLeaveList(employeeId);
+
+      if (!leaveData || !leaveData.recordset || !leaveData.recordset.length) {
+         response(404, "01", "Data not found", {}, res, req);
+      } else {
+         response(
+            200,
+            "00",
+            "Leave data retrieved successfully",
+            leaveData.recordset,
+            res,
+            req
+         );
+      }
+   } catch (error) {
+      console.error("Failed to retrieve leave data:", error);
+      response(500, "99", "Internal Server Error", {}, res, req);
+   }
+}
+
+async function getLeaveDetail(req, res) {
+   const { employeeId, RequestFormId } = req.body;
+
+   // Validate the user input
+   const isInputValid = userValidation.validateUserInput(employeeId);
+
+   if (!isInputValid) {
+      response(400, "98", "Invalid user input", {}, res, req);
+      return;
+   }
+
+   try {
+      const leaveData = await userModel.getLeaveDet(employeeId, RequestFormId);
+
+      if (!leaveData || !leaveData.recordset || !leaveData.recordset.length) {
+         response(404, "01", "Data not found", {}, res, req);
+      } else {
+         response(
+            200,
+            "00",
+            "Leave data retrieved successfully",
+            leaveData.recordset[0],
+            res,
+            req
+         );
+      }
+   } catch (error) {
+      console.error("Failed to retrieve leave data:", error);
+      response(500, "99", "Internal Server Error", {}, res, req);
+   }
+}
+
+async function getMedicalPlafonds(req, res) {
+   const { employeeId } = req.body;
+   // Validate the user input
+   const isInputValid = userValidation.validateUserInput(employeeId);
+
+   if (!isInputValid) {
+      response(400, "98", "Invalid user input", {}, res, req);
+      return;
+   }
+
+   try {
+      // Dummy response for plafonds
+      const plafonds = {
+         amount: "10.000.000",
+         expiredDate: "1 Aug 2023",
+      };
+
+      const { amount, expiredDate } = plafonds;
+
+      const plafondsData = {
+         amount,
+         expiredDate,
+      };
+
+      response(
+         200,
+         "00",
+         "Plafonds retrieved successfully",
+         plafondsData,
+         res,
+         req
+      );
+   } catch (error) {
+      console.error("Failed to retrieve plafonds:", error);
+      response(500, "99", "Internal Server Error", {}, res, req);
+   }
+}
+
 module.exports = {
    loginEmail,
    loginWA,
@@ -928,12 +928,12 @@ module.exports = {
    getAttendanceHistory,
    getAttendanceToday,
    getAttendanceRecent,
-   getMedicalPlafonds,
-   getLeavePlafonds,
-   getLeaveList,
-   getLeaveDetail,
    getRequestCompleted,
    getRequestRejected,
    getRequestProgress,
    getRequestDetail,
+   getLeavePlafonds,
+   getLeaveList,
+   getLeaveDetail,
+   getMedicalPlafonds,
 };

@@ -13,6 +13,13 @@ router.post("/user/verify-otp", userController.verifyOTP);
 router.post("/user/verify-token", userController.verifyTokenHandler);
 router.post("/user/get-profile", verifyToken, userController.getProfile);
 router.post(
+   "/user/get-medical-plafonds",
+   verifyToken,
+   userController.getMedicalPlafonds
+);
+
+// REQUEST CLAIM
+router.post(
    "/user/get-request-completed",
    verifyToken,
    userController.getRequestCompleted
@@ -32,16 +39,21 @@ router.post(
    verifyToken,
    userController.getRequestProgress
 );
+
+// LEAVE
+router.post("/user/get-leave-list", verifyToken, userController.getLeaveList);
+router.post(
+   "/user/get-leave-detail",
+   verifyToken,
+   userController.getLeaveDetail
+);
 router.post(
    "/user/get-leave-plafonds",
    verifyToken,
    userController.getLeavePlafonds
 );
-router.post(
-   "/user/get-medical-plafonds",
-   verifyToken,
-   userController.getMedicalPlafonds
-);
+
+// ATTENDANCE
 router.post("/user/attendance", verifyToken, userController.attendance);
 router.post(
    "/user/get-attendance-today",
@@ -53,16 +65,15 @@ router.post(
    verifyToken,
    userController.getAttendanceClock
 );
-
 router.post(
    "/user/get-attendance-recent",
    verifyToken,
    userController.getAttendanceRecent
 );
-
 router.post(
    "/user/get-attendance-history",
    verifyToken,
    userController.getAttendanceHistory
 );
+
 module.exports = router;

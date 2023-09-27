@@ -399,9 +399,49 @@ async function getRequestDet(employeeId, RequestFormId) {
 async function getLeavePlaf(employeeId) {
    try {
       const query = `
-      SELECT [TotalRequestCutiRegular], [LastUpdateSaldo]
+      SELECT [CurrentCutiRegular], [TotalRequestCutiRegular], [SaldoCutiRegular], [LastUpdateSaldo]
       FROM [LiteErp].[dbo].[vwHrPersonalLeavesRemaining]
       WHERE [EmployeeId] = '${employeeId}';
+     `;
+
+      const result = await db2(query);
+
+      return result;
+   } catch (error) {
+      throw error;
+   }
+}
+
+async function getLeaveList(employeeId) {
+   try {
+      const query = `
+      SELECT PLR.RequestFormId, PLR.EmployeeId, PLR.IsApprove, PLRD.LeaveType, PLRD.StartDate, PLRD.EndDate, RFL.RefLeaveId, RFL.ReferenceIndLabel FROM [LiteErp].[dbo].[HrPersonalLeaveReq] PLR JOIN [LiteErp].[dbo].[HrPersonalLeaveReqDetail] PLRD ON PLR.RequestFormId = PLRD.RequestFormId JOIN [LiteErp].[dbo].[HrReferenceLeave] RFL ON PLRD.LeaveType = RFL.RefLeaveId WHERE PLR.EmployeeId = '${employeeId}';
+     `;
+
+      const result = await db2(query);
+
+      return result;
+   } catch (error) {
+      throw error;
+   }
+}
+
+async function getLeaveDet(employeeId, RequestFormId) {
+   try {
+      const query = `
+      SELECT plr.[RequestFormId]
+      ,plr.[EmployeeId]
+      ,plr.[IsApprove]
+      ,plrd.[LeaveType]
+      ,plrd.[StartDate]
+      ,plrd.[EndDate]
+      ,plrd.[LeaveReason]
+      ,hrl.[ReferenceIndLabel]
+FROM [LiteErp].[dbo].[HrPersonalLeaveReq] plr
+INNER JOIN [LiteErp].[dbo].[HrPersonalLeaveReqDetail] plrd ON plrd.[RequestFormId] = plr.[RequestFormId]
+INNER JOIN [LiteErp].[dbo].[HrReferenceLeave] hrl ON hrl.[RefLeaveId] = plrd.[LeaveType]
+WHERE plr.[EmployeeId] = '${employeeId}'
+      AND plr.[RequestFormId] = '${RequestFormId}';
      `;
 
       const result = await db2(query);
@@ -433,4 +473,6 @@ module.exports = {
    getRequestProg,
    getRequestDet,
    getLeavePlaf,
+   getLeaveList,
+   getLeaveDet,
 };

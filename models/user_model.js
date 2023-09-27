@@ -415,7 +415,10 @@ async function getLeavePlaf(employeeId) {
 async function getLeaveList(employeeId) {
    try {
       const query = `
-      SELECT PLR.RequestFormId, PLR.EmployeeId, PLR.IsApprove, PLRD.LeaveType, PLRD.StartDate, PLRD.EndDate, RFL.ReferenceIndLabel FROM [LiteErp].[dbo].[HrPersonalLeaveReq] PLR JOIN [LiteErp].[dbo].[HrPersonalLeaveReqDetail] PLRD ON PLR.RequestFormId = PLRD.RequestFormId JOIN [LiteErp].[dbo].[HrReferenceLeave] RFL ON PLRD.LeaveType = RFL.RefLeaveId WHERE PLR.EmployeeId = '${employeeId}';
+      SELECT PLR.RequestFormId, PLR.EmployeeId, PLR.IsApprove, PLRD.LeaveType 
+      ,FORMAT(PLRD.[StartDate],'dd MMMM yyyy') AS StartDate
+      ,FORMAT(PLRD.[EndDate],'dd MMMM yyyy') AS EndDate
+      , RFL.ReferenceIndLabel FROM [LiteErp].[dbo].[HrPersonalLeaveReq] PLR JOIN [LiteErp].[dbo].[HrPersonalLeaveReqDetail] PLRD ON PLR.RequestFormId = PLRD.RequestFormId JOIN [LiteErp].[dbo].[HrReferenceLeave] RFL ON PLRD.LeaveType = RFL.RefLeaveId WHERE PLR.EmployeeId = '${employeeId}';
      `;
 
       const result = await db2(query);
@@ -433,8 +436,8 @@ async function getLeaveDet(employeeId, RequestFormId) {
       ,plr.[EmployeeId]
       ,plr.[IsApprove]
       ,plrd.[LeaveType]
-      ,plrd.[StartDate]
-      ,plrd.[EndDate]
+      ,FORMAT(plrd.[StartDate],'dd MMMM yyyy') AS StartDate
+      ,FORMAT(plrd.[EndDate],'dd MMMM yyyy') AS EndDate
       ,plrd.[LeaveReason]
       ,hrl.[ReferenceIndLabel]
 FROM [LiteErp].[dbo].[HrPersonalLeaveReq] plr

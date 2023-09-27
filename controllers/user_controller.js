@@ -722,18 +722,11 @@ async function getLeaveList(req, res) {
       if (!leaveData || !leaveData.recordset || !leaveData.recordset.length) {
          response(404, "01", "Data not found", {}, res, req);
       } else {
-         const StartDateUpdate = new Date(leaveData.recordset[0].StartDate);
-         const EndDateUpdate = new Date(leaveData.recordset[0].EndDate);
-         leaveData.recordset[0].StartDate =
-            userValidation.formatDate(StartDateUpdate);
-         leaveData.recordset[0].EndDate =
-            userValidation.formatDate(EndDateUpdate);
-
          response(
             200,
             "00",
             "Leave data retrieved successfully",
-            leaveData.recordset[0],
+            leaveData.recordset,
             res,
             req
          );
@@ -761,12 +754,6 @@ async function getLeaveDetail(req, res) {
       if (!leaveData || !leaveData.recordset || !leaveData.recordset.length) {
          response(404, "01", "Data not found", {}, res, req);
       } else {
-         const StartDateUpdate = new Date(leaveData.recordset[0].StartDate);
-         const EndDateUpdate = new Date(leaveData.recordset[0].EndDate);
-         leaveData.recordset[0].StartDate =
-            userValidation.formatDate(StartDateUpdate);
-         leaveData.recordset[0].EndDate =
-            userValidation.formatDate(EndDateUpdate);
          response(
             200,
             "00",

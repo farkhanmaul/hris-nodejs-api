@@ -700,7 +700,7 @@ async function getLeavePlafonds(req, res) {
          );
       }
    } catch (error) {
-      console.error("Failed to retrieve request data:", error);
+      console.error("Failed to retrieve leave data:", error);
       response(500, "99", "Internal Server Error", {}, res, req);
    }
 }
@@ -739,7 +739,7 @@ async function getLeaveList(req, res) {
          );
       }
    } catch (error) {
-      console.error("Failed to retrieve request data:", error);
+      console.error("Failed to retrieve leave data:", error);
       response(500, "99", "Internal Server Error", {}, res, req);
    }
 }
@@ -770,14 +770,14 @@ async function getLeaveDetail(req, res) {
          response(
             200,
             "00",
-            "Request data retrieved successfully",
+            "Leave data retrieved successfully",
             leaveData.recordset[0],
             res,
             req
          );
       }
    } catch (error) {
-      console.error("Failed to retrieve request data:", error);
+      console.error("Failed to retrieve leave data:", error);
       response(500, "99", "Internal Server Error", {}, res, req);
    }
 }

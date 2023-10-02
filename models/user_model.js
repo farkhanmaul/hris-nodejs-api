@@ -455,6 +455,99 @@ WHERE plr.[EmployeeId] = '${employeeId}'
    }
 }
 
+async function sendOTPbyEmailWeb(
+   receiver,
+   otp,
+   expiredAt,
+   employeeId,
+   deviceId
+) {
+   const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+         user: process.env.MAIL_EMAIL,
+         pass: process.env.MAIL_PASSWORD,
+      },
+   });
+
+   const mailGenerator = new Mailgen({
+      theme: "salted",
+      product: {
+         name: "Abhimata Citra Abadi",
+         link: "http://www.abhimata.co.id/",
+         logo: "http://www.abhimata.co.id/v2.0//images/logo_aca.png",
+      },
+   });
+
+   const email = {
+      body: {
+         title: "Welcome to ACA Apps!",
+         intro: "For the security of your account, a one-time verification process is necessary using an OTP (One-Time Password). Here is your OTP:",
+         table: {
+            data: [
+               {
+                  OTP: `<div style="text-align: center;"><span style="font-size: 24px; font-weight: bold;">${otp}</span></div>`,
+               },
+            ],
+            columns: {
+               customWidth: {
+                  OTP: "20%",
+               },
+               customColors: {
+                  OTP: "#2F4F4F",
+               },
+            },
+         },
+         outro: "Thank you for using ACA Apps! Enjoy your experience with us!",
+      },
+   };
+
+   const emailBody = mailGenerator.generate(email);
+
+   const mailOptions = {
+      from: "OTP@gmail.com",
+      to: receiver,
+      subject: "Your OTP Code",
+      html: emailBody,
+   };
+
+   await transporter.sendMail(mailOptions);
+   const createdAt = new Date();
+   const mobilePhone = "none";
+   const query = `INSERT INTO user_otp_web (email, otp, expiredAt, employeeId, createdAt, mobilePhone) VALUES (?, ?, ?, ?, ?, ?)`;
+   db.query(
+      query,
+      [receiver, otp, expiredAt, employeeId, createdAt, mobilePhone],
+      (error, results) => {
+         if (error) {
+            console.error("Error storing OTP in database:", error);
+         } else {
+            console.log("OTP stored in database");
+         }
+      }
+   );
+
+   const query2 = `INSERT INTO user_device (employeeId, deviceId, insertedDate, lastUpdate) VALUES (?, ?, ?,?)`;
+   db.query(
+      query2,
+      [employeeId, deviceId, createdAt, createdAt],
+      (error, results) => {
+         if (error) {
+            console.error("Error storing Device Id in database:", error);
+         } else {
+            console.log("OTP stored in database");
+         }
+      }
+   );
+}
+
+async function getUserOTPweb(employeeId) {
+   const query =
+      "SELECT otp, expiredAt FROM user_otp_web WHERE employeeId = ? ORDER BY createdAt DESC LIMIT 1";
+   const result = await db.query(query, [employeeId]);
+   return result;
+}
+
 module.exports = {
    closeToken,
    sendOTPbyEmail,
@@ -478,4 +571,6 @@ module.exports = {
    getLeavePlaf,
    getLeaveList,
    getLeaveDet,
+   sendOTPbyEmailWeb,
+   getUserOTPweb,
 };

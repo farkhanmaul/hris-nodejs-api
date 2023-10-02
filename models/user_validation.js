@@ -30,12 +30,11 @@ function formatDate(date) {
 }
 
 function validateUserInput(userInput) {
-   const userInputString = String(userInput);
-
    if (userInput === null || userInput === undefined || userInput === "") {
       return false;
    }
 
+   const userInputString = String(userInput);
    const sqlKeywords = [
       "SELECT",
       "INSERT",

@@ -6,6 +6,10 @@ const userController = require("../controllers/user_controller.js");
 router.get("/", (req, res) => {
    res.send("API is running");
 });
+
+router.post("/user/login-email-web", userController.loginEmailWeb);
+router.post("/user/verify-otp-web", userController.verifyOTPweb);
+
 router.post("/user/login-email", userController.loginEmail);
 router.post("/user/login-wa", userController.loginWA);
 router.post("/user/logout", verifyToken, userController.logout);

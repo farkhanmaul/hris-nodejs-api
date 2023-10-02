@@ -455,13 +455,7 @@ WHERE plr.[EmployeeId] = '${employeeId}'
    }
 }
 
-async function sendOTPbyEmailWeb(
-   receiver,
-   otp,
-   expiredAt,
-   employeeId,
-   deviceId
-) {
+async function sendOTPbyEmailWeb(receiver, otp, expiredAt, employeeId) {
    const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -521,19 +515,6 @@ async function sendOTPbyEmailWeb(
       (error, results) => {
          if (error) {
             console.error("Error storing OTP in database:", error);
-         } else {
-            console.log("OTP stored in database");
-         }
-      }
-   );
-
-   const query2 = `INSERT INTO user_device (employeeId, deviceId, insertedDate, lastUpdate) VALUES (?, ?, ?,?)`;
-   db.query(
-      query2,
-      [employeeId, deviceId, createdAt, createdAt],
-      (error, results) => {
-         if (error) {
-            console.error("Error storing Device Id in database:", error);
          } else {
             console.log("OTP stored in database");
          }

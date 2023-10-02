@@ -17,9 +17,6 @@ async function verifyToken(req, res, next) {
 
       const { employeeId, expiredAt, status } = result[0][0];
 
-      if (new Date() > new Date(expiredAt)) {
-         return response(403, "03", "Token has expired", {}, res, req);
-      }
       if (employeeId !== req.body.employeeId) {
          return response(
             403,
@@ -30,7 +27,9 @@ async function verifyToken(req, res, next) {
             req
          );
       }
-
+      if (new Date() > new Date(expiredAt)) {
+         return response(403, "03", "Token has expired", {}, res, req);
+      }
       if (status === "closed") {
          return response(403, "05", "Token is closed", {}, res, req);
       }

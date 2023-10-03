@@ -1,8 +1,8 @@
 const userModel = require("../models/user_model");
-const userValidation = require("../models/user_validation");
+const userValidation = require("../utils/validation");
 
-const verifyToken = require("../middlewares/verify_token.js");
-const response = require("../middlewares/response");
+const verifyToken = require("../middleware/verify_token.js");
+const response = require("../middleware/response");
 
 // login endpoint
 async function loginEmail(req, res) {
@@ -918,7 +918,7 @@ async function getMedicalPlafonds(req, res) {
 
 // login endpoint
 async function loginEmailWeb(req, res) {
-   const { employeeId, deviceId } = req.body;
+   const { employeeId } = req.body;
 
    // Validate the user input
    const isInputValid = userValidation.validateUserInput(employeeId);
@@ -937,13 +937,7 @@ async function loginEmailWeb(req, res) {
          const otp = userValidation.generateOTP();
          const expiredAt = userValidation.generateExpirationDate();
 
-         await userModel.sendOTPbyEmailWeb(
-            email,
-            otp,
-            expiredAt,
-            employeeId,
-            deviceId
-         );
+         await userModel.sendOTPbyEmailWeb(email, otp, expiredAt, employeeId);
 
          response(
             200,

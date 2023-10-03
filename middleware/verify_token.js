@@ -1,5 +1,6 @@
 const db = require("../config/database");
 const response = require("./response");
+const userModel = require("../models/user_model");
 
 async function verifyToken(req, res, next) {
    const apiKey = req.headers["x-api-key"];
@@ -28,6 +29,7 @@ async function verifyToken(req, res, next) {
          );
       }
       if (new Date() > new Date(expiredAt)) {
+         await userModel.closeToken(apiKey);
          return response(403, "03", "Token has expired", {}, res, req);
       }
       if (status === "closed") {

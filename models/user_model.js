@@ -1,6 +1,6 @@
 const db = require("../config/database"); // Assuming the db library is used for database operations
 const db2 = require("../config/database2"); // Assuming the db library is used for database operations
-const response = require("../middlewares/response");
+const response = require("../middleware/response");
 const nodemailer = require("nodemailer");
 const axios = require("axios");
 const Mailgen = require("mailgen");

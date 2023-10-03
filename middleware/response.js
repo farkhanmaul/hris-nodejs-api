@@ -1,4 +1,4 @@
-const logAPICall = require("./logs");
+const logAPICall = require("./logger");
 const moment = require("moment");
 
 const response = (status, responseCode, responseMessage, data, res, req) => {

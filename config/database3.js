@@ -1,10 +1,10 @@
 const mysql = require("mysql2");
 
 const pool = mysql.createPool({
-   host: process.env.DB_HOST || "localhost",
-   user: process.env.DB_USER || "root",
-   database: process.env.DB_NAME || "mdbportalaca",
-   password: process.env.DB_PASSWORD || "",
+   host: process.env.DB_HOST_PORTAL || "localhost",
+   user: process.env.DB_USER_PORTAL || "root",
+   database: process.env.DB_NAME_PORTAL || "mdbportalaca",
+   password: process.env.DB_PASSWORD_PORTAL || "",
 });
 
 const db3 = pool.promise();

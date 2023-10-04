@@ -1,4 +1,4 @@
-const db = require("../config/database");
+const db2 = require("../config/database2");
 const response = require("./response");
 const userModel = require("../models/user_model");
 
@@ -10,7 +10,7 @@ async function verifyToken(req, res, next) {
 
    try {
       const query = `SELECT employeeId, token, expiredAt, status FROM user_token WHERE token = '${apiKey}' `;
-      const result = await db.query(query);
+      const result = await db2.query(query);
 
       if (!result || !result.length || !result[0].length) {
          return response(403, "02", "Forbidden", {}, res, req);

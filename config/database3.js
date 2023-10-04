@@ -3,18 +3,18 @@ const mysql = require("mysql2");
 const pool = mysql.createPool({
    host: process.env.DB_HOST || "localhost",
    user: process.env.DB_USER || "root",
-   database: process.env.DB_NAME || "abhimata1",
+   database: process.env.DB_NAME || "mdbportalaca",
    password: process.env.DB_PASSWORD || "",
 });
 
-const db = pool.promise();
+const db3 = pool.promise();
 
-db.getConnection()
+db3.getConnection()
    .then(() => {
-      console.log("Database connection successful");
+      console.log("DB mdbportalaca connection successful");
    })
    .catch((err) => {
       console.error("Error connecting to the database:", err);
    });
 
-module.exports = db;
+module.exports = db3;

@@ -2,19 +2,22 @@ const express = require("express");
 const router = express.Router();
 const verifyToken = require("../middleware/verify_token.js");
 const userController = require("../controllers/user_controller.js");
+const acaportalController = require("../controllers/acaportal_controller.js");
 
 router.get("/", (req, res) => {
    res.send("API is running");
 });
 
-router.post("/user/login-email-web", userController.loginEmailWeb);
-router.post("/user/verify-otp-web", userController.verifyOTPweb);
+// AUTH
+router.post("/user/login-email-web", acaportalController.loginEmailWeb);
+router.post("/user/verify-otp-web", acaportalController.verifyOTPweb);
 
 router.post("/user/login-email", userController.loginEmail);
 router.post("/user/login-wa", userController.loginWA);
 router.post("/user/logout", verifyToken, userController.logout);
 router.post("/user/verify-otp", userController.verifyOTP);
 router.post("/user/verify-token", userController.verifyTokenHandler);
+
 router.post("/user/get-profile", verifyToken, userController.getProfile);
 router.post(
    "/user/get-medical-plafonds",

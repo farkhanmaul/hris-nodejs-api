@@ -1,25 +1,20 @@
-const sql = require("mssql");
+const mysql = require("mysql2");
 
-async function db2(query) {
-   try {
-      const pool = await sql.connect({
-         user: process.env.DB_USER_ERP || "admin",
-         password: process.env.DB_PASSWORD_ERP || "admin",
-         server: process.env.DB_SERVER_ERP,
-         database: process.env.DB_DATABASE_ERP || "LiteErp",
-         port: parseInt(process.env.DB_PORT_ERP, 10) || "1433",
-         options: {
-            encrypt: false,
-         },
-      });
+const pool = mysql.createPool({
+   host: process.env.DB_HOST || "localhost",
+   user: process.env.DB_USER || "root",
+   database: process.env.DB_NAME || "mdbacamobile",
+   password: process.env.DB_PASSWORD || "",
+});
 
-      const result = await pool.request().query(query);
+const db2 = pool.promise();
 
-      return result;
-   } catch (error) {
-      console.error("Failed to execute SQL query:", error);
-      throw error;
-   }
-}
+db2.getConnection()
+   .then(() => {
+      console.log("DB mdbacamobile connection successful");
+   })
+   .catch((err) => {
+      console.error("Error connecting to the database:", err);
+   });
 
 module.exports = db2;

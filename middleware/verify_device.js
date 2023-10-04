@@ -1,4 +1,4 @@
-// const db = require("../config/database");
+// const db2 = require("../config/database");
 // const response = require("./response");
 
 // async function verifyDevice(req, res, next) {
@@ -9,7 +9,7 @@
 
 //    try {
 //       const query = `SELECT employeeId, expiredAt, deviceId FROM user_device WHERE deviceId = '${deviceId}' `;
-//       const result = await db.query(query);
+//       const result = await db2.query(query);
 
 //       if (!result || !result.length || !result[0].length) {
 //          return response(403, "02", "Forbidden", {}, res, req);

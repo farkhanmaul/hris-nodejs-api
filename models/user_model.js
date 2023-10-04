@@ -1,5 +1,6 @@
-const db = require("../config/database"); // Assuming the db library is used for database operations
-const db2 = require("../config/database2"); // Assuming the db library is used for database operations
+const db1 = require("../config/database1");
+const db2 = require("../config/database2");
+const db3 = require("../config/database3");
 const response = require("../middleware/response");
 const nodemailer = require("nodemailer");
 const axios = require("axios");
@@ -8,7 +9,7 @@ const Mailgen = require("mailgen");
 async function getUserEmail(employeeId) {
    try {
       const query = `SELECT PrimaryEmail FROM dbo.HrEmployee WHERE EmployeeId = '${employeeId}'`;
-      const result = await db2(query);
+      const result = await db1(query);
 
       if (result.recordset && result.recordset.length > 0) {
          const { PrimaryEmail } = result.recordset[0];
@@ -75,7 +76,7 @@ async function sendOTPbyEmail(receiver, otp, expiredAt, employeeId, deviceId) {
    const createdAt = new Date();
    const mobilePhone = "none";
    const query = `INSERT INTO user_otp (email, otp, expiredAt, employeeId, createdAt, mobilePhone) VALUES (?, ?, ?, ?, ?, ?)`;
-   db.query(
+   db2.query(
       query,
       [receiver, otp, expiredAt, employeeId, createdAt, mobilePhone],
       (error, results) => {
@@ -88,7 +89,7 @@ async function sendOTPbyEmail(receiver, otp, expiredAt, employeeId, deviceId) {
    );
 
    const query2 = `INSERT INTO user_device (employeeId, deviceId, insertedDate, lastUpdate) VALUES (?, ?, ?,?)`;
-   db.query(
+   db2.query(
       query2,
       [employeeId, deviceId, createdAt, createdAt],
       (error, results) => {
@@ -104,7 +105,7 @@ async function sendOTPbyEmail(receiver, otp, expiredAt, employeeId, deviceId) {
 async function getUserOTP(employeeId) {
    const query =
       "SELECT otp, expiredAt FROM user_otp WHERE employeeId = ? ORDER BY createdAt DESC LIMIT 1";
-   const result = await db.query(query, [employeeId]);
+   const result = await db2.query(query, [employeeId]);
    return result;
 }
 
@@ -113,7 +114,7 @@ async function storeUserToken(employeeId, token, expirationDate) {
    const status = "open"; // Default value for the status column
    const createdAt = new Date(); // Current datetime value for the createdAt column
 
-   await db.query(insertQuery, [
+   await db2.query(insertQuery, [
       employeeId,
       token,
       expirationDate,
@@ -143,7 +144,7 @@ async function getUserProfile(employeeId) {
          AND eh.IsExists = '1';
    `;
 
-      const result = await db2(query);
+      const result = await db1(query);
 
       return result;
    } catch (error) {
@@ -153,13 +154,13 @@ async function getUserProfile(employeeId) {
 
 async function getTokenStatus(token) {
    const selectQuery = `SELECT status FROM user_token WHERE token = ?`;
-   const result = await db.query(selectQuery, [token]);
+   const result = await db2.query(selectQuery, [token]);
    return result;
 }
 
 async function closeToken(token) {
    const updateQuery = `UPDATE user_token SET status = 'closed' WHERE token = ?`;
-   await db.query(updateQuery, [token]);
+   await db2.query(updateQuery, [token]);
 }
 
 async function recordEmployeePresence(
@@ -174,7 +175,7 @@ async function recordEmployeePresence(
 ) {
    const query = `INSERT INTO user_presence (employeeId, longitude, altitude, latitude, datetime, location_name, action, notes) 
                   VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
-   await db.query(query, [
+   await db2.query(query, [
       employeeId,
       longitude,
       altitude,
@@ -188,7 +189,7 @@ async function recordEmployeePresence(
 
 async function getPresenceData(employeeId, date) {
    const query = `SELECT * FROM user_presence WHERE employeeId = ? AND DATE(datetime) = ? ORDER BY datetime DESC`;
-   const result = await db.query(query, [employeeId, date]);
+   const result = await db2.query(query, [employeeId, date]);
    return result[0];
 }
 
@@ -200,14 +201,14 @@ async function getClockTimeData(employeeId, date, action) {
       ORDER BY datetime DESC
       LIMIT 1
    `;
-   const result = await db.query(query, [employeeId, date, action]);
+   const result = await db2.query(query, [employeeId, date, action]);
    return result[0];
 }
 
 async function getUserMobilePhones(employeeId) {
    try {
       const query = `SELECT MobilePhone1, MobilePhone2 FROM dbo.HrEmployee WHERE EmployeeId = '${employeeId}'`;
-      const result = await db2(query);
+      const result = await db1(query);
 
       if (result.recordset && result.recordset.length > 0) {
          const mobilePhones = result.recordset[0];
@@ -248,10 +249,10 @@ async function sendOTPbyWhatsApp(
 ) {
    try {
       const query2 = `INSERT INTO user_device (employeeId, deviceId, insertedDate, lastUpdate) VALUES (?, ?, ?, ?)`;
-      await db.query(query2, [employeeId, deviceId, createdAt, createdAt]);
+      await db2.query(query2, [employeeId, deviceId, createdAt, createdAt]);
 
       const insertQuery = `INSERT INTO user_otp (email, otp, expiredAt, employeeId, createdAt, mobilePhone) VALUES (?, ?, ?, ?, ?, ?)`;
-      await db.query(insertQuery, [
+      await db2.query(insertQuery, [
          email,
          otp,
          expiredAt,
@@ -275,12 +276,12 @@ async function sendOTPbyWhatsApp(
 
 function getLastAttendance(employeeId) {
    const query = `SELECT * FROM user_presence WHERE employeeId = ? ORDER BY datetime DESC LIMIT 1`;
-   return db.query(query, [employeeId]).then((result) => result[0][0]);
+   return db2.query(query, [employeeId]).then((result) => result[0][0]);
 }
 
 async function getAttendanceHistory(employeeId, startDate, endDate) {
    const query = `SELECT * FROM user_presence WHERE employeeId = ? AND datetime >= ? AND datetime <= ? ORDER BY datetime DESC`;
-   const result = await db.query(query, [employeeId, startDate, endDate]);
+   const result = await db2.query(query, [employeeId, startDate, endDate]);
    return result[0];
 }
 
@@ -315,7 +316,7 @@ async function getRequestComp(employeeId) {
        AND [EmployeeId] = '${employeeId}';
      `;
 
-      const result = await db2(query);
+      const result = await db1(query);
 
       return result;
    } catch (error) {
@@ -339,7 +340,7 @@ async function getRequestReject(employeeId) {
        AND [EmployeeId] = '${employeeId}';
      `;
 
-      const result = await db2(query);
+      const result = await db1(query);
 
       return result;
    } catch (error) {
@@ -364,7 +365,7 @@ async function getRequestProg(employeeId) {
        AND [EmployeeId] = '${employeeId}';
      `;
 
-      const result = await db2(query);
+      const result = await db1(query);
 
       return result;
    } catch (error) {
@@ -388,7 +389,7 @@ async function getRequestDet(employeeId, RequestFormId) {
        AND [EmployeeId] = '${employeeId}';
      `;
 
-      const result = await db2(query);
+      const result = await db1(query);
 
       return result;
    } catch (error) {
@@ -404,7 +405,7 @@ async function getLeavePlaf(employeeId) {
       WHERE [EmployeeId] = '${employeeId}';
      `;
 
-      const result = await db2(query);
+      const result = await db1(query);
 
       return result;
    } catch (error) {
@@ -421,7 +422,7 @@ async function getLeaveList(employeeId) {
       , RFL.ReferenceIndLabel FROM [LiteErp].[dbo].[HrPersonalLeaveReq] PLR JOIN [LiteErp].[dbo].[HrPersonalLeaveReqDetail] PLRD ON PLR.RequestFormId = PLRD.RequestFormId JOIN [LiteErp].[dbo].[HrReferenceLeave] RFL ON PLRD.LeaveType = RFL.RefLeaveId WHERE PLR.EmployeeId = '${employeeId}';
      `;
 
-      const result = await db2(query);
+      const result = await db1(query);
 
       return result;
    } catch (error) {
@@ -447,7 +448,7 @@ WHERE plr.[EmployeeId] = '${employeeId}'
       AND plr.[RequestFormId] = '${RequestFormId}';
      `;
 
-      const result = await db2(query);
+      const result = await db1(query);
 
       return result;
    } catch (error) {
@@ -509,7 +510,7 @@ async function sendOTPbyEmailWeb(receiver, otp, expiredAt, employeeId) {
    const createdAt = new Date();
    const mobilePhone = "none";
    const query = `INSERT INTO user_otp_web (email, otp, expiredAt, employeeId, createdAt, mobilePhone) VALUES (?, ?, ?, ?, ?, ?)`;
-   db.query(
+   db3.query(
       query,
       [receiver, otp, expiredAt, employeeId, createdAt, mobilePhone],
       (error, results) => {
@@ -525,7 +526,7 @@ async function sendOTPbyEmailWeb(receiver, otp, expiredAt, employeeId) {
 async function getUserOTPweb(employeeId) {
    const query =
       "SELECT otp, expiredAt FROM user_otp_web WHERE employeeId = ? ORDER BY createdAt DESC LIMIT 1";
-   const result = await db.query(query, [employeeId]);
+   const result = await db3.query(query, [employeeId]);
    return result;
 }
 

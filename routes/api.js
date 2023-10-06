@@ -2,10 +2,12 @@ const express = require("express");
 const router = express.Router();
 const verifyToken = require("../middleware/verify_token.js");
 const userController = require("../controllers/user_controller.js");
-const acaportalController = require("../controllers/acaportal_controller.js");
+const acaportalController = require("../controllers/portal_controller.js");
+const response = require("../middleware/response");
 
+// STATUS
 router.get("/", (req, res) => {
-   res.send("API is running");
+   response(200, "00", "API is running", {}, res, req);
 });
 
 // AUTH

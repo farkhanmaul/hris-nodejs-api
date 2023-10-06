@@ -2,14 +2,12 @@ const userModel = require("../models/user_model");
 const userValidation = require("../utils/validation");
 const verifyToken = require("../middleware/verify_token.js");
 const response = require("../middleware/response");
-
 // login endpoint
 async function loginEmail(req, res) {
-   const { employeeId, deviceId } = req.body;
+   const { employee_id, device_id } = req.body;
 
-   // Validate the user input
-   const isEmployeeIdValid = userValidation.validateUserInput(employeeId);
-   const isDeviceIdValid = userValidation.validateUserInput(deviceId);
+   const isEmployeeIdValid = userValidation.validateUserInput(employee_id);
+   const isDeviceIdValid = userValidation.validateUserInput(device_id);
 
    if (!isEmployeeIdValid || !isDeviceIdValid) {
       response(400, "98", "Invalid user input", {}, res, req);
@@ -17,20 +15,20 @@ async function loginEmail(req, res) {
    }
 
    try {
-      const email = await userModel.getUserEmail(employeeId);
+      const email = await userModel.getUserEmail(employee_id);
 
       if (!email) {
          response(404, "01", "User not found", {}, res, req);
       } else {
          const otp = userValidation.generateOTP();
-         const expiredAt = userValidation.generateExpirationDate();
+         const expired_at = userValidation.generateExpirationDate();
 
          await userModel.sendOTPbyEmail(
             email,
             otp,
-            expiredAt,
-            employeeId,
-            deviceId
+            expired_at,
+            employee_id,
+            device_id
          );
 
          response(
@@ -49,10 +47,10 @@ async function loginEmail(req, res) {
 }
 
 async function loginWA(req, res) {
-   const { employeeId, deviceId } = req.body;
+   const { employee_id, device_id } = req.body;
    // Validate the user input
-   const isEmployeeIdValid = userValidation.validateUserInput(employeeId);
-   const isDeviceIdValid = userValidation.validateUserInput(deviceId);
+   const isEmployeeIdValid = userValidation.validateUserInput(employee_id);
+   const isDeviceIdValid = userValidation.validateUserInput(device_id);
 
    if (!isEmployeeIdValid || !isDeviceIdValid) {
       response(400, "98", "Invalid user input", {}, res, req);
@@ -60,21 +58,21 @@ async function loginWA(req, res) {
    }
 
    try {
-      const result = await userModel.getUserMobilePhones(employeeId);
+      const result = await userModel.getUserMobilePhones(employee_id);
 
       if (!result) {
          response(404, "01", "User not found", {}, res, req);
       } else {
-         const mobilePhone1 = result.MobilePhone1;
-         const mobilePhone2 = result.MobilePhone2;
+         const no_hp1 = result.MobilePhone1;
+         const no_hp2 = result.MobilePhone2;
 
          // no hp tujuan
          let destination = "";
 
-         if (mobilePhone1) {
-            destination = mobilePhone1;
-         } else if (mobilePhone2) {
-            destination = mobilePhone2;
+         if (no_hp1) {
+            destination = no_hp1;
+         } else if (no_hp2) {
+            destination = no_hp2;
          } else {
             // Mobile phone not found
             response(404, "02", "Mobile phone not found", {}, res, req);
@@ -82,8 +80,8 @@ async function loginWA(req, res) {
          }
 
          const otp = userValidation.generateOTP();
-         const expiredAt = userValidation.generateExpirationDate();
-         const createdAt = new Date();
+         const expired_at = userValidation.generateExpirationDate();
+         const created_at = new Date();
          const email = "none";
 
          const headers = {
@@ -96,19 +94,33 @@ async function loginWA(req, res) {
             destination,
             message: `This message originated from ACA, \nThis is your OTP code : \n*${otp}* \nPlease do not share your OTP code to anyone. We never ask for your personal OTP code.`,
          };
-
-         await userModel.sendOTPbyWhatsApp(
-            email,
-            otp,
-            expiredAt,
-            employeeId,
-            createdAt,
-            destination,
-            deviceId,
-            url,
+         console.log(
+            "\nemail:" + email,
+            "\notp:" + otp,
+            "\nexpired_at:" + expired_at,
+            "\nemployee_id:" + employee_id,
+            "\ncreated_at:" + created_at,
+            "\ndestination:" + destination,
+            "\ndevice_id:" + device_id,
+            "\nurl:" + url,
+            "\nheaders:",
             headers,
+            "\ndata:",
             data
          );
+
+         // await userModel.sendOTPbyWhatsApp(
+         //    email,
+         //    otp,
+         //    expired_at,
+         //    employee_id,
+         //    created_at,
+         //    destination,
+         //    device_id,
+         //    url,
+         //    headers,
+         //    data
+         // );
 
          response(200, "00", "OTP Sent to WhatsApp", {}, res, req);
       }
@@ -121,9 +133,9 @@ async function loginWA(req, res) {
 async function logout(req, res) {
    const token = req.headers["x-api-key"];
 
-   const { employeeId } = req.body;
+   const { employee_id } = req.body;
    // Validate the user input
-   const isInputValid = userValidation.validateUserInput(employeeId);
+   const isInputValid = userValidation.validateUserInput(employee_id);
 
    if (!isInputValid) {
       response(400, "98", "Invalid user input", {}, res, req);
@@ -151,25 +163,25 @@ async function logout(req, res) {
 }
 
 async function verifyOTP(req, res) {
-   const { employeeId, otp } = req.body;
+   const { employee_id, otp } = req.body;
    if (
-      !userValidation.validateUserInput(employeeId) ||
+      !userValidation.validateUserInput(employee_id) ||
       !userValidation.validateUserInput(otp)
    ) {
       response(400, "04", "Invalid user input", {}, res, req);
       return;
    }
    try {
-      const result = await userModel.getUserOTP(employeeId);
+      const result = await userModel.getUserOTP(employee_id);
 
       if (!result || result.length === 0 || result[0].length === 0) {
          // Employee ID not found in user_otp table
          response(404, "01", "Employee ID not found", {}, res, req);
       } else {
-         const { otp: storedOTP, expiredAt } = result[0][0];
+         const { otp: storedOTP, expired_at } = result[0][0];
 
          // Check if OTP is expired
-         if (new Date() > new Date(expiredAt)) {
+         if (new Date() > new Date(expired_at)) {
             response(400, "02", "OTP has expired", {}, res, req);
          } else {
             // Verify the OTP (case-insensitive and ignore leading/trailing white spaces)
@@ -181,9 +193,9 @@ async function verifyOTP(req, res) {
                // Generate the expiration date (3 months from the current date)
                const expirationDate = userValidation.generateExpirationDate();
 
-               // Store the employeeId, token, and expiration date in the database
+               // Store the employee_id, token, and expiration date in the database
                await userModel.storeUserToken(
-                  employeeId,
+                  employee_id,
                   token,
                   expirationDate
                );
@@ -218,9 +230,9 @@ async function verifyTokenHandler(req, res, next) {
 }
 
 async function getProfile(req, res) {
-   const { employeeId } = req.body;
+   const { employee_id } = req.body;
    // Validate the user input
-   const isInputValid = userValidation.validateUserInput(employeeId);
+   const isInputValid = userValidation.validateUserInput(employee_id);
 
    if (!isInputValid) {
       response(400, "98", "Invalid user input", {}, res, req);
@@ -228,7 +240,7 @@ async function getProfile(req, res) {
    }
 
    try {
-      const result = await userModel.getUserProfile(employeeId);
+      const result = await userModel.getUserProfile(employee_id);
 
       if (!result || !result.recordset || !result.recordset.length) {
          response(404, "01", "User not found", {}, res, req);
@@ -267,29 +279,29 @@ async function getProfile(req, res) {
 
 async function attendance(req, res) {
    const {
-      employeeId,
+      employee_id,
       longitude,
       altitude,
       latitude,
-      locationName,
+      location_name,
       action,
       notes,
    } = req.body;
-   // Validate employeeId, longitude, altitude, latitude, locationName, action, and notes
-   const employeeIdValid = userValidation.validateUserInput(employeeId);
+   // Validate employee_id, longitude, altitude, latitude, location_name, action, and notes
+   const employee_idValid = userValidation.validateUserInput(employee_id);
    const longitudeValid = userValidation.validateUserInput(longitude);
    const altitudeValid = userValidation.validateUserInput(altitude);
    const latitudeValid = userValidation.validateUserInput(latitude);
-   const locationNameValid = userValidation.validateUserInput(locationName);
+   const location_nameValid = userValidation.validateUserInput(location_name);
    const actionValid = userValidation.validateUserInput(action);
    const notesValid = userValidation.validateUserInput(notes);
 
    if (
-      !employeeIdValid ||
+      !employee_idValid ||
       !longitudeValid ||
       !altitudeValid ||
       !latitudeValid ||
-      !locationNameValid ||
+      !location_nameValid ||
       !actionValid ||
       !notesValid
    ) {
@@ -302,12 +314,12 @@ async function attendance(req, res) {
       const datetime = new Date(); // Generate the current datetime
 
       await userModel.recordEmployeePresence(
-         employeeId,
+         employee_id,
          longitude,
          altitude,
          latitude,
          datetime,
-         locationName,
+         location_name,
          action,
          notes
       );
@@ -327,9 +339,9 @@ async function attendance(req, res) {
    }
 }
 async function getAttendanceClock(req, res) {
-   const { employeeId, date, action } = req.body;
+   const { employee_id, date, action } = req.body;
    if (
-      !userValidation.validateUserInput(employeeId) ||
+      !userValidation.validateUserInput(employee_id) ||
       !userValidation.validateUserInput(date) ||
       !userValidation.validateUserInput(action)
    ) {
@@ -344,7 +356,11 @@ async function getAttendanceClock(req, res) {
       return; // Exit the function if input is invalid
    }
    try {
-      const result = await userModel.getClockTimeData(employeeId, date, action);
+      const result = await userModel.getClockTimeData(
+         employee_id,
+         date,
+         action
+      );
 
       if (!result || result.length === 0) {
          response(
@@ -395,25 +411,25 @@ async function getAttendanceClock(req, res) {
 }
 
 async function getAttendanceHistory(req, res) {
-   const { employeeId, startDate, endDate } = req.body;
+   const { employee_id, start_date, end_date } = req.body;
 
    if (
-      !userValidation.validateUserInput(employeeId) ||
-      !userValidation.validateUserInput(startDate) ||
-      !userValidation.validateUserInput(endDate)
+      !userValidation.validateUserInput(employee_id) ||
+      !userValidation.validateUserInput(start_date) ||
+      !userValidation.validateUserInput(end_date)
    ) {
       response(400, "05", "User input invalid", {}, res, req);
       return; // Exit the function if input is invalid
    }
 
    try {
-      const endDatePlusOneDay = new Date(endDate);
-      endDatePlusOneDay.setDate(endDatePlusOneDay.getDate() + 1);
+      const end_datePlusOneDay = new Date(end_date);
+      end_datePlusOneDay.setDate(end_datePlusOneDay.getDate() + 1);
 
       const attendanceData = await userModel.getAttendanceHistory(
-         employeeId,
-         startDate,
-         endDatePlusOneDay
+         employee_id,
+         start_date,
+         end_datePlusOneDay
       );
 
       if (!attendanceData || attendanceData.length === 0) {
@@ -456,9 +472,9 @@ async function getAttendanceHistory(req, res) {
       }
 
       let responsePayload;
-      if (startDate === endDate && attendanceByDay[startDate]) {
+      if (start_date === end_date && attendanceByDay[start_date]) {
          // If start date and end date are the same and data is available for that day
-         responsePayload = attendanceByDay[startDate];
+         responsePayload = attendanceByDay[start_date];
       } else {
          // Process data for multiple days
          const combinedData = [];
@@ -503,16 +519,16 @@ async function getAttendanceHistory(req, res) {
 }
 
 async function getAttendanceToday(req, res) {
-   const { employeeId, date } = req.body;
+   const { employee_id, date } = req.body;
    if (
-      !userValidation.validateUserInput(employeeId) ||
+      !userValidation.validateUserInput(employee_id) ||
       !userValidation.validateUserInput(date)
    ) {
       response(400, "04", "Invalid input", {}, res, req);
       return;
    }
    try {
-      const result = await userModel.getPresenceData(employeeId, date);
+      const result = await userModel.getPresenceData(employee_id, date);
 
       if (!result || result.length === 0) {
          response(
@@ -563,16 +579,16 @@ async function getAttendanceToday(req, res) {
 }
 
 async function getAttendanceRecent(req, res) {
-   const { employeeId } = req.body;
+   const { employee_id } = req.body;
    // Validate the user input
-   const isInputValid = userValidation.validateUserInput(employeeId);
+   const isInputValid = userValidation.validateUserInput(employee_id);
 
    if (!isInputValid) {
       response(400, "98", "Invalid user input", {}, res, req);
       return;
    }
    try {
-      const lastAttendance = await userModel.getLastAttendance(employeeId);
+      const lastAttendance = await userModel.getLastAttendance(employee_id);
 
       if (!lastAttendance) {
          response(404, "01", "No presence data found", {}, res, req);
@@ -593,13 +609,35 @@ async function getAttendanceRecent(req, res) {
             hour12: false,
          });
 
+         // Get the current timestamp
+         const nowTime = new Date();
+         const currentTime = nowTime.toLocaleTimeString("en-US", {
+            hour12: false,
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+         });
+
+         // Retrieve the relevant absence time range based on the current timestamp
+         const absenceTimeRange = await userModel.getAttendanceTimeRangeByTime(
+            currentTime
+         );
+
+         // Check if the current time falls within the absence time range
          let nextAction = "";
-         if (action === "Clock In") {
-            nextAction = "Clock Break In";
-         } else if (action === "Clock Break In") {
-            nextAction = "Clock Out";
-         } else if (action === "Clock Out") {
-            nextAction = "Clock In";
+         if (absenceTimeRange) {
+            if (
+               currentTime >= absenceTimeRange.start_time &&
+               currentTime <= absenceTimeRange.end_time
+            ) {
+               if (action === "Clock In") {
+                  nextAction = "Clock Break In";
+               } else if (action === "Clock Break In") {
+                  nextAction = "Clock Out";
+               } else if (action === "Clock Out") {
+                  nextAction = "Clock In";
+               }
+            }
          }
 
          const responsePayload = {
@@ -608,6 +646,7 @@ async function getAttendanceRecent(req, res) {
             date,
             time,
             nextAction,
+            absenceTimeRange,
          };
 
          response(
@@ -633,10 +672,10 @@ async function getAttendanceRecent(req, res) {
 }
 
 async function getRequestCompleted(req, res) {
-   const { employeeId } = req.body;
+   const { employee_id } = req.body;
 
    // Validate the user input
-   const isInputValid = userValidation.validateUserInput(employeeId);
+   const isInputValid = userValidation.validateUserInput(employee_id);
 
    if (!isInputValid) {
       response(400, "98", "Invalid user input", {}, res, req);
@@ -644,7 +683,7 @@ async function getRequestCompleted(req, res) {
    }
 
    try {
-      const requestData = await userModel.getRequestComp(employeeId);
+      const requestData = await userModel.getRequestComp(employee_id);
 
       if (
          !requestData ||
@@ -669,10 +708,10 @@ async function getRequestCompleted(req, res) {
 }
 
 async function getRequestRejected(req, res) {
-   const { employeeId } = req.body;
+   const { employee_id } = req.body;
 
    // Validate the user input
-   const isInputValid = userValidation.validateUserInput(employeeId);
+   const isInputValid = userValidation.validateUserInput(employee_id);
 
    if (!isInputValid) {
       response(400, "98", "Invalid user input", {}, res, req);
@@ -680,7 +719,7 @@ async function getRequestRejected(req, res) {
    }
 
    try {
-      const requestData = await userModel.getRequestReject(employeeId);
+      const requestData = await userModel.getRequestReject(employee_id);
 
       if (
          !requestData ||
@@ -705,10 +744,10 @@ async function getRequestRejected(req, res) {
 }
 
 async function getRequestProgress(req, res) {
-   const { employeeId } = req.body;
+   const { employee_id } = req.body;
 
    // Validate the user input
-   const isInputValid = userValidation.validateUserInput(employeeId);
+   const isInputValid = userValidation.validateUserInput(employee_id);
 
    if (!isInputValid) {
       response(400, "98", "Invalid user input", {}, res, req);
@@ -716,7 +755,7 @@ async function getRequestProgress(req, res) {
    }
 
    try {
-      const requestData = await userModel.getRequestProg(employeeId);
+      const requestData = await userModel.getRequestProg(employee_id);
 
       if (
          !requestData ||
@@ -741,10 +780,10 @@ async function getRequestProgress(req, res) {
 }
 
 async function getRequestDetail(req, res) {
-   const { employeeId, RequestFormId } = req.body;
+   const { employee_id, RequestFormId } = req.body;
 
    // Validate the user input
-   const isInputValid = userValidation.validateUserInput(employeeId);
+   const isInputValid = userValidation.validateUserInput(employee_id);
 
    if (!isInputValid) {
       response(400, "98", "Invalid user input", {}, res, req);
@@ -753,7 +792,7 @@ async function getRequestDetail(req, res) {
 
    try {
       const requestData = await userModel.getRequestDet(
-         employeeId,
+         employee_id,
          RequestFormId
       );
 
@@ -780,10 +819,10 @@ async function getRequestDetail(req, res) {
 }
 
 async function getLeavePlafonds(req, res) {
-   const { employeeId } = req.body;
+   const { employee_id } = req.body;
 
    // Validate the user input
-   const isInputValid = userValidation.validateUserInput(employeeId);
+   const isInputValid = userValidation.validateUserInput(employee_id);
 
    if (!isInputValid) {
       response(400, "98", "Invalid user input", {}, res, req);
@@ -791,7 +830,7 @@ async function getLeavePlafonds(req, res) {
    }
 
    try {
-      const leaveData = await userModel.getLeavePlaf(employeeId);
+      const leaveData = await userModel.getLeavePlaf(employee_id);
 
       if (!leaveData || !leaveData.recordset || !leaveData.recordset.length) {
          response(404, "01", "Data not found", {}, res, req);
@@ -815,10 +854,10 @@ async function getLeavePlafonds(req, res) {
 }
 
 async function getLeaveList(req, res) {
-   const { employeeId } = req.body;
+   const { employee_id } = req.body;
 
    // Validate the user input
-   const isInputValid = userValidation.validateUserInput(employeeId);
+   const isInputValid = userValidation.validateUserInput(employee_id);
 
    if (!isInputValid) {
       response(400, "98", "Invalid user input", {}, res, req);
@@ -826,7 +865,7 @@ async function getLeaveList(req, res) {
    }
 
    try {
-      const leaveData = await userModel.getLeaveList(employeeId);
+      const leaveData = await userModel.getLeaveList(employee_id);
 
       if (!leaveData || !leaveData.recordset || !leaveData.recordset.length) {
          response(404, "01", "Data not found", {}, res, req);
@@ -847,10 +886,10 @@ async function getLeaveList(req, res) {
 }
 
 async function getLeaveDetail(req, res) {
-   const { employeeId, RequestFormId } = req.body;
+   const { employee_id, RequestFormId } = req.body;
 
    // Validate the user input
-   const isInputValid = userValidation.validateUserInput(employeeId);
+   const isInputValid = userValidation.validateUserInput(employee_id);
 
    if (!isInputValid) {
       response(400, "98", "Invalid user input", {}, res, req);
@@ -858,7 +897,7 @@ async function getLeaveDetail(req, res) {
    }
 
    try {
-      const leaveData = await userModel.getLeaveDet(employeeId, RequestFormId);
+      const leaveData = await userModel.getLeaveDet(employee_id, RequestFormId);
 
       if (!leaveData || !leaveData.recordset || !leaveData.recordset.length) {
          response(404, "01", "Data not found", {}, res, req);
@@ -879,9 +918,9 @@ async function getLeaveDetail(req, res) {
 }
 
 async function getMedicalPlafonds(req, res) {
-   const { employeeId } = req.body;
+   const { employee_id } = req.body;
    // Validate the user input
-   const isInputValid = userValidation.validateUserInput(employeeId);
+   const isInputValid = userValidation.validateUserInput(employee_id);
 
    if (!isInputValid) {
       response(400, "98", "Invalid user input", {}, res, req);

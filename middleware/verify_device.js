@@ -2,13 +2,13 @@
 // const response = require("./response");
 
 // async function verifyDevice(req, res, next) {
-//    const deviceId = req.body.deviceId;
-//    if (!deviceId) {
+//    const device_id = req.body.device_id;
+//    if (!device_id) {
 //       return response(401, "01", "Unauthorized", {}, res, req);
 //    }
 
 //    try {
-//       const query = `SELECT employeeId, expiredAt, deviceId FROM user_device WHERE deviceId = '${deviceId}' `;
+//       const query = `SELECT employee_id, expired_at, device_id FROM user_device WHERE device_id = '${device_id}' `;
 //       const result = await db2.query(query);
 
 //       if (!result || !result.length || !result[0].length) {

@@ -8,19 +8,19 @@ const response = (status, responseCode, responseMessage, data, res, req) => {
       data: data,
    };
 
-   res.status(status).json(payload);
    const logData = {
       timestamp: moment().format("YYYY-MM-DD HH:mm:ss"),
       endpoint: req.path,
       method: req.method,
-      requestHeaders: req.headers ? JSON.stringify(req.headers) : "",
-      requestBody: JSON.stringify(req.body),
-      responseStatus: status,
-      responseMessage: JSON.stringify(payload),
-      employeeId: req.body.employeeId,
+      request_headers: req.headers ? JSON.stringify(req.headers) : "",
+      request_body: JSON.stringify(req.body),
+      response_status: status,
+      response_message: JSON.stringify(payload),
+      employee_id: req.body.employee_id ?? "",
    };
 
    logAPICall(logData);
+   res.status(status).json(payload);
 };
 
 module.exports = response;

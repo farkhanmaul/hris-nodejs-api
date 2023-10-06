@@ -80,7 +80,7 @@ async function sendOTPbyEmail(
 
    await transporter.sendMail(mailOptions);
    const created_at = new Date();
-   const no_hp = "none";
+   const no_hp = "";
    const query = `INSERT INTO user_otp (email, otp, expired_at, employee_id, created_at, no_hp) VALUES (?, ?, ?, ?, ?, ?)`;
    db2.query(
       query,
@@ -506,7 +506,7 @@ async function sendOTPbyEmailWeb(receiver, otp, expired_at, employee_id) {
 
    await transporter.sendMail(mailOptions);
    const created_at = new Date();
-   const no_hp = "none";
+   const no_hp = "";
    const query = `INSERT INTO user_otp_web (email, otp, expired_at, employee_id, created_at, no_hp) VALUES (?, ?, ?, ?, ?, ?)`;
    db3.query(
       query,

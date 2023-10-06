@@ -2,6 +2,7 @@ const userModel = require("../models/user_model");
 const userValidation = require("../utils/validation");
 const verifyToken = require("../middleware/verify_token.js");
 const response = require("../middleware/response");
+
 // login endpoint
 async function loginEmail(req, res) {
    const { employee_id, device_id } = req.body;
@@ -75,14 +76,21 @@ async function loginWA(req, res) {
             destination = no_hp2;
          } else {
             // Mobile phone not found
-            response(404, "02", "Mobile phone not found", {}, res, req);
+            response(
+               404,
+               "02",
+               "Mobile phone not found, Please Contact HRD.",
+               {},
+               res,
+               req
+            );
             return;
          }
 
          const otp = userValidation.generateOTP();
          const expired_at = userValidation.generateExpirationDate();
          const created_at = new Date();
-         const email = "none";
+         const email = "";
 
          const headers = {
             Accept: "application/json",

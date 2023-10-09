@@ -16,7 +16,7 @@ const response = (status, responseCode, responseMessage, data, res, req) => {
       request_body: JSON.stringify(req.body),
       response_status: status,
       response_message: JSON.stringify(payload),
-      employee_id: req.body.employee_id ?? "null",
+      employee_id: req.body.employee_id ?? "",
    };
 
    logAPICall(logData);

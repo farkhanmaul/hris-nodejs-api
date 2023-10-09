@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 06, 2023 at 12:09 PM
+-- Generation Time: Oct 09, 2023 at 05:35 AM
 -- Server version: 10.4.24-MariaDB
 -- PHP Version: 8.1.6
 
@@ -30,15 +30,23 @@ SET time_zone = "+00:00";
 CREATE TABLE `users` (
   `id` bigint(20) NOT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `username` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `employee_id` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL,
   `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `no_hp` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `telegram_id` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `no_tlp_kantor` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `st_active` tinyint(4) DEFAULT NULL,
+  `st_active` tinyint(1) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`id`, `name`, `employee_id`, `email`, `no_hp`, `telegram_id`, `no_tlp_kantor`, `st_active`, `created_at`, `updated_at`) VALUES
+(7, 'Farkhan', '202501010', 'farkhanmaul25@gmail.com', '0816674127', 'farkhanmau', '0816674127', 1, '2023-10-09 03:09:32', '2023-10-09 03:09:32'),
+(8, 'Off Man', '202501011', 'farkhanmaul@gmail.com', '0816674127', 'farkhan', '0816674127', 0, '2023-10-09 03:09:32', '2023-10-09 03:09:32');
 
 -- --------------------------------------------------------
 
@@ -68,7 +76,9 @@ INSERT INTO `user_otp_web` (`id`, `employee_id`, `otp`, `expired_at`, `created_a
 (5, '232323232', '374782', '2024-01-02 11:16:42', '2023-10-04 11:16:44', 'farkhanmaul@gmail.com', 'none'),
 (6, '232323232', '278422', '2024-01-02 11:19:20', '2023-10-04 11:19:23', 'farkhanmaul@gmail.com', 'none'),
 (7, '232323232', '255442', '2024-01-04 13:14:38', '2023-10-06 13:14:40', 'farkhanmaul@gmail.com', 'none'),
-(8, '232323232', '025414', '2024-01-04 15:44:39', '2023-10-06 15:44:41', 'farkhanmaul@gmail.com', 'none');
+(8, '232323232', '025414', '2024-01-04 15:44:39', '2023-10-06 15:44:41', 'farkhanmaul@gmail.com', 'none'),
+(9, '202501010', '763717', '2024-01-07 10:34:04', '2023-10-09 10:34:08', 'farkhanmaul25@gmail.com', ''),
+(10, '202501010', '186286', '2024-01-07 10:34:42', '2023-10-09 10:34:45', 'farkhanmaul25@gmail.com', '');
 
 --
 -- Indexes for dumped tables
@@ -80,7 +90,7 @@ INSERT INTO `user_otp_web` (`id`, `employee_id`, `otp`, `expired_at`, `created_a
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `users_email_unique` (`email`),
-  ADD UNIQUE KEY `users_un` (`username`);
+  ADD UNIQUE KEY `users_un` (`employee_id`);
 
 --
 -- Indexes for table `user_otp_web`
@@ -96,13 +106,13 @@ ALTER TABLE `user_otp_web`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `user_otp_web`
 --
 ALTER TABLE `user_otp_web`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

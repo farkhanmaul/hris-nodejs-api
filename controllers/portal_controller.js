@@ -1,4 +1,5 @@
 const userModel = require("../models/user_model");
+const portalModel = require("../models/portal_model");
 const userValidation = require("../utils/validation");
 const verifyToken = require("../middleware/verify_token.js");
 const response = require("../middleware/response");
@@ -16,21 +17,25 @@ async function loginEmailWeb(req, res) {
    }
 
    try {
-      const email = await userModel.getUserEmail(employee_id);
+      const result = await portalModel.getUserEmail(employee_id);
 
-      if (!email) {
+      if (!result || result.length === 0 || result[0].length === 0) {
          response(404, "01", "User not found", {}, res, req);
       } else {
+         const { email } = result[0][0];
          const otp = userValidation.generateOTP();
          const expired_at = userValidation.generateExpirationDate();
-
-         await userModel.sendOTPbyEmailWeb(email, otp, expired_at, employee_id);
-
+         await portalModel.sendOTPbyEmailWeb(
+            email,
+            otp,
+            expired_at,
+            employee_id
+         );
          response(
             200,
             "00",
             "Employee Found, OTP Sent to Email",
-            { employeeEmail: email },
+            { email: email },
             res,
             req
          );
@@ -51,7 +56,7 @@ async function verifyOTPweb(req, res) {
       return;
    }
    try {
-      const result = await userModel.getUserOTPweb(employee_id);
+      const result = await portalModel.getUserOTPweb(employee_id);
 
       if (!result || result.length === 0 || result[0].length === 0) {
          // Employee ID not found in user_otp table
@@ -98,6 +103,7 @@ async function verifyOTPweb(req, res) {
       response(500, "99", "Internal Server Error", {}, res, req);
    }
 }
+
 module.exports = {
    loginEmailWeb,
    verifyOTPweb,

@@ -7,7 +7,8 @@ const axios = require("axios");
 const Mailgen = require("mailgen");
 
 async function getUserEmail(employee_id) {
-   const query = "SELECT email FROM users WHERE employee_id = ?";
+   const query =
+      "SELECT email FROM users WHERE employee_id = ? AND st_active = 1";
    const result = await db3.query(query, [employee_id]);
    return result;
 }

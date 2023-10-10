@@ -319,7 +319,7 @@ async function attendance(req, res) {
    }
 
    try {
-      const datetime = new Date(); // Generate the current datetime
+      const datetime = new Date();
 
       await userModel.recordEmployeePresence(
          employee_id,
@@ -331,7 +331,7 @@ async function attendance(req, res) {
          action,
          notes
       );
-
+      console.log(datetime);
       // Send the regular success response
       response(
          200,
@@ -630,7 +630,6 @@ async function getAttendanceRecent(req, res) {
          const absenceTimeRange = await userModel.getAttendanceTimeRangeByTime(
             currentTime
          );
-
          // Check if the current time falls within the absence time range
          let nextAction = "";
          if (absenceTimeRange) {

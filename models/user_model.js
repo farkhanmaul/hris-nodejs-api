@@ -457,12 +457,14 @@ WHERE plr.[EmployeeId] = '${employee_id}'
 async function getAttendanceTimeRangeByTime(currentTime) {
    try {
       const query = `
-       SELECT range_name, start_time, end_time
+       SELECT *
        FROM attendance_time_range
-       WHERE start_time <= ? AND start_time >= ?
+       WHERE ? >= start_time AND ? <= end_time
      `;
-      const [rows] = await db2.query(query, [currentTime, currentTime]);
-      return rows.length > 0 ? rows[0] : null;
+      const result = await db2.query(query, [currentTime, currentTime]);
+
+      console.log("query", result[0][0]);
+      return result.length > 0 ? result[0][0] : null;
    } catch (error) {
       console.error("Failed to retrieve attendance time range:", error);
       throw error;

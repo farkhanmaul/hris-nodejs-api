@@ -261,7 +261,6 @@ async function sendOTPbyWhatsApp(
 
       // This Code For Send OTP, Hapus jika tidak perlu
       const response = await axios.post(url, data, { headers });
-      console.log(response.data);
       return response;
    } catch (error) {
       console.error(
@@ -463,7 +462,6 @@ async function getAttendanceTimeRangeByTime(currentTime) {
      `;
       const result = await db2.query(query, [currentTime, currentTime]);
 
-      console.log("query", result[0][0]);
       return result.length > 0 ? result[0][0] : null;
    } catch (error) {
       console.error("Failed to retrieve attendance time range:", error);

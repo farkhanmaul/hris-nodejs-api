@@ -17,12 +17,11 @@ async function loginEmailWeb(req, res) {
    }
 
    try {
-      const result = await portalModel.getUserEmail(employee_id);
+      const email = await userModel.getUserEmail(employee_id);
 
-      if (!result || result.length === 0 || result[0].length === 0) {
+      if (!email) {
          response(404, "01", "User not found", {}, res, req);
       } else {
-         const { email } = result[0][0];
          const otp = userValidation.generateOTP();
          const expired_at = userValidation.generateExpirationDate();
          await portalModel.sendOTPbyEmailWeb(

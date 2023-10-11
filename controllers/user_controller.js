@@ -1,5 +1,10 @@
 const userModel = require("../models/user_model");
 const userValidation = require("../utils/validation");
+const {
+   HTTP_STATUS,
+   RESPONSE_CODES,
+   RESPONSE_MESSAGES,
+} = require("../utils/globals.js");
 const verifyToken = require("../middleware/verify_token.js");
 const response = require("../middleware/response");
 
@@ -102,33 +107,19 @@ async function loginWA(req, res) {
             destination,
             message: `This message originated from ACA, \nThis is your OTP code : \n*${otp}* \nPlease do not share your OTP code to anyone. We never ask for your personal OTP code.`,
          };
-         console.log(
-            "\nemail:" + email,
-            "\notp:" + otp,
-            "\nexpired_at:" + expired_at,
-            "\nemployee_id:" + employee_id,
-            "\ncreated_at:" + created_at,
-            "\ndestination:" + destination,
-            "\ndevice_id:" + device_id,
-            "\nurl:" + url,
-            "\nheaders:",
+
+         await userModel.sendOTPbyWhatsApp(
+            email,
+            otp,
+            expired_at,
+            employee_id,
+            created_at,
+            destination,
+            device_id,
+            url,
             headers,
-            "\ndata:",
             data
          );
-
-         // await userModel.sendOTPbyWhatsApp(
-         //    email,
-         //    otp,
-         //    expired_at,
-         //    employee_id,
-         //    created_at,
-         //    destination,
-         //    device_id,
-         //    url,
-         //    headers,
-         //    data
-         // );
 
          response(200, "00", "OTP Sent to WhatsApp", {}, res, req);
       }
@@ -331,7 +322,6 @@ async function attendance(req, res) {
          action,
          notes
       );
-      console.log(datetime);
       // Send the regular success response
       response(
          200,
@@ -601,7 +591,7 @@ async function getAttendanceRecent(req, res) {
       if (!lastAttendance) {
          response(404, "01", "No presence data found", {}, res, req);
       } else {
-         const { datetime, action } = lastAttendance;
+         const { datetime, action: lastAction } = lastAttendance;
 
          const formattedDateTime = new Date(datetime);
          const dayName = formattedDateTime.toLocaleDateString("en-US", {
@@ -632,19 +622,13 @@ async function getAttendanceRecent(req, res) {
          );
          // Check if the current time falls within the absence time range
          let nextAction = "";
-         if (absenceTimeRange) {
-            if (
-               currentTime >= absenceTimeRange.start_time &&
-               currentTime <= absenceTimeRange.end_time
-            ) {
-               if (action === "Clock In") {
-                  nextAction = "Clock Break In";
-               } else if (action === "Clock Break In") {
-                  nextAction = "Clock Out";
-               } else if (action === "Clock Out") {
-                  nextAction = "Clock In";
-               }
-            }
+
+         if (lastAction === "Clock In") {
+            nextAction = "Clock Break In";
+         } else if (action === "Clock Break In") {
+            nextAction = "Clock Out";
+         } else if (action === "Clock Out") {
+            nextAction = "Clock In";
          }
 
          const responsePayload = {
@@ -652,6 +636,7 @@ async function getAttendanceRecent(req, res) {
             dayName,
             date,
             time,
+            lastAction,
             nextAction,
             absenceTimeRange,
          };

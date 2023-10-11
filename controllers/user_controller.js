@@ -24,7 +24,7 @@ async function loginEmail(req, res) {
       const email = await userModel.getUserEmail(employee_id);
 
       if (!email) {
-         response(404, "01", "User not found", {}, res, req);
+         response(HTTP_STATUS.NOT_FOUND, "01", "User not found", {}, res, req);
       } else {
          const otp = userValidation.generateOTP();
          const expired_at = userValidation.generateExpirationDate();

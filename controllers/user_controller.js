@@ -591,8 +591,8 @@ async function getAttendanceRecent(req, res) {
       if (!lastAttendance) {
          response(404, "01", "No presence data found", {}, res, req);
       } else {
-         const { datetime, action: lastAction } = lastAttendance;
-
+         const { datetime } = lastAttendance;
+         console.log(datetime);
          const formattedDateTime = new Date(datetime);
          const dayName = formattedDateTime.toLocaleDateString("en-US", {
             weekday: "long",
@@ -621,23 +621,12 @@ async function getAttendanceRecent(req, res) {
             currentTime
          );
          // Check if the current time falls within the absence time range
-         let nextAction = "";
-
-         if (lastAction === "Clock In") {
-            nextAction = "Clock Break In";
-         } else if (action === "Clock Break In") {
-            nextAction = "Clock Out";
-         } else if (action === "Clock Out") {
-            nextAction = "Clock In";
-         }
 
          const responsePayload = {
             ...lastAttendance,
             dayName,
             date,
             time,
-            lastAction,
-            nextAction,
             absenceTimeRange,
          };
 

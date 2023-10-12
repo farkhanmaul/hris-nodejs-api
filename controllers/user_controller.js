@@ -592,7 +592,6 @@ async function getAttendanceRecent(req, res) {
          response(404, "01", "No presence data found", {}, res, req);
       } else {
          const { datetime } = lastAttendance;
-         console.log(datetime);
          const formattedDateTime = new Date(datetime);
          const dayName = formattedDateTime.toLocaleDateString("en-US", {
             weekday: "long",

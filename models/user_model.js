@@ -462,7 +462,7 @@ async function getAttendanceTimeRangeByTime(currentTime) {
      `;
       const result = await db2.query(query, [currentTime, currentTime]);
 
-      return result.length > 0 ? result[0][0] : null;
+      return result[0].length > 0 ? result[0][0] : null;
    } catch (error) {
       console.error("Failed to retrieve attendance time range:", error);
       throw error;

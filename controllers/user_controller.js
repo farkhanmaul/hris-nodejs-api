@@ -67,7 +67,7 @@ async function loginWA(req, res) {
       const result = await userModel.getUserMobilePhones(employee_id);
 
       if (!result) {
-         response(404, "01", "User not found", {}, res, req);
+         response(HTTP_STATUS.NOT_FOUND, "01", "User not found", {}, res, req);
       } else {
          const no_hp1 = result.MobilePhone1;
          const no_hp2 = result.MobilePhone2;
@@ -82,7 +82,7 @@ async function loginWA(req, res) {
          } else {
             // Mobile phone not found
             response(
-               404,
+               HTTP_STATUS.NOT_FOUND,
                "02",
                "Mobile phone not found, Please Contact HRD.",
                {},
@@ -144,12 +144,12 @@ async function logout(req, res) {
       const result = await userModel.getTokenStatus(token);
 
       if (!result || result.length === 0 || result[0].length === 0) {
-         response(404, "01", "Token not found", {}, res, req);
+         response(HTTP_STATUS.NOT_FOUND, "01", "Token not found", {}, res, req);
       } else {
          const { status } = result[0][0];
 
          if (status === "closed") {
-            response(400, "02", "Token is already closed", {}, res, req);
+            response(403, "02", "Token is already closed", {}, res, req);
          } else {
             await userModel.closeToken(token);
             response(200, "00", "Logout successful", {}, res, req);
@@ -167,7 +167,7 @@ async function verifyOTP(req, res) {
       !userValidation.validateUserInput(employee_id) ||
       !userValidation.validateUserInput(otp)
    ) {
-      response(400, "04", "Invalid user input", {}, res, req);
+      response(400, "98", "Invalid user input", {}, res, req);
       return;
    }
    try {
@@ -175,13 +175,20 @@ async function verifyOTP(req, res) {
 
       if (!result || result.length === 0 || result[0].length === 0) {
          // Employee ID not found in user_otp table
-         response(404, "01", "Employee ID not found", {}, res, req);
+         response(
+            HTTP_STATUS.NOT_FOUND,
+            "01",
+            "Employee ID not found",
+            {},
+            res,
+            req
+         );
       } else {
          const { otp: storedOTP, expired_at } = result[0][0];
 
          // Check if OTP is expired
          if (new Date() > new Date(expired_at)) {
-            response(400, "02", "OTP has expired", {}, res, req);
+            response(403, "02", "OTP has expired", {}, res, req);
          } else {
             // Verify the OTP (case-insensitive and ignore leading/trailing white spaces)
             if (otp === storedOTP) {
@@ -209,7 +216,14 @@ async function verifyOTP(req, res) {
                );
             } else {
                // OTP is incorrect
-               response(404, "03", "Invalid OTP", {}, res, req);
+               response(
+                  HTTP_STATUS.NOT_FOUND,
+                  "03",
+                  "Data not found",
+                  {},
+                  res,
+                  req
+               );
             }
          }
       }
@@ -242,7 +256,7 @@ async function getProfile(req, res) {
       const result = await userModel.getUserProfile(employee_id);
 
       if (!result || !result.recordset || !result.recordset.length) {
-         response(404, "01", "User not found", {}, res, req);
+         response(HTTP_STATUS.NOT_FOUND, "01", "Data not found", {}, res, req);
       } else {
          const profile = result.recordset[0];
          const birthDate = new Date(profile.BirthDate);
@@ -305,7 +319,7 @@ async function attendance(req, res) {
       !notesValid
    ) {
       // Handle the case where any of the user inputs are potentially malicious
-      response(400, "02", "Invalid user input", {}, res, req);
+      response(400, "98", "Invalid user input", {}, res, req);
       return; // Return early to prevent further processing
    }
 
@@ -332,8 +346,8 @@ async function attendance(req, res) {
          req
       );
    } catch (error) {
-      console.error("Failed to record employee presence:", error);
-      response(500, "99", "Failed to record employee presence", {}, res, req);
+      console.error("Internal Server Error:", error);
+      response(500, "99", "Internal Server Error", {}, res, req);
    }
 }
 async function getAttendanceClock(req, res) {
@@ -362,7 +376,7 @@ async function getAttendanceClock(req, res) {
 
       if (!result || result.length === 0) {
          response(
-            404,
+            HTTP_STATUS.NOT_FOUND,
             "01",
             "No clock data found for the specified date and action",
             { hasClockToday: false },
@@ -416,7 +430,7 @@ async function getAttendanceHistory(req, res) {
       !userValidation.validateUserInput(start_date) ||
       !userValidation.validateUserInput(end_date)
    ) {
-      response(400, "05", "User input invalid", {}, res, req);
+      response(400, "98", "Invalid user input", {}, res, req);
       return; // Exit the function if input is invalid
    }
 
@@ -432,7 +446,7 @@ async function getAttendanceHistory(req, res) {
 
       if (!attendanceData || attendanceData.length === 0) {
          response(
-            404,
+            HTTP_STATUS.NOT_FOUND,
             "01",
             "No presence data found for the specified date range",
             {},
@@ -511,8 +525,8 @@ async function getAttendanceHistory(req, res) {
          req
       );
    } catch (error) {
-      console.error("Failed to retrieve presence data:", error);
-      response(500, "99", "Failed to retrieve presence data", {}, res, req);
+      console.error("Internal Server Error:", error);
+      response(500, "99", "Internal Server Error", {}, res, req);
    }
 }
 
@@ -522,7 +536,7 @@ async function getAttendanceToday(req, res) {
       !userValidation.validateUserInput(employee_id) ||
       !userValidation.validateUserInput(date)
    ) {
-      response(400, "04", "Invalid input", {}, res, req);
+      response(400, "98", "Invalid user input", {}, res, req);
       return;
    }
    try {
@@ -530,7 +544,7 @@ async function getAttendanceToday(req, res) {
 
       if (!result || result.length === 0) {
          response(
-            404,
+            HTTP_STATUS.NOT_FOUND,
             "01",
             "No presence data found for the specified date",
             {},
@@ -571,8 +585,8 @@ async function getAttendanceToday(req, res) {
          );
       }
    } catch (error) {
-      console.error("Failed to retrieve presence data:", error);
-      response(500, "99", "Failed to retrieve presence data", {}, res, req);
+      console.error("Internal Server Error:", error);
+      response(500, "99", "Internal Server Error", {}, res, req);
    }
 }
 
@@ -589,7 +603,7 @@ async function getAttendanceRecent(req, res) {
       const lastAttendance = await userModel.getLastAttendance(employee_id);
 
       if (!lastAttendance) {
-         response(404, "01", "No presence data found", {}, res, req);
+         response(HTTP_STATUS.NOT_FOUND, "01", "Data not found", {}, res, req);
       } else {
          const { datetime } = lastAttendance;
          const formattedDateTime = new Date(datetime);
@@ -670,7 +684,7 @@ async function getRequestCompleted(req, res) {
          !requestData.recordset ||
          !requestData.recordset.length
       ) {
-         response(404, "01", "Data not found", {}, res, req);
+         response(HTTP_STATUS.NOT_FOUND, "01", "Data not found", {}, res, req);
       } else {
          response(
             200,
@@ -706,7 +720,7 @@ async function getRequestRejected(req, res) {
          !requestData.recordset ||
          !requestData.recordset.length
       ) {
-         response(404, "01", "Data not found", {}, res, req);
+         response(HTTP_STATUS.NOT_FOUND, "01", "Data not found", {}, res, req);
       } else {
          response(
             200,
@@ -742,7 +756,7 @@ async function getRequestProgress(req, res) {
          !requestData.recordset ||
          !requestData.recordset.length
       ) {
-         response(404, "01", "Data not found", {}, res, req);
+         response(HTTP_STATUS.NOT_FOUND, "01", "Data not found", {}, res, req);
       } else {
          response(
             200,
@@ -781,7 +795,7 @@ async function getRequestDetail(req, res) {
          !requestData.recordset ||
          !requestData.recordset.length
       ) {
-         response(404, "01", "Data not found", {}, res, req);
+         response(HTTP_STATUS.NOT_FOUND, "01", "Data not found", {}, res, req);
       } else {
          response(
             200,
@@ -813,7 +827,7 @@ async function getLeavePlafonds(req, res) {
       const leaveData = await userModel.getLeavePlaf(employee_id);
 
       if (!leaveData || !leaveData.recordset || !leaveData.recordset.length) {
-         response(404, "01", "Data not found", {}, res, req);
+         response(HTTP_STATUS.NOT_FOUND, "01", "Data not found", {}, res, req);
       } else {
          const lastUpdate = new Date(leaveData.recordset[0].LastUpdateSaldo);
          leaveData.recordset[0].LastUpdateSaldo =
@@ -848,7 +862,7 @@ async function getLeaveList(req, res) {
       const leaveData = await userModel.getLeaveList(employee_id);
 
       if (!leaveData || !leaveData.recordset || !leaveData.recordset.length) {
-         response(404, "01", "Data not found", {}, res, req);
+         response(HTTP_STATUS.NOT_FOUND, "01", "Data not found", {}, res, req);
       } else {
          response(
             200,
@@ -880,7 +894,7 @@ async function getLeaveDetail(req, res) {
       const leaveData = await userModel.getLeaveDet(employee_id, RequestFormId);
 
       if (!leaveData || !leaveData.recordset || !leaveData.recordset.length) {
-         response(404, "01", "Data not found", {}, res, req);
+         response(HTTP_STATUS.NOT_FOUND, "01", "Data not found", {}, res, req);
       } else {
          response(
             200,

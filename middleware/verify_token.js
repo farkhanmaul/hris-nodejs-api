@@ -1,11 +1,22 @@
 const db2 = require("../config/database2");
 const response = require("./response");
 const userModel = require("../models/user_model");
+const userValidation = require("../utils/validation");
 
 async function verifyToken(req, res, next) {
    const apiKey = req.headers["x-api-key"];
+   const { employee_id } = req.body;
+   console.log(employee_id);
+
    if (!apiKey) {
       return response(401, "01", "Unauthorized", {}, res, req);
+   }
+   const isEmployeeIdValid = userValidation.validateUserInput(employee_id);
+   const isAPIKeyValid = userValidation.validateUserInput(apiKey);
+
+   if (!isEmployeeIdValid || !isAPIKeyValid) {
+      response(400, "98", "Invalid user input", {}, res, req);
+      return;
    }
 
    try {

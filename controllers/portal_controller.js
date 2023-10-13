@@ -1,6 +1,11 @@
 const userModel = require("../models/user_model");
 const portalModel = require("../models/portal_model");
 const userValidation = require("../utils/validation");
+const {
+   HTTP_STATUS,
+   RESPONSE_CODES,
+   RESPONSE_MESSAGES,
+} = require("../utils/globals.js");
 const verifyToken = require("../middleware/verify_token.js");
 const response = require("../middleware/response");
 
@@ -20,7 +25,7 @@ async function loginEmailWeb(req, res) {
       const email = await userModel.getUserEmail(employee_id);
 
       if (!email) {
-         response(404, "01", "User not found", {}, res, req);
+         response(HTTP_STATUS.NOT_FOUND, "01", "User not found", {}, res, req);
       } else {
          const otp = userValidation.generateOTP();
          const expired_at = userValidation.generateExpirationDate();
@@ -51,7 +56,7 @@ async function verifyOTPweb(req, res) {
       !userValidation.validateUserInput(employee_id) ||
       !userValidation.validateUserInput(otp)
    ) {
-      response(400, "04", "Invalid user input", {}, res, req);
+      response(400, "98", "Invalid user input", {}, res, req);
       return;
    }
    try {
@@ -59,13 +64,20 @@ async function verifyOTPweb(req, res) {
 
       if (!result || result.length === 0 || result[0].length === 0) {
          // Employee ID not found in user_otp table
-         response(404, "01", "Employee ID not found", {}, res, req);
+         response(
+            HTTP_STATUS.NOT_FOUND,
+            "01",
+            "Employee ID not found",
+            {},
+            res,
+            req
+         );
       } else {
          const { otp: storedOTP, expired_at } = result[0][0];
 
          // Check if OTP is expired
          if (new Date() > new Date(expired_at)) {
-            response(400, "02", "OTP has expired", {}, res, req);
+            response(403, "02", "OTP has expired", {}, res, req);
          } else {
             // Verify the OTP (case-insensitive and ignore leading/trailing white spaces)
             if (otp === storedOTP) {
@@ -93,7 +105,14 @@ async function verifyOTPweb(req, res) {
                );
             } else {
                // OTP is incorrect
-               response(404, "03", "Invalid OTP", {}, res, req);
+               response(
+                  HTTP_STATUS.NOT_FOUND,
+                  "03",
+                  "Data not found",
+                  {},
+                  res,
+                  req
+               );
             }
          }
       }

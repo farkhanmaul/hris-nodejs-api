@@ -6,10 +6,9 @@ const userValidation = require("../utils/validation");
 async function verifyToken(req, res, next) {
    const apiKey = req.headers["x-api-key"];
    const { employee_id } = req.body;
-   console.log(employee_id);
 
    if (!apiKey) {
-      return response(401, "01", "Unauthorized", {}, res, req);
+      return response(401, "90", "Unauthorized", {}, res, req);
    }
    const isEmployeeIdValid = userValidation.validateUserInput(employee_id);
    const isAPIKeyValid = userValidation.validateUserInput(apiKey);
@@ -24,7 +23,7 @@ async function verifyToken(req, res, next) {
       const result = await db2.query(query);
 
       if (!result || !result.length || !result[0].length) {
-         return response(403, "02", "Forbidden", {}, res, req);
+         return response(403, "91", "Forbidden", {}, res, req);
       }
 
       const { employee_id, expired_at, status } = result[0][0];
@@ -32,7 +31,7 @@ async function verifyToken(req, res, next) {
       if (employee_id !== req.body.employee_id) {
          return response(
             403,
-            "04",
+            "92",
             "Token does not match employee ID",
             {},
             res,
@@ -41,10 +40,10 @@ async function verifyToken(req, res, next) {
       }
       if (new Date() > new Date(expired_at)) {
          await userModel.closeToken(apiKey);
-         return response(403, "03", "Token has expired", {}, res, req);
+         return response(403, "93", "Token has expired", {}, res, req);
       }
       if (status === "closed") {
-         return response(403, "05", "Token is closed", {}, res, req);
+         return response(403, "94", "Token is closed", {}, res, req);
       }
 
       if (typeof next === "function") {

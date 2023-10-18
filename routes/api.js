@@ -50,7 +50,16 @@ router.post(
 );
 
 // LEAVE
-router.post("/user/get-leave-list", verifyToken, userController.getLeaveList);
+router.post(
+   "/user/get-leave-list-approve",
+   verifyToken,
+   userController.getLeaveListApprove
+);
+router.post(
+   "/user/get-leave-list-not-approve",
+   verifyToken,
+   userController.getLeaveListNotApprove
+);
 router.post(
    "/user/get-leave-detail",
    verifyToken,

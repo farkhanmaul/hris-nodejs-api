@@ -847,7 +847,7 @@ async function getLeavePlafonds(req, res) {
    }
 }
 
-async function getLeaveList(req, res) {
+async function getLeaveListApprove(req, res) {
    const { employee_id } = req.body;
 
    // Validate the user input
@@ -859,7 +859,39 @@ async function getLeaveList(req, res) {
    }
 
    try {
-      const leaveData = await userModel.getLeaveList(employee_id);
+      const leaveData = await userModel.getLeaveListApprove(employee_id);
+
+      if (!leaveData || !leaveData.recordset || !leaveData.recordset.length) {
+         response(HTTP_STATUS.NOT_FOUND, "01", "Data not found", {}, res, req);
+      } else {
+         response(
+            200,
+            "00",
+            "Leave data retrieved successfully",
+            leaveData.recordset,
+            res,
+            req
+         );
+      }
+   } catch (error) {
+      console.error("Failed to retrieve leave data:", error);
+      response(500, "99", "Internal Server Error", {}, res, req);
+   }
+}
+
+async function getLeaveListNotApprove(req, res) {
+   const { employee_id } = req.body;
+
+   // Validate the user input
+   const isInputValid = userValidation.validateUserInput(employee_id);
+
+   if (!isInputValid) {
+      response(400, "98", "Invalid user input", {}, res, req);
+      return;
+   }
+
+   try {
+      const leaveData = await userModel.getLeaveListNotApprove(employee_id);
 
       if (!leaveData || !leaveData.recordset || !leaveData.recordset.length) {
          response(HTTP_STATUS.NOT_FOUND, "01", "Data not found", {}, res, req);
@@ -966,7 +998,8 @@ module.exports = {
    getRequestProgress,
    getRequestDetail,
    getLeavePlafonds,
-   getLeaveList,
+   getLeaveListApprove,
+   getLeaveListNotApprove,
    getLeaveDetail,
    getMedicalPlafonds,
 };

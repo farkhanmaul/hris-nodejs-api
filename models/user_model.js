@@ -133,7 +133,7 @@ async function getUserProfile(employee_id) {
    try {
       const query = `
       SELECT 
-         e.EmployeeId, e.EmployeeFullName, e.PrimaryEmail, e.BirthDate, e.JoinCompany, 
+         e.EmployeeId, e.EmployeeFullName, e.PrimaryEmail, e.BirthDate, e.JoinCompany, e.MobilePhone1, e.MobilePhone2,
          j.JobTitleLabel,
          o.OrganizationLevelNum, o.OrganizationLevelEngLabel,
          s.StatusEngLabel,
@@ -410,14 +410,57 @@ async function getLeavePlaf(employee_id) {
    }
 }
 
-async function getLeaveList(employee_id) {
+async function getLeaveListApprove(employee_id) {
    try {
       const query = `
-      SELECT PLR.RequestFormId, PLR.EmployeeId, PLR.IsApprove, PLRD.LeaveType 
-      ,FORMAT(PLRD.[StartDate],'dd MMMM yyyy') AS StartDate
-      ,FORMAT(PLRD.[EndDate],'dd MMMM yyyy') AS EndDate
-      , RFL.ReferenceIndLabel FROM [LiteErp].[dbo].[HrPersonalLeaveReq] PLR JOIN [LiteErp].[dbo].[HrPersonalLeaveReqDetail] PLRD ON PLR.RequestFormId = PLRD.RequestFormId JOIN [LiteErp].[dbo].[HrReferenceLeave] RFL ON PLRD.LeaveType = RFL.RefLeaveId WHERE PLR.EmployeeId = '${employee_id}';
-     `;
+  SELECT
+    PLR.RequestFormId,
+    PLR.EmployeeId,
+    PLR.IsApprove,
+    PLRD.LeaveType,
+    FORMAT(PLRD.[StartDate], 'dd MMMM yyyy') AS StartDate,
+    FORMAT(PLRD.[EndDate], 'dd MMMM yyyy') AS EndDate,
+    RFL.ReferenceIndLabel
+  FROM
+    [LiteErp].[dbo].[HrPersonalLeaveReq] PLR
+    JOIN [LiteErp].[dbo].[HrPersonalLeaveReqDetail] PLRD ON PLR.RequestFormId = PLRD.RequestFormId
+    JOIN [LiteErp].[dbo].[HrReferenceLeave] RFL ON PLRD.LeaveType = RFL.RefLeaveId
+  WHERE
+    PLR.EmployeeId = '${employee_id}'
+    AND PLR.IsApprove = 1
+  ORDER BY
+    PLRD.StartDate DESC;
+`;
+
+      const result = await db1(query);
+
+      return result;
+   } catch (error) {
+      throw error;
+   }
+}
+
+async function getLeaveListNotApprove(employee_id) {
+   try {
+      const query = `
+  SELECT
+    PLR.RequestFormId,
+    PLR.EmployeeId,
+    PLR.IsApprove,
+    PLRD.LeaveType,
+    FORMAT(PLRD.[StartDate], 'dd MMMM yyyy') AS StartDate,
+    FORMAT(PLRD.[EndDate], 'dd MMMM yyyy') AS EndDate,
+    RFL.ReferenceIndLabel
+  FROM
+    [LiteErp].[dbo].[HrPersonalLeaveReq] PLR
+    JOIN [LiteErp].[dbo].[HrPersonalLeaveReqDetail] PLRD ON PLR.RequestFormId = PLRD.RequestFormId
+    JOIN [LiteErp].[dbo].[HrReferenceLeave] RFL ON PLRD.LeaveType = RFL.RefLeaveId
+  WHERE
+    PLR.EmployeeId = '${employee_id}'
+    AND PLR.IsApprove = 0
+  ORDER BY
+    PLRD.StartDate DESC;
+`;
 
       const result = await db1(query);
 
@@ -490,7 +533,8 @@ module.exports = {
    getRequestProg,
    getRequestDet,
    getLeavePlaf,
-   getLeaveList,
+   getLeaveListApprove,
+   getLeaveListNotApprove,
    getLeaveDet,
    getAttendanceTimeRangeByTime,
 };

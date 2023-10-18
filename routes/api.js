@@ -51,12 +51,12 @@ router.post(
 
 // LEAVE
 router.post(
-   "/user/get-leave-list-approve",
+   "/user/get-leave-list-approved",
    verifyToken,
    userController.getLeaveListApprove
 );
 router.post(
-   "/user/get-leave-list-not-approve",
+   "/user/get-leave-list-not-approved",
    verifyToken,
    userController.getLeaveListNotApprove
 );

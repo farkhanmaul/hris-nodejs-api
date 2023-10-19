@@ -16,8 +16,6 @@ router.get("/", (req, res) => {
 });
 
 // AUTH
-router.post("/user/login-email-web", acaportalController.loginEmailWeb);
-router.post("/user/verify-otp-web", acaportalController.verifyOTPweb);
 
 router.post("/user/login-email", userController.loginEmail);
 router.post("/user/login-wa", userController.loginWA);
@@ -98,5 +96,10 @@ router.post(
    verifyToken,
    userController.getAttendanceHistory
 );
+
+// PORTAL
+router.post("/portal/login-email", acaportalController.loginEmailWeb);
+// router.post("/portal/login-wa", acaportalController.loginWaWeb);
+router.post("/portal/verify-otp", acaportalController.verifyOTPweb);
 
 module.exports = router;

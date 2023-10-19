@@ -752,21 +752,6 @@ async function getAttendanceRecent(req, res) {
       if (!lastAttendance) {
          response(HTTP_STATUS.NOT_FOUND, "01", "Data not found", {}, res, req);
       } else {
-         const { datetime } = lastAttendance;
-         const formattedDateTime = new Date(datetime);
-         const dayName = formattedDateTime.toLocaleDateString("en-US", {
-            weekday: "long",
-         });
-         const date = formattedDateTime.toLocaleDateString("en-US", {
-            day: "numeric",
-            month: "long",
-         });
-         const time = formattedDateTime.toLocaleTimeString("en-US", {
-            hour: "numeric",
-            minute: "numeric",
-            hour12: false,
-         });
-
          // Get the current timestamp
          const nowTime = new Date();
          const currentTime = nowTime.toLocaleTimeString("en-US", {
@@ -780,14 +765,12 @@ async function getAttendanceRecent(req, res) {
          const absenceTimeRange = await userModel.getAttendanceTimeRangeByTime(
             currentTime
          );
-         // Check if the current time falls within the absence time range
+         const workTimeRange = await userModel.getWorkingHour();
 
          const responsePayload = {
             ...lastAttendance,
-            dayName,
-            date,
-            time,
             absenceTimeRange,
+            workTimeRange,
          };
 
          response(

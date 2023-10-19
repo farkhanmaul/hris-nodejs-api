@@ -272,7 +272,7 @@ async function sendOTPbyWhatsApp(
 }
 
 function getLastAttendance(employee_id) {
-   const query = `SELECT * FROM user_attendance WHERE employee_id = ? ORDER BY datetime DESC LIMIT 1`;
+   const query = `SELECT action FROM user_attendance WHERE employee_id = ? ORDER BY datetime DESC LIMIT 1`;
    return db2.query(query, [employee_id]).then((result) => result[0][0]);
 }
 
@@ -512,6 +512,22 @@ async function getAttendanceTimeRangeByTime(currentTime) {
    }
 }
 
+async function getWorkingHour() {
+   try {
+      const query = `
+       SELECT *
+       FROM attendance_time_range
+       WHERE range_name="Work Time"
+     `;
+      const result = await db2.query(query);
+
+      return result[0].length > 0 ? result[0][0] : null;
+   } catch (error) {
+      console.error("Failed to retrieve attendance time range:", error);
+      throw error;
+   }
+}
+
 module.exports = {
    closeToken,
    sendOTPbyEmail,
@@ -537,4 +553,5 @@ module.exports = {
    getLeaveListNotApprove,
    getLeaveDet,
    getAttendanceTimeRangeByTime,
+   getWorkingHour,
 };

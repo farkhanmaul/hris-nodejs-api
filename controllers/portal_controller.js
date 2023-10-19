@@ -17,7 +17,14 @@ async function loginEmailWeb(req, res) {
    const isInputValid = userValidation.validateUserInput(employee_id);
 
    if (!isInputValid) {
-      response(400, "98", "Invalid user input", {}, res, req);
+      response(
+         HTTP_STATUS.BAD_REQUEST,
+         "98",
+         "Invalid user input",
+         {},
+         res,
+         req
+      );
       return;
    }
 
@@ -36,17 +43,24 @@ async function loginEmailWeb(req, res) {
             employee_id
          );
          response(
-            200,
+            HTTP_STATUS.OK,
             "00",
             "Employee Found, OTP Sent to Email",
-            { email: email },
+            { destination: email },
             res,
             req
          );
       }
    } catch (error) {
       console.error("Failed to retrieve user email:", error);
-      response(500, "99", "Internal Server Error", {}, res, req);
+      response(
+         HTTP_STATUS.INTERNAL_SERVER_ERROR,
+         "99",
+         "Internal Server Error",
+         {},
+         res,
+         req
+      );
    }
 }
 
@@ -56,7 +70,14 @@ async function verifyOTPweb(req, res) {
       !userValidation.validateUserInput(employee_id) ||
       !userValidation.validateUserInput(otp)
    ) {
-      response(400, "98", "Invalid user input", {}, res, req);
+      response(
+         HTTP_STATUS.BAD_REQUEST,
+         "98",
+         "Invalid user input",
+         {},
+         res,
+         req
+      );
       return;
    }
    try {
@@ -77,32 +98,18 @@ async function verifyOTPweb(req, res) {
 
          // Check if OTP is expired
          if (new Date() > new Date(expired_at)) {
-            response(403, "02", "OTP has expired", {}, res, req);
+            response(
+               HTTP_STATUS.FORBIDDEN,
+               "02",
+               "OTP has expired",
+               {},
+               res,
+               req
+            );
          } else {
             // Verify the OTP (case-insensitive and ignore leading/trailing white spaces)
             if (otp === storedOTP) {
-               // OTP is correct
-               // Generate a random 30-digit string token
-               const token = userValidation.generateRandomToken();
-
-               // Generate the expiration date (3 months from the current date)
-               const expirationDate = userValidation.generateExpirationDate();
-
-               // Store the employee_id, token, and expiration date in the database
-               await userModel.storeUserToken(
-                  employee_id,
-                  token,
-                  expirationDate
-               );
-
-               response(
-                  200,
-                  "00",
-                  "OTP verified",
-                  { token, expirationDate },
-                  res,
-                  req
-               );
+               response(HTTP_STATUS.OK, "00", "OTP verified", {}, res, req);
             } else {
                // OTP is incorrect
                response(
@@ -118,7 +125,14 @@ async function verifyOTPweb(req, res) {
       }
    } catch (error) {
       console.error("Failed to verify OTP:", error);
-      response(500, "99", "Internal Server Error", {}, res, req);
+      response(
+         HTTP_STATUS.INTERNAL_SERVER_ERROR,
+         "99",
+         "Internal Server Error",
+         {},
+         res,
+         req
+      );
    }
 }
 

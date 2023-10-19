@@ -4,10 +4,15 @@ const verifyToken = require("../middleware/verify_token.js");
 const userController = require("../controllers/user_controller.js");
 const acaportalController = require("../controllers/portal_controller.js");
 const response = require("../middleware/response");
+const {
+   HTTP_STATUS,
+   RESPONSE_CODES,
+   RESPONSE_MESSAGES,
+} = require("../utils/globals.js");
 
 // STATUS
 router.get("/", (req, res) => {
-   response(200, "00", "API is running", {}, res, req);
+   response(HTTP_STATUS.OK, "00", "API is running", {}, res, req);
 });
 
 // AUTH

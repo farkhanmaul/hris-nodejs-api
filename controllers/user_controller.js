@@ -767,8 +767,22 @@ async function getAttendanceRecent(req, res) {
          );
          const workTimeRange = await userModel.getWorkingHour();
 
+         let greeting;
+
+         if (currentTime >= "05:00:00" && currentTime < "12:00:00") {
+            greeting = "Good afternoon, have a productive day!";
+         } else if (currentTime >= "12:00:00" && currentTime < "18:00:00") {
+            greeting = "Good afternoon, have a productive day!";
+         } else if (currentTime >= "18:00:00" && currentTime < "21:00:00") {
+            greeting = "Good evening, take some time to relax!";
+         } else {
+            greeting = "Good night, have a restful sleep!";
+         }
+
          const responsePayload = {
             ...lastAttendance,
+            currentTime,
+            greeting,
             absenceTimeRange,
             workTimeRange,
          };

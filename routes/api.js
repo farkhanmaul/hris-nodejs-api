@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const verifyToken = require("../middleware/verify_token.js");
 const userController = require("../controllers/user_controller.js");
-const acaportalController = require("../controllers/portal_controller.js");
+const portalController = require("../controllers/portal_controller.js");
 const response = require("../middleware/response");
 const {
    HTTP_STATUS,
@@ -98,8 +98,8 @@ router.post(
 );
 
 // PORTAL
-router.post("/portal/login-email", acaportalController.loginEmailWeb);
-router.post("/portal/login-wa", acaportalController.loginWAWeb);
-router.post("/portal/verify-otp", acaportalController.verifyOTPweb);
+router.post("/portal/login-email", portalController.loginEmailPortal);
+router.post("/portal/login-wa", portalController.loginWAPortal);
+router.post("/portal/verify-otp", portalController.verifyOTPportal);
 
 module.exports = router;

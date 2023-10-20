@@ -6,6 +6,12 @@ const nodemailer = require("nodemailer");
 const axios = require("axios");
 const Mailgen = require("mailgen");
 
+async function checkEmployeeExistence(employee_id) {
+   const query = "SELECT employee_id from user_roles WHERE employee_id = ?";
+   const result = await db3.query(query, [employee_id]);
+   return result[0][0];
+}
+
 async function getUserEmail(employee_id) {
    try {
       const query = `SELECT PrimaryEmail FROM dbo.HrEmployee WHERE EmployeeId = '${employee_id}'`;
@@ -22,7 +28,7 @@ async function getUserEmail(employee_id) {
    }
 }
 
-async function sendOTPbyEmailWeb(receiver, otp, expired_at, employee_id) {
+async function sendOTPbyEmailPortal(receiver, otp, expired_at, employee_id) {
    const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -111,7 +117,7 @@ async function getUserMobilePhones(employee_id) {
    }
 }
 
-async function sendOTPbyWhatsApp(
+async function sendOTPbyWhatsAppPortal(
    email,
    otp,
    expired_at,
@@ -145,7 +151,7 @@ async function sendOTPbyWhatsApp(
    }
 }
 
-async function getUserOTPweb(employee_id) {
+async function getUserOTPportal(employee_id) {
    const query =
       "SELECT otp, expired_at FROM user_otp_web WHERE employee_id = ? ORDER BY created_at DESC LIMIT 1";
    const result = await db3.query(query, [employee_id]);
@@ -153,9 +159,10 @@ async function getUserOTPweb(employee_id) {
 }
 
 module.exports = {
+   checkEmployeeExistence,
    getUserEmail,
-   sendOTPbyEmailWeb,
+   sendOTPbyEmailPortal,
    getUserMobilePhones,
-   sendOTPbyWhatsApp,
-   getUserOTPweb,
+   sendOTPbyWhatsAppPortal,
+   getUserOTPportal,
 };

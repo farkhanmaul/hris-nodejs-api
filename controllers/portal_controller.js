@@ -9,7 +9,7 @@ const verifyToken = require("../middleware/verify_token.js");
 const response = require("../middleware/response");
 
 // login endpoint
-async function loginEmailWeb(req, res) {
+async function loginEmailPortal(req, res) {
    const { employee_id } = req.body;
 
    // Validate the user input
@@ -28,27 +28,49 @@ async function loginEmailWeb(req, res) {
    }
 
    try {
-      const email = await portalModel.getUserEmail(employee_id);
+      const employeeExists = await portalModel.checkEmployeeExistence(
+         employee_id
+      );
 
-      if (!email) {
-         response(HTTP_STATUS.NOT_FOUND, "01", "User not found", {}, res, req);
-      } else {
-         const otp = validation.generateOTP();
-         const expired_at = validation.generateExpirationDate();
-         await portalModel.sendOTPbyEmailWeb(
-            email,
-            otp,
-            expired_at,
-            employee_id
-         );
+      if (!employeeExists) {
          response(
-            HTTP_STATUS.OK,
-            "00",
-            "Employee Found, OTP Sent to Email",
-            { destination: email },
+            HTTP_STATUS.NOT_FOUND,
+            "01",
+            "User does not have permission",
+            {},
             res,
             req
          );
+      } else {
+         const email = await portalModel.getUserEmail(employee_id);
+
+         if (!email) {
+            response(
+               HTTP_STATUS.NOT_FOUND,
+               "01",
+               "User not found",
+               {},
+               res,
+               req
+            );
+         } else {
+            const otp = validation.generateOTP();
+            const expired_at = validation.generateExpirationDate();
+            await portalModel.sendOTPbyEmailPortal(
+               email,
+               otp,
+               expired_at,
+               employee_id
+            );
+            response(
+               HTTP_STATUS.OK,
+               "00",
+               "Employee Found, OTP Sent to Email",
+               { destination: email },
+               res,
+               req
+            );
+         }
       }
    } catch (error) {
       console.error("Failed to retrieve user email:", error);
@@ -63,7 +85,7 @@ async function loginEmailWeb(req, res) {
    }
 }
 
-async function loginWAWeb(req, res) {
+async function loginWAPortal(req, res) {
    const { employee_id } = req.body;
    // Validate the user input
    const isEmployeeIdValid = validation.validateUserInput(employee_id);
@@ -81,70 +103,92 @@ async function loginWAWeb(req, res) {
    }
 
    try {
-      const result = await portalModel.getUserMobilePhones(employee_id);
+      const employeeExists = await portalModel.checkEmployeeExistence(
+         employee_id
+      );
 
-      if (!result) {
-         response(HTTP_STATUS.NOT_FOUND, "01", "User not found", {}, res, req);
+      if (!employeeExists) {
+         response(
+            HTTP_STATUS.NOT_FOUND,
+            "01",
+            "User does not have permission",
+            {},
+            res,
+            req
+         );
       } else {
-         const no_hp1 = result.MobilePhone1;
-         const no_hp2 = result.MobilePhone2;
+         const result = await portalModel.getUserMobilePhones(employee_id);
 
-         // no hp tujuan
-         let destination = "";
-
-         if (no_hp1) {
-            destination = no_hp1;
-         } else if (no_hp2) {
-            destination = no_hp2;
-         } else {
-            // Mobile phone not found
+         if (!result) {
             response(
                HTTP_STATUS.NOT_FOUND,
-               "02",
-               "Mobile phone not found, Please Contact HRD.",
+               "01",
+               "User not found",
                {},
                res,
                req
             );
-            return;
+         } else {
+            const no_hp1 = result.MobilePhone1;
+            const no_hp2 = result.MobilePhone2;
+
+            // no hp tujuan
+            let destination = "";
+
+            if (no_hp1) {
+               destination = no_hp1;
+            } else if (no_hp2) {
+               destination = no_hp2;
+            } else {
+               // Mobile phone not found
+               response(
+                  HTTP_STATUS.NOT_FOUND,
+                  "02",
+                  "Mobile phone not found, Please Contact HRD.",
+                  {},
+                  res,
+                  req
+               );
+               return;
+            }
+
+            const otp = validation.generateOTP();
+            const expired_at = validation.generateExpirationDate();
+            const created_at = new Date();
+            const email = "";
+
+            const headers = {
+               Accept: "application/json",
+               APIKey: process.env.WA_API_KEY,
+            };
+            const url = process.env.WA_URL;
+
+            const data = {
+               destination,
+               message: `This message originated from ACA, \nThis is your OTP code : \n*${otp}* \nPlease do not share your OTP code to anyone. We never ask for your personal OTP code.`,
+            };
+
+            await portalModel.sendOTPbyWhatsAppPortal(
+               email,
+               otp,
+               expired_at,
+               employee_id,
+               created_at,
+               destination,
+               url,
+               headers,
+               data
+            );
+
+            response(
+               HTTP_STATUS.OK,
+               "00",
+               "OTP Sent to WhatsApp",
+               { destination: destination },
+               res,
+               req
+            );
          }
-
-         const otp = validation.generateOTP();
-         const expired_at = validation.generateExpirationDate();
-         const created_at = new Date();
-         const email = "";
-
-         const headers = {
-            Accept: "application/json",
-            APIKey: process.env.WA_API_KEY,
-         };
-         const url = process.env.WA_URL;
-
-         const data = {
-            destination,
-            message: `This message originated from ACA, \nThis is your OTP code : \n*${otp}* \nPlease do not share your OTP code to anyone. We never ask for your personal OTP code.`,
-         };
-
-         await portalModel.sendOTPbyWhatsApp(
-            email,
-            otp,
-            expired_at,
-            employee_id,
-            created_at,
-            destination,
-            url,
-            headers,
-            data
-         );
-
-         response(
-            HTTP_STATUS.OK,
-            "00",
-            "OTP Sent to WhatsApp",
-            { destination: destination },
-            res,
-            req
-         );
       }
    } catch (error) {
       console.error("Failed to send OTP via WhatsApp:", error);
@@ -159,7 +203,7 @@ async function loginWAWeb(req, res) {
    }
 }
 
-async function verifyOTPweb(req, res) {
+async function verifyOTPportal(req, res) {
    const { employee_id, otp } = req.body;
    if (
       !validation.validateUserInput(employee_id) ||
@@ -176,7 +220,7 @@ async function verifyOTPweb(req, res) {
       return;
    }
    try {
-      const result = await portalModel.getUserOTPweb(employee_id);
+      const result = await portalModel.getUserOTPportal(employee_id);
 
       if (!result || result.length === 0 || result[0].length === 0) {
          // Employee ID not found in user_otp table
@@ -232,7 +276,7 @@ async function verifyOTPweb(req, res) {
 }
 
 module.exports = {
-   loginEmailWeb,
-   verifyOTPweb,
-   loginWAWeb,
+   loginEmailPortal,
+   verifyOTPportal,
+   loginWAPortal,
 };

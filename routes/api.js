@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const verifyToken = require("../middleware/verify_token.js");
 const userController = require("../controllers/user_controller.js");
+const userAttendanceController = require("../controllers/user_attendance_controller.js");
+const userLeaveController = require("../controllers/user_leave_controller.js");
 const portalController = require("../controllers/portal_controller.js");
 const response = require("../middleware/response");
 const {
@@ -16,18 +18,38 @@ router.get("/", (req, res) => {
 });
 
 // AUTH
-
 router.post("/user/login-email", userController.loginEmail);
 router.post("/user/login-wa", userController.loginWA);
 router.post("/user/logout", verifyToken, userController.logout);
 router.post("/user/verify-otp", userController.verifyOTP);
 router.post("/user/verify-token", userController.verifyTokenHandler);
-
 router.post("/user/get-profile", verifyToken, userController.getProfile);
+
+// ATTENDANCE
 router.post(
-   "/user/get-medical-plafonds",
+   "/user/attendance",
    verifyToken,
-   userController.getMedicalPlafonds
+   userAttendanceController.attendance
+);
+router.post(
+   "/user/get-attendance-today",
+   verifyToken,
+   userAttendanceController.getAttendanceToday
+);
+router.post(
+   "/user/get-attendance-clock",
+   verifyToken,
+   userAttendanceController.getAttendanceClock
+);
+router.post(
+   "/user/get-attendance-recent",
+   verifyToken,
+   userAttendanceController.getAttendanceRecent
+);
+router.post(
+   "/user/get-attendance-history",
+   verifyToken,
+   userAttendanceController.getAttendanceHistory
 );
 
 // REQUEST CLAIM
@@ -56,7 +78,7 @@ router.post(
 router.post(
    "/user/get-leave-list-approved",
    verifyToken,
-   userController.getLeaveListApprove
+   userLeaveController.getLeaveListApprove
 );
 router.post(
    "/user/get-leave-list-not-approved",
@@ -74,27 +96,10 @@ router.post(
    userController.getLeavePlafonds
 );
 
-// ATTENDANCE
-router.post("/user/attendance", verifyToken, userController.attendance);
 router.post(
-   "/user/get-attendance-today",
+   "/user/get-medical-plafonds",
    verifyToken,
-   userController.getAttendanceToday
-);
-router.post(
-   "/user/get-attendance-clock",
-   verifyToken,
-   userController.getAttendanceClock
-);
-router.post(
-   "/user/get-attendance-recent",
-   verifyToken,
-   userController.getAttendanceRecent
-);
-router.post(
-   "/user/get-attendance-history",
-   verifyToken,
-   userController.getAttendanceHistory
+   userController.getMedicalPlafonds
 );
 
 // PORTAL

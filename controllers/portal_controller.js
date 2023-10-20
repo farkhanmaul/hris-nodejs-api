@@ -47,7 +47,7 @@ async function loginEmailPortal(req, res) {
          if (!email) {
             response(
                HTTP_STATUS.NOT_FOUND,
-               "01",
+               "02",
                "User not found",
                {},
                res,
@@ -122,7 +122,7 @@ async function loginWAPortal(req, res) {
          if (!result) {
             response(
                HTTP_STATUS.NOT_FOUND,
-               "01",
+               "02",
                "User not found",
                {},
                res,
@@ -143,7 +143,7 @@ async function loginWAPortal(req, res) {
                // Mobile phone not found
                response(
                   HTTP_STATUS.NOT_FOUND,
-                  "02",
+                  "03",
                   "Mobile phone not found, Please Contact HRD.",
                   {},
                   res,

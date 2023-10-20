@@ -83,17 +83,17 @@ router.post(
 router.post(
    "/user/get-leave-list-not-approved",
    verifyToken,
-   userController.getLeaveListNotApprove
+   userLeaveController.getLeaveListNotApprove
 );
 router.post(
    "/user/get-leave-detail",
    verifyToken,
-   userController.getLeaveDetail
+   userLeaveController.getLeaveDetail
 );
 router.post(
    "/user/get-leave-plafonds",
    verifyToken,
-   userController.getLeavePlafonds
+   userLeaveController.getLeavePlafonds
 );
 
 router.post(

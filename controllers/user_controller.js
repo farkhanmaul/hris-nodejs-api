@@ -1,5 +1,5 @@
 const userModel = require("../models/user_model");
-const userValidation = require("../utils/validation");
+const validation = require("../utils/validation");
 const {
    HTTP_STATUS,
    RESPONSE_CODES,
@@ -12,8 +12,8 @@ const response = require("../middleware/response");
 async function loginEmail(req, res) {
    const { employee_id, device_id } = req.body;
 
-   const isEmployeeIdValid = userValidation.validateUserInput(employee_id);
-   const isDeviceIdValid = userValidation.validateUserInput(device_id);
+   const isEmployeeIdValid = validation.validateUserInput(employee_id);
+   const isDeviceIdValid = validation.validateUserInput(device_id);
 
    if (!isEmployeeIdValid || !isDeviceIdValid) {
       response(
@@ -33,8 +33,8 @@ async function loginEmail(req, res) {
       if (!email) {
          response(HTTP_STATUS.NOT_FOUND, "01", "User not found", {}, res, req);
       } else {
-         const otp = userValidation.generateOTP();
-         const expired_at = userValidation.generateExpirationDate();
+         const otp = validation.generateOTP();
+         const expired_at = validation.generateExpirationDate();
 
          await userModel.sendOTPbyEmail(
             email,
@@ -69,8 +69,8 @@ async function loginEmail(req, res) {
 async function loginWA(req, res) {
    const { employee_id, device_id } = req.body;
    // Validate the user input
-   const isEmployeeIdValid = userValidation.validateUserInput(employee_id);
-   const isDeviceIdValid = userValidation.validateUserInput(device_id);
+   const isEmployeeIdValid = validation.validateUserInput(employee_id);
+   const isDeviceIdValid = validation.validateUserInput(device_id);
 
    if (!isEmployeeIdValid || !isDeviceIdValid) {
       response(
@@ -113,8 +113,8 @@ async function loginWA(req, res) {
             return;
          }
 
-         const otp = userValidation.generateOTP();
-         const expired_at = userValidation.generateExpirationDate();
+         const otp = validation.generateOTP();
+         const expired_at = validation.generateExpirationDate();
          const created_at = new Date();
          const email = "";
 
@@ -169,7 +169,7 @@ async function logout(req, res) {
 
    const { employee_id } = req.body;
    // Validate the user input
-   const isInputValid = userValidation.validateUserInput(employee_id);
+   const isInputValid = validation.validateUserInput(employee_id);
 
    if (!isInputValid) {
       response(
@@ -220,8 +220,8 @@ async function logout(req, res) {
 async function verifyOTP(req, res) {
    const { employee_id, otp } = req.body;
    if (
-      !userValidation.validateUserInput(employee_id) ||
-      !userValidation.validateUserInput(otp)
+      !validation.validateUserInput(employee_id) ||
+      !validation.validateUserInput(otp)
    ) {
       response(
          HTTP_STATUS.BAD_REQUEST,
@@ -264,10 +264,10 @@ async function verifyOTP(req, res) {
             if (otp === storedOTP) {
                // OTP is correct
                // Generate a random 30-digit string token
-               const token = userValidation.generateRandomToken();
+               const token = validation.generateRandomToken();
 
                // Generate the expiration date (3 months from the current date)
-               const expirationDate = userValidation.generateExpirationDate();
+               const expirationDate = validation.generateExpirationDate();
 
                // Store the employee_id, token, and expiration date in the database
                await userModel.storeUserToken(
@@ -289,7 +289,7 @@ async function verifyOTP(req, res) {
                response(
                   HTTP_STATUS.NOT_FOUND,
                   "03",
-                  "Data not found",
+                  "OTP is incorrect",
                   {},
                   res,
                   req
@@ -329,7 +329,7 @@ async function verifyTokenHandler(req, res, next) {
 async function getProfile(req, res) {
    const { employee_id } = req.body;
    // Validate the user input
-   const isInputValid = userValidation.validateUserInput(employee_id);
+   const isInputValid = validation.validateUserInput(employee_id);
 
    if (!isInputValid) {
       response(
@@ -363,8 +363,8 @@ async function getProfile(req, res) {
             days: diffInDays % 30,
          };
          profile.workingPeriod = workingPeriod;
-         profile.BirthDate = userValidation.formatDate(birthDate); // Format BirthDate
-         profile.JoinCompany = userValidation.formatDate(joinCompanyDate); // Format JoinCompany
+         profile.BirthDate = validation.formatDate(birthDate); // Format BirthDate
+         profile.JoinCompany = validation.formatDate(joinCompanyDate); // Format JoinCompany
 
          response(
             HTTP_STATUS.OK,
@@ -399,13 +399,13 @@ async function attendance(req, res) {
       notes,
    } = req.body;
    // Validate employee_id, longitude, altitude, latitude, location_name, action, and notes
-   const employee_idValid = userValidation.validateUserInput(employee_id);
-   const longitudeValid = userValidation.validateUserInput(longitude);
-   const altitudeValid = userValidation.validateUserInput(altitude);
-   const latitudeValid = userValidation.validateUserInput(latitude);
-   const location_nameValid = userValidation.validateUserInput(location_name);
-   const actionValid = userValidation.validateUserInput(action);
-   const notesValid = userValidation.validateUserInput(notes);
+   const employee_idValid = validation.validateUserInput(employee_id);
+   const longitudeValid = validation.validateUserInput(longitude);
+   const altitudeValid = validation.validateUserInput(altitude);
+   const latitudeValid = validation.validateUserInput(latitude);
+   const location_nameValid = validation.validateUserInput(location_name);
+   const actionValid = validation.validateUserInput(action);
+   const notesValid = validation.validateUserInput(notes);
 
    if (
       !employee_idValid ||
@@ -465,9 +465,9 @@ async function attendance(req, res) {
 async function getAttendanceClock(req, res) {
    const { employee_id, date, action } = req.body;
    if (
-      !userValidation.validateUserInput(employee_id) ||
-      !userValidation.validateUserInput(date) ||
-      !userValidation.validateUserInput(action)
+      !validation.validateUserInput(employee_id) ||
+      !validation.validateUserInput(date) ||
+      !validation.validateUserInput(action)
    ) {
       response(
          HTTP_STATUS.BAD_REQUEST,
@@ -538,9 +538,9 @@ async function getAttendanceHistory(req, res) {
    const { employee_id, start_date, end_date } = req.body;
 
    if (
-      !userValidation.validateUserInput(employee_id) ||
-      !userValidation.validateUserInput(start_date) ||
-      !userValidation.validateUserInput(end_date)
+      !validation.validateUserInput(employee_id) ||
+      !validation.validateUserInput(start_date) ||
+      !validation.validateUserInput(end_date)
    ) {
       response(
          HTTP_STATUS.BAD_REQUEST,
@@ -659,8 +659,8 @@ async function getAttendanceHistory(req, res) {
 async function getAttendanceToday(req, res) {
    const { employee_id, date } = req.body;
    if (
-      !userValidation.validateUserInput(employee_id) ||
-      !userValidation.validateUserInput(date)
+      !validation.validateUserInput(employee_id) ||
+      !validation.validateUserInput(date)
    ) {
       response(
          HTTP_STATUS.BAD_REQUEST,
@@ -733,7 +733,7 @@ async function getAttendanceToday(req, res) {
 async function getAttendanceRecent(req, res) {
    const { employee_id } = req.body;
    // Validate the user input
-   const isInputValid = userValidation.validateUserInput(employee_id);
+   const isInputValid = validation.validateUserInput(employee_id);
 
    if (!isInputValid) {
       response(
@@ -813,7 +813,7 @@ async function getRequestCompleted(req, res) {
    const { employee_id } = req.body;
 
    // Validate the user input
-   const isInputValid = userValidation.validateUserInput(employee_id);
+   const isInputValid = validation.validateUserInput(employee_id);
 
    if (!isInputValid) {
       response(
@@ -863,7 +863,7 @@ async function getRequestRejected(req, res) {
    const { employee_id } = req.body;
 
    // Validate the user input
-   const isInputValid = userValidation.validateUserInput(employee_id);
+   const isInputValid = validation.validateUserInput(employee_id);
 
    if (!isInputValid) {
       response(
@@ -913,7 +913,7 @@ async function getRequestProgress(req, res) {
    const { employee_id } = req.body;
 
    // Validate the user input
-   const isInputValid = userValidation.validateUserInput(employee_id);
+   const isInputValid = validation.validateUserInput(employee_id);
 
    if (!isInputValid) {
       response(
@@ -963,7 +963,7 @@ async function getRequestDetail(req, res) {
    const { employee_id, RequestFormId } = req.body;
 
    // Validate the user input
-   const isInputValid = userValidation.validateUserInput(employee_id);
+   const isInputValid = validation.validateUserInput(employee_id);
 
    if (!isInputValid) {
       response(
@@ -1016,7 +1016,7 @@ async function getLeavePlafonds(req, res) {
    const { employee_id } = req.body;
 
    // Validate the user input
-   const isInputValid = userValidation.validateUserInput(employee_id);
+   const isInputValid = validation.validateUserInput(employee_id);
 
    if (!isInputValid) {
       response(
@@ -1038,7 +1038,7 @@ async function getLeavePlafonds(req, res) {
       } else {
          const lastUpdate = new Date(leaveData.recordset[0].LastUpdateSaldo);
          leaveData.recordset[0].LastUpdateSaldo =
-            userValidation.formatDate(lastUpdate);
+            validation.formatDate(lastUpdate);
          response(
             HTTP_STATUS.OK,
             "00",
@@ -1065,7 +1065,7 @@ async function getLeaveListApprove(req, res) {
    const { employee_id } = req.body;
 
    // Validate the user input
-   const isInputValid = userValidation.validateUserInput(employee_id);
+   const isInputValid = validation.validateUserInput(employee_id);
 
    if (!isInputValid) {
       response(
@@ -1111,7 +1111,7 @@ async function getLeaveListNotApprove(req, res) {
    const { employee_id } = req.body;
 
    // Validate the user input
-   const isInputValid = userValidation.validateUserInput(employee_id);
+   const isInputValid = validation.validateUserInput(employee_id);
 
    if (!isInputValid) {
       response(
@@ -1157,7 +1157,7 @@ async function getLeaveDetail(req, res) {
    const { employee_id, RequestFormId } = req.body;
 
    // Validate the user input
-   const isInputValid = userValidation.validateUserInput(employee_id);
+   const isInputValid = validation.validateUserInput(employee_id);
 
    if (!isInputValid) {
       response(
@@ -1202,7 +1202,7 @@ async function getLeaveDetail(req, res) {
 async function getMedicalPlafonds(req, res) {
    const { employee_id } = req.body;
    // Validate the user input
-   const isInputValid = userValidation.validateUserInput(employee_id);
+   const isInputValid = validation.validateUserInput(employee_id);
 
    if (!isInputValid) {
       response(

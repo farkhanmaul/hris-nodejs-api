@@ -1,7 +1,7 @@
 const db2 = require("../config/database2");
 const response = require("./response");
 const userModel = require("../models/user_model");
-const userValidation = require("../utils/validation");
+const validation = require("../utils/validation");
 const {
    HTTP_STATUS,
    RESPONSE_CODES,
@@ -22,8 +22,8 @@ async function verifyToken(req, res, next) {
          req
       );
    }
-   const isEmployeeIdValid = userValidation.validateUserInput(employee_id);
-   const isAPIKeyValid = userValidation.validateUserInput(apiKey);
+   const isEmployeeIdValid = validation.validateUserInput(employee_id);
+   const isAPIKeyValid = validation.validateUserInput(apiKey);
 
    if (!isEmployeeIdValid || !isAPIKeyValid) {
       response(

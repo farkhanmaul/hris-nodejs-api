@@ -99,7 +99,7 @@ router.post(
 
 // PORTAL
 router.post("/portal/login-email", acaportalController.loginEmailWeb);
-// router.post("/portal/login-wa", acaportalController.loginWaWeb);
+router.post("/portal/login-wa", acaportalController.loginWAWeb);
 router.post("/portal/verify-otp", acaportalController.verifyOTPweb);
 
 module.exports = router;

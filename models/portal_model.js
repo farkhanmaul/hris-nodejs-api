@@ -22,28 +22,6 @@ async function getUserEmail(employee_id) {
    }
 }
 
-async function getUserMobilePhones(employee_id) {
-   try {
-      const query = `SELECT MobilePhone1, MobilePhone2 FROM dbo.HrEmployee WHERE EmployeeId = '${employee_id}'`;
-      const result = await db1(query);
-
-      if (result.recordset && result.recordset.length > 0) {
-         const no_hp = result.recordset[0];
-         if (no_hp.MobilePhone1 && no_hp.MobilePhone1.startsWith("0")) {
-            no_hp.MobilePhone1 = "62" + no_hp.MobilePhone1.slice(1);
-         }
-         if (no_hp.MobilePhone2 && no_hp.MobilePhone2.startsWith("0")) {
-            no_hp.MobilePhone2 = "62" + no_hp.MobilePhone2.slice(1);
-         }
-         return no_hp;
-      } else {
-         return null;
-      }
-   } catch (error) {
-      throw error;
-   }
-}
-
 async function sendOTPbyEmailWeb(receiver, otp, expired_at, employee_id) {
    const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -111,6 +89,62 @@ async function sendOTPbyEmailWeb(receiver, otp, expired_at, employee_id) {
    );
 }
 
+async function getUserMobilePhones(employee_id) {
+   try {
+      const query = `SELECT MobilePhone1, MobilePhone2 FROM dbo.HrEmployee WHERE EmployeeId = '${employee_id}'`;
+      const result = await db1(query);
+
+      if (result.recordset && result.recordset.length > 0) {
+         const no_hp = result.recordset[0];
+         if (no_hp.MobilePhone1 && no_hp.MobilePhone1.startsWith("0")) {
+            no_hp.MobilePhone1 = "62" + no_hp.MobilePhone1.slice(1);
+         }
+         if (no_hp.MobilePhone2 && no_hp.MobilePhone2.startsWith("0")) {
+            no_hp.MobilePhone2 = "62" + no_hp.MobilePhone2.slice(1);
+         }
+         return no_hp;
+      } else {
+         return null;
+      }
+   } catch (error) {
+      throw error;
+   }
+}
+
+async function sendOTPbyWhatsApp(
+   email,
+   otp,
+   expired_at,
+   employee_id,
+   created_at,
+   destination,
+   url,
+   headers,
+   data
+) {
+   try {
+      const insertQuery = `INSERT INTO user_otp_web (email, otp, expired_at, employee_id, created_at, no_hp) VALUES (?, ?, ?, ?, ?, ?)`;
+      await db3.query(insertQuery, [
+         email,
+         otp,
+         expired_at,
+         employee_id,
+         created_at,
+         destination,
+      ]);
+
+      // This Code For Send OTP, Hapus jika tidak perlu
+      const response = await axios.post(url, data, { headers });
+      return response;
+   } catch (error) {
+      console.error(
+         "Failed to send OTP via WhatsApp and store in database:",
+         error
+      );
+      throw error;
+   }
+}
+
 async function getUserOTPweb(employee_id) {
    const query =
       "SELECT otp, expired_at FROM user_otp_web WHERE employee_id = ? ORDER BY created_at DESC LIMIT 1";
@@ -120,7 +154,8 @@ async function getUserOTPweb(employee_id) {
 
 module.exports = {
    getUserEmail,
-   getUserMobilePhones,
    sendOTPbyEmailWeb,
+   getUserMobilePhones,
+   sendOTPbyWhatsApp,
    getUserOTPweb,
 };

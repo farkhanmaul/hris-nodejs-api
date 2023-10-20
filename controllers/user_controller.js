@@ -770,13 +770,13 @@ async function getAttendanceRecent(req, res) {
          let greeting;
 
          if (currentTime >= "05:00:00" && currentTime < "12:00:00") {
-            greeting = "Good afternoon, have a productive day!";
+            greeting = "Good morning";
          } else if (currentTime >= "12:00:00" && currentTime < "18:00:00") {
-            greeting = "Good afternoon, have a productive day!";
+            greeting = "Good afternoon";
          } else if (currentTime >= "18:00:00" && currentTime < "21:00:00") {
-            greeting = "Good evening, take some time to relax!";
+            greeting = "Good evening";
          } else {
-            greeting = "Good night, have a restful sleep!";
+            greeting = "Good night";
          }
 
          const responsePayload = {

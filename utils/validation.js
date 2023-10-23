@@ -10,8 +10,7 @@ function generateExpirationDate() {
 }
 
 function generateRandomToken() {
-   const characters =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+   const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
    let token = "";
    for (let i = 0; i < 30; i++) {
       const randomIndex = Math.floor(Math.random() * characters.length);
@@ -35,15 +34,7 @@ function validateUserInput(userInput) {
    }
 
    const userInputString = String(userInput);
-   const sqlKeywords = [
-      "SELECT",
-      "INSERT",
-      "UPDATE",
-      "DELETE",
-      "DROP",
-      "TABLE",
-      "--",
-   ];
+   const sqlKeywords = ["SELECT", "INSERT", "UPDATE", "DELETE", "DROP", "TABLE", "--"];
    const forbiddenCharacters = ["'", '"', ";", "--"];
 
    for (let i = 0; i < sqlKeywords.length; i++) {

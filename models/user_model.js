@@ -22,13 +22,7 @@ async function getUserEmail(employee_id) {
    }
 }
 
-async function sendOTPbyEmail(
-   receiver,
-   otp,
-   expired_at,
-   employee_id,
-   device_id
-) {
+async function sendOTPbyEmail(receiver, otp, expired_at, employee_id, device_id) {
    const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -48,7 +42,7 @@ async function sendOTPbyEmail(
 
    const email = {
       body: {
-         title: "Welcome to ACA Apps!",
+         title: "Welcome to ACA Mobile Apps!",
          intro: "For the security of your account, a one-time verification process is necessary using an OTP (One-Time Password). Here is your OTP:",
          table: {
             data: [
@@ -82,35 +76,26 @@ async function sendOTPbyEmail(
    const created_at = new Date();
    const no_hp = "";
    const query = `INSERT INTO user_otp (email, otp, expired_at, employee_id, created_at, no_hp) VALUES (?, ?, ?, ?, ?, ?)`;
-   db2.query(
-      query,
-      [receiver, otp, expired_at, employee_id, created_at, no_hp],
-      (error, results) => {
-         if (error) {
-            console.error("Error storing OTP in database:", error);
-         } else {
-            console.log("OTP stored in database");
-         }
+   db2.query(query, [receiver, otp, expired_at, employee_id, created_at, no_hp], (error, results) => {
+      if (error) {
+         console.error("Error storing OTP in database:", error);
+      } else {
+         console.log("OTP stored in database");
       }
-   );
+   });
 
    const query2 = `INSERT INTO user_device (employee_id, device_id, inserted_at, updated_at) VALUES (?, ?, ?,?)`;
-   db2.query(
-      query2,
-      [employee_id, device_id, created_at, created_at],
-      (error, results) => {
-         if (error) {
-            console.error("Error storing Device Id in database:", error);
-         } else {
-            console.log("OTP stored in database");
-         }
+   db2.query(query2, [employee_id, device_id, created_at, created_at], (error, results) => {
+      if (error) {
+         console.error("Error storing Device Id in database:", error);
+      } else {
+         console.log("OTP stored in database");
       }
-   );
+   });
 }
 
 async function getUserOTP(employee_id) {
-   const query =
-      "SELECT otp, expired_at FROM user_otp WHERE employee_id = ? ORDER BY created_at DESC LIMIT 1";
+   const query = "SELECT otp, expired_at FROM user_otp WHERE employee_id = ? ORDER BY created_at DESC LIMIT 1";
    const result = await db2.query(query, [employee_id]);
    return result;
 }
@@ -120,13 +105,7 @@ async function storeUserToken(employee_id, token, expirationDate) {
    const status = "open"; // Default value for the status column
    const created_at = new Date(); // Current datetime value for the created_at column
 
-   await db2.query(insertQuery, [
-      employee_id,
-      token,
-      expirationDate,
-      status,
-      created_at,
-   ]);
+   await db2.query(insertQuery, [employee_id, token, expirationDate, status, created_at]);
 }
 
 async function getUserProfile(employee_id) {
@@ -181,16 +160,7 @@ async function recordEmployeePresence(
 ) {
    const query = `INSERT INTO user_attendance (employee_id, longitude, altitude, latitude, datetime, location_name, action, notes) 
                   VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
-   await db2.query(query, [
-      employee_id,
-      longitude,
-      altitude,
-      latitude,
-      datetime,
-      location_name,
-      action,
-      notes,
-   ]);
+   await db2.query(query, [employee_id, longitude, altitude, latitude, datetime, location_name, action, notes]);
 }
 
 async function getPresenceData(employee_id, date) {
@@ -250,23 +220,13 @@ async function sendOTPbyWhatsApp(
       await db2.query(query2, [employee_id, device_id, created_at, created_at]);
 
       const insertQuery = `INSERT INTO user_otp (email, otp, expired_at, employee_id, created_at, no_hp) VALUES (?, ?, ?, ?, ?, ?)`;
-      await db2.query(insertQuery, [
-         email,
-         otp,
-         expired_at,
-         employee_id,
-         created_at,
-         destination,
-      ]);
+      await db2.query(insertQuery, [email, otp, expired_at, employee_id, created_at, destination]);
 
       // This Code For Send OTP, Hapus jika tidak perlu
       const response = await axios.post(url, data, { headers });
       return response;
    } catch (error) {
-      console.error(
-         "Failed to send OTP via WhatsApp and store in database:",
-         error
-      );
+      console.error("Failed to send OTP via WhatsApp and store in database:", error);
       throw error;
    }
 }

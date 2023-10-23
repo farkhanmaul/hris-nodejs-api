@@ -48,7 +48,7 @@ async function sendOTPbyEmailPortal(receiver, otp, expired_at, employee_id) {
 
    const email = {
       body: {
-         title: "Welcome to ACA Apps!",
+         title: "Welcome to ACA Web Apps!",
          intro: "For the security of your account, a one-time verification process is necessary using an OTP (One-Time Password). Here is your OTP:",
          table: {
             data: [
@@ -82,17 +82,13 @@ async function sendOTPbyEmailPortal(receiver, otp, expired_at, employee_id) {
    const created_at = new Date();
    const no_hp = "";
    const query = `INSERT INTO user_otp_web (email, otp, expired_at, employee_id, created_at, no_hp) VALUES (?, ?, ?, ?, ?, ?)`;
-   db3.query(
-      query,
-      [receiver, otp, expired_at, employee_id, created_at, no_hp],
-      (error, results) => {
-         if (error) {
-            console.error("Error storing OTP in database:", error);
-         } else {
-            console.log("OTP stored in database");
-         }
+   db3.query(query, [receiver, otp, expired_at, employee_id, created_at, no_hp], (error, results) => {
+      if (error) {
+         console.error("Error storing OTP in database:", error);
+      } else {
+         console.log("OTP stored in database");
       }
-   );
+   });
 }
 
 async function getUserMobilePhones(employee_id) {
@@ -130,30 +126,19 @@ async function sendOTPbyWhatsAppPortal(
 ) {
    try {
       const insertQuery = `INSERT INTO user_otp_web (email, otp, expired_at, employee_id, created_at, no_hp) VALUES (?, ?, ?, ?, ?, ?)`;
-      await db3.query(insertQuery, [
-         email,
-         otp,
-         expired_at,
-         employee_id,
-         created_at,
-         destination,
-      ]);
+      await db3.query(insertQuery, [email, otp, expired_at, employee_id, created_at, destination]);
 
       // This Code For Send OTP, Hapus jika tidak perlu
       const response = await axios.post(url, data, { headers });
       return response;
    } catch (error) {
-      console.error(
-         "Failed to send OTP via WhatsApp and store in database:",
-         error
-      );
+      console.error("Failed to send OTP via WhatsApp and store in database:", error);
       throw error;
    }
 }
 
 async function getUserOTPportal(employee_id) {
-   const query =
-      "SELECT otp, expired_at FROM user_otp_web WHERE employee_id = ? ORDER BY created_at DESC LIMIT 1";
+   const query = "SELECT otp, expired_at FROM user_otp_web WHERE employee_id = ? ORDER BY created_at DESC LIMIT 1";
    const result = await db3.query(query, [employee_id]);
    return result;
 }

@@ -1,22 +1,10 @@
 const userModel = require("../models/user_model");
 const validation = require("../utils/validation");
-const {
-   HTTP_STATUS,
-   RESPONSE_CODES,
-   RESPONSE_MESSAGES,
-} = require("../utils/globals.js");
+const { HTTP_STATUS, RESPONSE_CODES, RESPONSE_MESSAGES } = require("../utils/globals.js");
 const response = require("../middleware/response");
 
 async function attendance(req, res) {
-   const {
-      employee_id,
-      longitude,
-      altitude,
-      latitude,
-      location_name,
-      action,
-      notes,
-   } = req.body;
+   const { employee_id, longitude, altitude, latitude, location_name, action, notes } = req.body;
    // Validate employee_id, longitude, altitude, latitude, location_name, action, and notes
    const employee_idValid = validation.validateUserInput(employee_id);
    const longitudeValid = validation.validateUserInput(longitude);
@@ -36,14 +24,7 @@ async function attendance(req, res) {
       !notesValid
    ) {
       // Handle the case where any of the user inputs are potentially malicious
-      response(
-         HTTP_STATUS.BAD_REQUEST,
-         "98",
-         "Invalid user input",
-         {},
-         res,
-         req
-      );
+      response(HTTP_STATUS.BAD_REQUEST, "98", "Invalid user input", {}, res, req);
       return; // Return early to prevent further processing
    }
 
@@ -61,24 +42,10 @@ async function attendance(req, res) {
          notes
       );
       // Send the regular success response
-      response(
-         HTTP_STATUS.OK,
-         "00",
-         "Employee presence recorded successfully",
-         {},
-         res,
-         req
-      );
+      response(HTTP_STATUS.OK, "00", "Employee presence recorded successfully", {}, res, req);
    } catch (error) {
       console.error("Internal Server Error:", error);
-      response(
-         HTTP_STATUS.INTERNAL_SERVER_ERROR,
-         "99",
-         "Internal Server Error",
-         {},
-         res,
-         req
-      );
+      response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Internal Server Error", {}, res, req);
    }
 }
 async function getAttendanceClock(req, res) {
@@ -99,11 +66,7 @@ async function getAttendanceClock(req, res) {
       return; // Exit the function if input is invalid
    }
    try {
-      const result = await userModel.getClockTimeData(
-         employee_id,
-         date,
-         action
-      );
+      const result = await userModel.getClockTimeData(employee_id, date, action);
 
       if (!result || result.length === 0) {
          response(
@@ -116,14 +79,11 @@ async function getAttendanceClock(req, res) {
          );
       } else {
          const clockTime = result[0].clockTime;
-         const clockDate = new Date(result[0].clockDate).toLocaleDateString(
-            "id-ID",
-            {
-               day: "numeric",
-               month: "long",
-               year: "numeric",
-            }
-         );
+         const clockDate = new Date(result[0].clockDate).toLocaleDateString("id-ID", {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+         });
 
          const action = result[0].action;
          response(
@@ -161,14 +121,7 @@ async function getAttendanceHistory(req, res) {
       !validation.validateUserInput(start_date) ||
       !validation.validateUserInput(end_date)
    ) {
-      response(
-         HTTP_STATUS.BAD_REQUEST,
-         "98",
-         "Invalid user input",
-         {},
-         res,
-         req
-      );
+      response(HTTP_STATUS.BAD_REQUEST, "98", "Invalid user input", {}, res, req);
       return; // Exit the function if input is invalid
    }
 
@@ -176,21 +129,10 @@ async function getAttendanceHistory(req, res) {
       const end_datePlusOneDay = new Date(end_date);
       end_datePlusOneDay.setDate(end_datePlusOneDay.getDate() + 1);
 
-      const attendanceData = await userModel.getAttendanceHistory(
-         employee_id,
-         start_date,
-         end_datePlusOneDay
-      );
+      const attendanceData = await userModel.getAttendanceHistory(employee_id, start_date, end_datePlusOneDay);
 
       if (!attendanceData || attendanceData.length === 0) {
-         response(
-            HTTP_STATUS.NOT_FOUND,
-            "01",
-            "No presence data found for the specified date range",
-            {},
-            res,
-            req
-         );
+         response(HTTP_STATUS.NOT_FOUND, "01", "No presence data found for the specified date range", {}, res, req);
          return; // Exit the function if no data found
       }
 
@@ -232,12 +174,8 @@ async function getAttendanceHistory(req, res) {
             const dayData = attendanceByDay[day];
 
             const clockIn = dayData.find((data) => data.action === "Clock In");
-            const clockBreakIn = dayData.find(
-               (data) => data.action === "Clock Break In"
-            );
-            const clockOut = dayData.find(
-               (data) => data.action === "Clock Out"
-            );
+            const clockBreakIn = dayData.find((data) => data.action === "Clock Break In");
+            const clockOut = dayData.find((data) => data.action === "Clock Out");
 
             const duration = userModel.calculateDuration(clockIn, clockOut);
 
@@ -254,55 +192,24 @@ async function getAttendanceHistory(req, res) {
          responsePayload = combinedData;
       }
 
-      response(
-         HTTP_STATUS.OK,
-         "00",
-         "Presence data retrieved successfully",
-         responsePayload,
-         res,
-         req
-      );
+      response(HTTP_STATUS.OK, "00", "Presence data retrieved successfully", responsePayload, res, req);
    } catch (error) {
       console.error("Internal Server Error:", error);
-      response(
-         HTTP_STATUS.INTERNAL_SERVER_ERROR,
-         "99",
-         "Internal Server Error",
-         {},
-         res,
-         req
-      );
+      response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Internal Server Error", {}, res, req);
    }
 }
 
 async function getAttendanceToday(req, res) {
    const { employee_id, date } = req.body;
-   if (
-      !validation.validateUserInput(employee_id) ||
-      !validation.validateUserInput(date)
-   ) {
-      response(
-         HTTP_STATUS.BAD_REQUEST,
-         "98",
-         "Invalid user input",
-         {},
-         res,
-         req
-      );
+   if (!validation.validateUserInput(employee_id) || !validation.validateUserInput(date)) {
+      response(HTTP_STATUS.BAD_REQUEST, "98", "Invalid user input", {}, res, req);
       return;
    }
    try {
       const result = await userModel.getPresenceData(employee_id, date);
 
       if (!result || result.length === 0) {
-         response(
-            HTTP_STATUS.NOT_FOUND,
-            "01",
-            "No presence data found for the specified date",
-            {},
-            res,
-            req
-         );
+         response(HTTP_STATUS.NOT_FOUND, "01", "No presence data found for the specified date", {}, res, req);
       } else {
          const attendanceData = result.map((row) => {
             const datetime = new Date(row.datetime);
@@ -327,25 +234,11 @@ async function getAttendanceToday(req, res) {
             };
          });
 
-         response(
-            HTTP_STATUS.OK,
-            "00",
-            "Presence data retrieved successfully",
-            attendanceData,
-            res,
-            req
-         );
+         response(HTTP_STATUS.OK, "00", "Presence data retrieved successfully", attendanceData, res, req);
       }
    } catch (error) {
       console.error("Internal Server Error:", error);
-      response(
-         HTTP_STATUS.INTERNAL_SERVER_ERROR,
-         "99",
-         "Internal Server Error",
-         {},
-         res,
-         req
-      );
+      response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Internal Server Error", {}, res, req);
    }
 }
 
@@ -355,14 +248,7 @@ async function getAttendanceRecent(req, res) {
    const isInputValid = validation.validateUserInput(employee_id);
 
    if (!isInputValid) {
-      response(
-         HTTP_STATUS.BAD_REQUEST,
-         "98",
-         "Invalid user input",
-         {},
-         res,
-         req
-      );
+      response(HTTP_STATUS.BAD_REQUEST, "98", "Invalid user input", {}, res, req);
       return;
    }
    try {
@@ -381,9 +267,7 @@ async function getAttendanceRecent(req, res) {
          });
 
          // Retrieve the relevant absence time range based on the current timestamp
-         const absenceTimeRange = await userModel.getAttendanceTimeRangeByTime(
-            currentTime
-         );
+         const absenceTimeRange = await userModel.getAttendanceTimeRangeByTime(currentTime);
          const workTimeRange = await userModel.getWorkingHour();
 
          let greeting;
@@ -406,25 +290,11 @@ async function getAttendanceRecent(req, res) {
             workTimeRange,
          };
 
-         response(
-            HTTP_STATUS.OK,
-            "00",
-            "Last attendance data retrieved successfully",
-            responsePayload,
-            res,
-            req
-         );
+         response(HTTP_STATUS.OK, "00", "Last attendance data retrieved successfully", responsePayload, res, req);
       }
    } catch (error) {
       console.error("Failed to retrieve last attendance data:", error);
-      response(
-         HTTP_STATUS.INTERNAL_SERVER_ERROR,
-         "99",
-         "Failed to retrieve last attendance data",
-         {},
-         res,
-         req
-      );
+      response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Failed to retrieve last attendance data", {}, res, req);
    }
 }
 

@@ -1,10 +1,6 @@
 const userModel = require("../models/user_model");
 const validation = require("../utils/validation");
-const {
-   HTTP_STATUS,
-   RESPONSE_CODES,
-   RESPONSE_MESSAGES,
-} = require("../utils/globals.js");
+const { HTTP_STATUS, RESPONSE_CODES, RESPONSE_MESSAGES } = require("../utils/globals.js");
 const verifyToken = require("../middleware/verify_token.js");
 const response = require("../middleware/response");
 
@@ -16,14 +12,7 @@ async function loginEmail(req, res) {
    const isDeviceIdValid = validation.validateUserInput(device_id);
 
    if (!isEmployeeIdValid || !isDeviceIdValid) {
-      response(
-         HTTP_STATUS.BAD_REQUEST,
-         "98",
-         "Invalid user input",
-         {},
-         res,
-         req
-      );
+      response(HTTP_STATUS.BAD_REQUEST, "98", "Invalid user input", {}, res, req);
       return;
    }
 
@@ -36,33 +25,13 @@ async function loginEmail(req, res) {
          const otp = validation.generateOTP();
          const expired_at = validation.generateExpirationDate();
 
-         await userModel.sendOTPbyEmail(
-            email,
-            otp,
-            expired_at,
-            employee_id,
-            device_id
-         );
+         await userModel.sendOTPbyEmail(email, otp, expired_at, employee_id, device_id);
 
-         response(
-            HTTP_STATUS.OK,
-            "00",
-            "Employee Found, OTP Sent to Email",
-            { destination: email },
-            res,
-            req
-         );
+         response(HTTP_STATUS.OK, "00", "Employee Found, OTP Sent to Email", { destination: email }, res, req);
       }
    } catch (error) {
       console.error("Failed to retrieve user email:", error);
-      response(
-         HTTP_STATUS.INTERNAL_SERVER_ERROR,
-         "99",
-         "Internal Server Error",
-         {},
-         res,
-         req
-      );
+      response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Internal Server Error", {}, res, req);
    }
 }
 
@@ -73,14 +42,7 @@ async function loginWA(req, res) {
    const isDeviceIdValid = validation.validateUserInput(device_id);
 
    if (!isEmployeeIdValid || !isDeviceIdValid) {
-      response(
-         HTTP_STATUS.BAD_REQUEST,
-         "98",
-         "Invalid user input",
-         {},
-         res,
-         req
-      );
+      response(HTTP_STATUS.BAD_REQUEST, "98", "Invalid user input", {}, res, req);
       return;
    }
 
@@ -102,14 +64,7 @@ async function loginWA(req, res) {
             destination = no_hp2;
          } else {
             // Mobile phone not found
-            response(
-               HTTP_STATUS.NOT_FOUND,
-               "02",
-               "Mobile phone not found, Please Contact HRD.",
-               {},
-               res,
-               req
-            );
+            response(HTTP_STATUS.NOT_FOUND, "02", "Mobile phone not found, Please Contact HRD.", {}, res, req);
             return;
          }
 
@@ -142,25 +97,11 @@ async function loginWA(req, res) {
             data
          );
 
-         response(
-            HTTP_STATUS.OK,
-            "00",
-            "OTP Sent to WhatsApp",
-            { destination: destination },
-            res,
-            req
-         );
+         response(HTTP_STATUS.OK, "00", "OTP Sent to WhatsApp", { destination: destination }, res, req);
       }
    } catch (error) {
       console.error("Failed to send OTP via WhatsApp:", error);
-      response(
-         HTTP_STATUS.INTERNAL_SERVER_ERROR,
-         "99",
-         "Internal Server Error",
-         {},
-         res,
-         req
-      );
+      response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Internal Server Error", {}, res, req);
    }
 }
 
@@ -172,14 +113,7 @@ async function logout(req, res) {
    const isInputValid = validation.validateUserInput(employee_id);
 
    if (!isInputValid) {
-      response(
-         HTTP_STATUS.BAD_REQUEST,
-         "98",
-         "Invalid user input",
-         {},
-         res,
-         req
-      );
+      response(HTTP_STATUS.BAD_REQUEST, "98", "Invalid user input", {}, res, req);
       return;
    }
    try {
@@ -191,14 +125,7 @@ async function logout(req, res) {
          const { status } = result[0][0];
 
          if (status === "closed") {
-            response(
-               HTTP_STATUS.FORBIDDEN,
-               "02",
-               "Token is already closed",
-               {},
-               res,
-               req
-            );
+            response(HTTP_STATUS.FORBIDDEN, "02", "Token is already closed", {}, res, req);
          } else {
             await userModel.closeToken(token);
             response(HTTP_STATUS.OK, "00", "Logout successful", {}, res, req);
@@ -206,31 +133,14 @@ async function logout(req, res) {
       }
    } catch (error) {
       console.error("Failed to logout:", error);
-      response(
-         HTTP_STATUS.INTERNAL_SERVER_ERROR,
-         "99",
-         "Internal Server Error",
-         {},
-         res,
-         req
-      );
+      response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Internal Server Error", {}, res, req);
    }
 }
 
 async function verifyOTP(req, res) {
    const { employee_id, otp } = req.body;
-   if (
-      !validation.validateUserInput(employee_id) ||
-      !validation.validateUserInput(otp)
-   ) {
-      response(
-         HTTP_STATUS.BAD_REQUEST,
-         "98",
-         "Invalid user input",
-         {},
-         res,
-         req
-      );
+   if (!validation.validateUserInput(employee_id) || !validation.validateUserInput(otp)) {
+      response(HTTP_STATUS.BAD_REQUEST, "98", "Invalid user input", {}, res, req);
       return;
    }
    try {
@@ -238,27 +148,13 @@ async function verifyOTP(req, res) {
 
       if (!result || result.length === 0 || result[0].length === 0) {
          // Employee ID not found in user_otp table
-         response(
-            HTTP_STATUS.NOT_FOUND,
-            "01",
-            "Employee ID not found",
-            {},
-            res,
-            req
-         );
+         response(HTTP_STATUS.NOT_FOUND, "01", "Employee ID not found", {}, res, req);
       } else {
          const { otp: storedOTP, expired_at } = result[0][0];
 
          // Check if OTP is expired
          if (new Date() > new Date(expired_at)) {
-            response(
-               HTTP_STATUS.FORBIDDEN,
-               "02",
-               "OTP has expired",
-               {},
-               res,
-               req
-            );
+            response(HTTP_STATUS.FORBIDDEN, "02", "OTP has expired", {}, res, req);
          } else {
             // Verify the OTP (case-insensitive and ignore leading/trailing white spaces)
             if (otp === storedOTP) {
@@ -270,43 +166,18 @@ async function verifyOTP(req, res) {
                const expirationDate = validation.generateExpirationDate();
 
                // Store the employee_id, token, and expiration date in the database
-               await userModel.storeUserToken(
-                  employee_id,
-                  token,
-                  expirationDate
-               );
+               await userModel.storeUserToken(employee_id, token, expirationDate);
 
-               response(
-                  HTTP_STATUS.OK,
-                  "00",
-                  "OTP verified",
-                  { token, expirationDate },
-                  res,
-                  req
-               );
+               response(HTTP_STATUS.OK, "00", "OTP verified", { token, expirationDate }, res, req);
             } else {
                // OTP is incorrect
-               response(
-                  HTTP_STATUS.NOT_FOUND,
-                  "03",
-                  "OTP is incorrect",
-                  {},
-                  res,
-                  req
-               );
+               response(HTTP_STATUS.NOT_FOUND, "03", "OTP is incorrect", {}, res, req);
             }
          }
       }
    } catch (error) {
       console.error("Failed to verify OTP:", error);
-      response(
-         HTTP_STATUS.INTERNAL_SERVER_ERROR,
-         "99",
-         "Internal Server Error",
-         {},
-         res,
-         req
-      );
+      response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Internal Server Error", {}, res, req);
    }
 }
 
@@ -315,14 +186,7 @@ async function verifyTokenHandler(req, res, next) {
       await verifyToken(req, res); // Pass req, res, and next as separate arguments
    } catch (error) {
       console.error("Failed to verify token:", error);
-      return response(
-         HTTP_STATUS.INTERNAL_SERVER_ERROR,
-         "99",
-         "Internal Server Error",
-         {},
-         res,
-         req
-      );
+      return response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Internal Server Error", {}, res, req);
    }
 }
 
@@ -332,14 +196,7 @@ async function getProfile(req, res) {
    const isInputValid = validation.validateUserInput(employee_id);
 
    if (!isInputValid) {
-      response(
-         HTTP_STATUS.BAD_REQUEST,
-         "98",
-         "Invalid user input",
-         {},
-         res,
-         req
-      );
+      response(HTTP_STATUS.BAD_REQUEST, "98", "Invalid user input", {}, res, req);
       return;
    }
 
@@ -366,25 +223,11 @@ async function getProfile(req, res) {
          profile.BirthDate = validation.formatDate(birthDate); // Format BirthDate
          profile.JoinCompany = validation.formatDate(joinCompanyDate); // Format JoinCompany
 
-         response(
-            HTTP_STATUS.OK,
-            "00",
-            "Profile retrieved successfully",
-            profile,
-            res,
-            req
-         );
+         response(HTTP_STATUS.OK, "00", "Profile retrieved successfully", profile, res, req);
       }
    } catch (error) {
       console.error("Failed to retrieve user profile:", error);
-      response(
-         HTTP_STATUS.INTERNAL_SERVER_ERROR,
-         "99",
-         "Internal Server Error",
-         {},
-         res,
-         req
-      );
+      response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Internal Server Error", {}, res, req);
    }
 }
 
@@ -395,46 +238,21 @@ async function getRequestCompleted(req, res) {
    const isInputValid = validation.validateUserInput(employee_id);
 
    if (!isInputValid) {
-      response(
-         HTTP_STATUS.BAD_REQUEST,
-         "98",
-         "Invalid user input",
-         {},
-         res,
-         req
-      );
+      response(HTTP_STATUS.BAD_REQUEST, "98", "Invalid user input", {}, res, req);
       return;
    }
 
    try {
       const requestData = await userModel.getRequestComp(employee_id);
 
-      if (
-         !requestData ||
-         !requestData.recordset ||
-         !requestData.recordset.length
-      ) {
+      if (!requestData || !requestData.recordset || !requestData.recordset.length) {
          response(HTTP_STATUS.NOT_FOUND, "01", "Data not found", {}, res, req);
       } else {
-         response(
-            HTTP_STATUS.OK,
-            "00",
-            "Request data retrieved successfully",
-            requestData.recordset,
-            res,
-            req
-         );
+         response(HTTP_STATUS.OK, "00", "Request data retrieved successfully", requestData.recordset, res, req);
       }
    } catch (error) {
       console.error("Failed to retrieve request data:", error);
-      response(
-         HTTP_STATUS.INTERNAL_SERVER_ERROR,
-         "99",
-         "Internal Server Error",
-         {},
-         res,
-         req
-      );
+      response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Internal Server Error", {}, res, req);
    }
 }
 
@@ -445,46 +263,21 @@ async function getRequestRejected(req, res) {
    const isInputValid = validation.validateUserInput(employee_id);
 
    if (!isInputValid) {
-      response(
-         HTTP_STATUS.BAD_REQUEST,
-         "98",
-         "Invalid user input",
-         {},
-         res,
-         req
-      );
+      response(HTTP_STATUS.BAD_REQUEST, "98", "Invalid user input", {}, res, req);
       return;
    }
 
    try {
       const requestData = await userModel.getRequestReject(employee_id);
 
-      if (
-         !requestData ||
-         !requestData.recordset ||
-         !requestData.recordset.length
-      ) {
+      if (!requestData || !requestData.recordset || !requestData.recordset.length) {
          response(HTTP_STATUS.NOT_FOUND, "01", "Data not found", {}, res, req);
       } else {
-         response(
-            HTTP_STATUS.OK,
-            "00",
-            "Request data retrieved successfully",
-            requestData.recordset,
-            res,
-            req
-         );
+         response(HTTP_STATUS.OK, "00", "Request data retrieved successfully", requestData.recordset, res, req);
       }
    } catch (error) {
       console.error("Failed to retrieve request data:", error);
-      response(
-         HTTP_STATUS.INTERNAL_SERVER_ERROR,
-         "99",
-         "Internal Server Error",
-         {},
-         res,
-         req
-      );
+      response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Internal Server Error", {}, res, req);
    }
 }
 
@@ -495,46 +288,21 @@ async function getRequestProgress(req, res) {
    const isInputValid = validation.validateUserInput(employee_id);
 
    if (!isInputValid) {
-      response(
-         HTTP_STATUS.BAD_REQUEST,
-         "98",
-         "Invalid user input",
-         {},
-         res,
-         req
-      );
+      response(HTTP_STATUS.BAD_REQUEST, "98", "Invalid user input", {}, res, req);
       return;
    }
 
    try {
       const requestData = await userModel.getRequestProg(employee_id);
 
-      if (
-         !requestData ||
-         !requestData.recordset ||
-         !requestData.recordset.length
-      ) {
+      if (!requestData || !requestData.recordset || !requestData.recordset.length) {
          response(HTTP_STATUS.NOT_FOUND, "01", "Data not found", {}, res, req);
       } else {
-         response(
-            HTTP_STATUS.OK,
-            "00",
-            "Request data retrieved successfully",
-            requestData.recordset,
-            res,
-            req
-         );
+         response(HTTP_STATUS.OK, "00", "Request data retrieved successfully", requestData.recordset, res, req);
       }
    } catch (error) {
       console.error("Failed to retrieve request data:", error);
-      response(
-         HTTP_STATUS.INTERNAL_SERVER_ERROR,
-         "99",
-         "Internal Server Error",
-         {},
-         res,
-         req
-      );
+      response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Internal Server Error", {}, res, req);
    }
 }
 
@@ -545,49 +313,21 @@ async function getRequestDetail(req, res) {
    const isInputValid = validation.validateUserInput(employee_id);
 
    if (!isInputValid) {
-      response(
-         HTTP_STATUS.BAD_REQUEST,
-         "98",
-         "Invalid user input",
-         {},
-         res,
-         req
-      );
+      response(HTTP_STATUS.BAD_REQUEST, "98", "Invalid user input", {}, res, req);
       return;
    }
 
    try {
-      const requestData = await userModel.getRequestDet(
-         employee_id,
-         RequestFormId
-      );
+      const requestData = await userModel.getRequestDet(employee_id, RequestFormId);
 
-      if (
-         !requestData ||
-         !requestData.recordset ||
-         !requestData.recordset.length
-      ) {
+      if (!requestData || !requestData.recordset || !requestData.recordset.length) {
          response(HTTP_STATUS.NOT_FOUND, "01", "Data not found", {}, res, req);
       } else {
-         response(
-            HTTP_STATUS.OK,
-            "00",
-            "Request data retrieved successfully",
-            requestData.recordset[0],
-            res,
-            req
-         );
+         response(HTTP_STATUS.OK, "00", "Request data retrieved successfully", requestData.recordset[0], res, req);
       }
    } catch (error) {
       console.error("Failed to retrieve request data:", error);
-      response(
-         HTTP_STATUS.INTERNAL_SERVER_ERROR,
-         "99",
-         "Internal Server Error",
-         {},
-         res,
-         req
-      );
+      response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Internal Server Error", {}, res, req);
    }
 }
 
@@ -597,14 +337,7 @@ async function getMedicalPlafonds(req, res) {
    const isInputValid = validation.validateUserInput(employee_id);
 
    if (!isInputValid) {
-      response(
-         HTTP_STATUS.BAD_REQUEST,
-         "98",
-         "Invalid user input",
-         {},
-         res,
-         req
-      );
+      response(HTTP_STATUS.BAD_REQUEST, "98", "Invalid user input", {}, res, req);
       return;
    }
 
@@ -622,24 +355,10 @@ async function getMedicalPlafonds(req, res) {
          expiredDate,
       };
 
-      response(
-         HTTP_STATUS.OK,
-         "00",
-         "Plafonds retrieved successfully",
-         plafondsData,
-         res,
-         req
-      );
+      response(HTTP_STATUS.OK, "00", "Plafonds retrieved successfully", plafondsData, res, req);
    } catch (error) {
       console.error("Failed to retrieve plafonds:", error);
-      response(
-         HTTP_STATUS.INTERNAL_SERVER_ERROR,
-         "99",
-         "Internal Server Error",
-         {},
-         res,
-         req
-      );
+      response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Internal Server Error", {}, res, req);
    }
 }
 

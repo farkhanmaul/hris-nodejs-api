@@ -1,10 +1,6 @@
 const portalModel = require("../models/portal_model");
 const validation = require("../utils/validation");
-const {
-   HTTP_STATUS,
-   RESPONSE_CODES,
-   RESPONSE_MESSAGES,
-} = require("../utils/globals.js");
+const { HTTP_STATUS, RESPONSE_CODES, RESPONSE_MESSAGES } = require("../utils/globals.js");
 const verifyToken = require("../middleware/verify_token.js");
 const response = require("../middleware/response");
 
@@ -16,72 +12,30 @@ async function loginEmailPortal(req, res) {
    const isInputValid = validation.validateUserInput(employee_id);
 
    if (!isInputValid) {
-      response(
-         HTTP_STATUS.BAD_REQUEST,
-         "98",
-         "Invalid user input",
-         {},
-         res,
-         req
-      );
+      response(HTTP_STATUS.BAD_REQUEST, "98", "Invalid user input", {}, res, req);
       return;
    }
 
    try {
-      const employeeExists = await portalModel.checkEmployeeExistence(
-         employee_id
-      );
+      const employeeExists = await portalModel.checkEmployeeExistence(employee_id);
 
       if (!employeeExists) {
-         response(
-            HTTP_STATUS.NOT_FOUND,
-            "01",
-            "User does not have permission",
-            {},
-            res,
-            req
-         );
+         response(HTTP_STATUS.NOT_FOUND, "01", "User does not have permission", {}, res, req);
       } else {
          const email = await portalModel.getUserEmail(employee_id);
 
          if (!email) {
-            response(
-               HTTP_STATUS.NOT_FOUND,
-               "02",
-               "User not found",
-               {},
-               res,
-               req
-            );
+            response(HTTP_STATUS.NOT_FOUND, "02", "User not found", {}, res, req);
          } else {
             const otp = validation.generateOTP();
             const expired_at = validation.generateExpirationDate();
-            await portalModel.sendOTPbyEmailPortal(
-               email,
-               otp,
-               expired_at,
-               employee_id
-            );
-            response(
-               HTTP_STATUS.OK,
-               "00",
-               "Employee Found, OTP Sent to Email",
-               { destination: email },
-               res,
-               req
-            );
+            await portalModel.sendOTPbyEmailPortal(email, otp, expired_at, employee_id);
+            response(HTTP_STATUS.OK, "00", "Employee Found, OTP Sent to Email", { destination: email }, res, req);
          }
       }
    } catch (error) {
       console.error("Failed to retrieve user email:", error);
-      response(
-         HTTP_STATUS.INTERNAL_SERVER_ERROR,
-         "99",
-         "Internal Server Error",
-         {},
-         res,
-         req
-      );
+      response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Internal Server Error", {}, res, req);
    }
 }
 
@@ -91,43 +45,20 @@ async function loginWAPortal(req, res) {
    const isEmployeeIdValid = validation.validateUserInput(employee_id);
 
    if (!isEmployeeIdValid) {
-      response(
-         HTTP_STATUS.BAD_REQUEST,
-         "98",
-         "Invalid user input",
-         {},
-         res,
-         req
-      );
+      response(HTTP_STATUS.BAD_REQUEST, "98", "Invalid user input", {}, res, req);
       return;
    }
 
    try {
-      const employeeExists = await portalModel.checkEmployeeExistence(
-         employee_id
-      );
+      const employeeExists = await portalModel.checkEmployeeExistence(employee_id);
 
       if (!employeeExists) {
-         response(
-            HTTP_STATUS.NOT_FOUND,
-            "01",
-            "User does not have permission",
-            {},
-            res,
-            req
-         );
+         response(HTTP_STATUS.NOT_FOUND, "01", "User does not have permission", {}, res, req);
       } else {
          const result = await portalModel.getUserMobilePhones(employee_id);
 
          if (!result) {
-            response(
-               HTTP_STATUS.NOT_FOUND,
-               "02",
-               "User not found",
-               {},
-               res,
-               req
-            );
+            response(HTTP_STATUS.NOT_FOUND, "02", "User not found", {}, res, req);
          } else {
             const no_hp1 = result.MobilePhone1;
             const no_hp2 = result.MobilePhone2;
@@ -141,14 +72,7 @@ async function loginWAPortal(req, res) {
                destination = no_hp2;
             } else {
                // Mobile phone not found
-               response(
-                  HTTP_STATUS.NOT_FOUND,
-                  "03",
-                  "Mobile phone not found, Please Contact HRD.",
-                  {},
-                  res,
-                  req
-               );
+               response(HTTP_STATUS.NOT_FOUND, "03", "Mobile phone not found, Please Contact HRD.", {}, res, req);
                return;
             }
 
@@ -180,43 +104,19 @@ async function loginWAPortal(req, res) {
                data
             );
 
-            response(
-               HTTP_STATUS.OK,
-               "00",
-               "OTP Sent to WhatsApp",
-               { destination: destination },
-               res,
-               req
-            );
+            response(HTTP_STATUS.OK, "00", "OTP Sent to WhatsApp", { destination: destination }, res, req);
          }
       }
    } catch (error) {
       console.error("Failed to send OTP via WhatsApp:", error);
-      response(
-         HTTP_STATUS.INTERNAL_SERVER_ERROR,
-         "99",
-         "Internal Server Error",
-         {},
-         res,
-         req
-      );
+      response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Internal Server Error", {}, res, req);
    }
 }
 
 async function verifyOTPportal(req, res) {
    const { employee_id, otp } = req.body;
-   if (
-      !validation.validateUserInput(employee_id) ||
-      !validation.validateUserInput(otp)
-   ) {
-      response(
-         HTTP_STATUS.BAD_REQUEST,
-         "98",
-         "Invalid user input",
-         {},
-         res,
-         req
-      );
+   if (!validation.validateUserInput(employee_id) || !validation.validateUserInput(otp)) {
+      response(HTTP_STATUS.BAD_REQUEST, "98", "Invalid user input", {}, res, req);
       return;
    }
    try {
@@ -224,54 +124,26 @@ async function verifyOTPportal(req, res) {
 
       if (!result || result.length === 0 || result[0].length === 0) {
          // Employee ID not found in user_otp table
-         response(
-            HTTP_STATUS.NOT_FOUND,
-            "01",
-            "Employee ID not found",
-            {},
-            res,
-            req
-         );
+         response(HTTP_STATUS.NOT_FOUND, "01", "Employee ID not found", {}, res, req);
       } else {
          const { otp: storedOTP, expired_at } = result[0][0];
 
          // Check if OTP is expired
          if (new Date() > new Date(expired_at)) {
-            response(
-               HTTP_STATUS.FORBIDDEN,
-               "02",
-               "OTP has expired",
-               {},
-               res,
-               req
-            );
+            response(HTTP_STATUS.FORBIDDEN, "02", "OTP has expired", {}, res, req);
          } else {
             // Verify the OTP (case-insensitive and ignore leading/trailing white spaces)
             if (otp === storedOTP) {
                response(HTTP_STATUS.OK, "00", "OTP verified", {}, res, req);
             } else {
                // OTP is incorrect
-               response(
-                  HTTP_STATUS.NOT_FOUND,
-                  "03",
-                  "OTP is incorrect",
-                  {},
-                  res,
-                  req
-               );
+               response(HTTP_STATUS.NOT_FOUND, "03", "OTP is incorrect", {}, res, req);
             }
          }
       }
    } catch (error) {
       console.error("Failed to verify OTP:", error);
-      response(
-         HTTP_STATUS.INTERNAL_SERVER_ERROR,
-         "99",
-         "Internal Server Error",
-         {},
-         res,
-         req
-      );
+      response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Internal Server Error", {}, res, req);
    }
 }
 

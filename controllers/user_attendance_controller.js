@@ -3,6 +3,11 @@ const validation = require("../utils/validation");
 const { HTTP_STATUS, RESPONSE_CODES, RESPONSE_MESSAGES } = require("../utils/globals.js");
 const response = require("../middleware/response");
 
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
+const FormData = require("form-data");
+
 async function attendance(req, res) {
    const { employee_id, longitude, altitude, latitude, location_name, action, notes } = req.body;
    // Validate employee_id, longitude, altitude, latitude, location_name, action, and notes
@@ -298,10 +303,53 @@ async function getAttendanceRecent(req, res) {
    }
 }
 
+// Multer configuration
+const storage = multer.diskStorage({
+   destination: "./uploads/",
+   filename: (req, file, cb) => {
+      // const timestamp = Date.now();
+      const employeeId = req.body.employee_id;
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, "0");
+      const day = String(now.getDate()).padStart(2, "0");
+      const datetime = `${year}${month}${day}`;
+
+      const type = req.body.type;
+      const extname = path.extname(file.originalname);
+      const filename = `${employeeId}_${datetime}_${type}${extname}`;
+      cb(null, filename);
+   },
+});
+
+const upload = multer({ storage });
+
+// Function to save attendance photos
+async function saveAttendancePhoto(req, res) {
+   upload.single("photo")(req, res, function (err) {
+      if (err instanceof multer.MulterError) {
+         console.error("Multer Error:", err);
+         response(HTTP_STATUS.BAD_REQUEST, "98", "Error uploading photo", {}, res, req);
+      } else if (err) {
+         console.error("Unknown Error:", err);
+         response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Internal Server Error", {}, res, req);
+      } else {
+         try {
+            // await userModel.saveAttendancePhoto(employee_id, datetime, attendance_type, photoFileName);
+            response(HTTP_STATUS.OK, "00", "Attendance photo saved successfully", {}, res, req);
+         } catch (error) {
+            console.error("Internal Server Error:", error);
+            response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Internal Server Error", {}, res, req);
+         }
+      }
+   });
+}
+
 module.exports = {
    attendance,
    getAttendanceClock,
    getAttendanceHistory,
    getAttendanceToday,
    getAttendanceRecent,
+   saveAttendancePhoto,
 };

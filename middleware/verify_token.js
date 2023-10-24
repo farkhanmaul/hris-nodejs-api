@@ -8,7 +8,7 @@ async function verifyToken(req, res, next) {
    const apiKey = req.headers["x-api-key"];
    const { employee_id } = req.body;
 
-   if (!apiKey) {
+   if (!apiKey || !employee_id) {
       return response(HTTP_STATUS.UNAUTHORIZED, "90", "Unauthorized", {}, res, req);
    }
    const isEmployeeIdValid = validation.validateUserInput(employee_id);

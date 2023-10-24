@@ -28,6 +28,9 @@ router.post("/user/get-attendance-clock", verifyToken, userAttendanceController.
 router.post("/user/get-attendance-recent", verifyToken, userAttendanceController.getAttendanceRecent);
 router.post("/user/get-attendance-history", verifyToken, userAttendanceController.getAttendanceHistory);
 
+router.post("/user/post-attendance-photo", userAttendanceController.saveAttendancePhoto);
+// router.post("/user/get-attendance-photo", verifyToken, userAttendanceController.getAttendancePhoto);
+
 // CLAIM
 router.post("/user/get-claim-completed", verifyToken, userController.getRequestCompleted);
 router.post("/user/get-claim-detail", verifyToken, userController.getRequestDetail);

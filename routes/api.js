@@ -28,11 +28,11 @@ router.post("/user/get-attendance-clock", verifyToken, userAttendanceController.
 router.post("/user/get-attendance-recent", verifyToken, userAttendanceController.getAttendanceRecent);
 router.post("/user/get-attendance-history", verifyToken, userAttendanceController.getAttendanceHistory);
 
-// REQUEST CLAIM
-router.post("/user/get-request-completed", verifyToken, userController.getRequestCompleted);
-router.post("/user/get-request-detail", verifyToken, userController.getRequestDetail);
-router.post("/user/get-request-rejected", verifyToken, userController.getRequestRejected);
-router.post("/user/get-request-progress", verifyToken, userController.getRequestProgress);
+// CLAIM
+router.post("/user/get-claim-completed", verifyToken, userController.getRequestCompleted);
+router.post("/user/get-claim-detail", verifyToken, userController.getRequestDetail);
+router.post("/user/get-claim-rejected", verifyToken, userController.getRequestRejected);
+router.post("/user/get-claim-progress", verifyToken, userController.getRequestProgress);
 
 // LEAVE
 router.post("/user/get-leave-list-approved", verifyToken, userLeaveController.getLeaveListApprove);

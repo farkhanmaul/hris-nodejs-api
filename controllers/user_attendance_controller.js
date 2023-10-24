@@ -324,7 +324,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// Function to save attendance photos
+// Function to save attendance photo
 async function saveAttendancePhoto(req, res) {
    upload.single("photo")(req, res, function (err) {
       if (err instanceof multer.MulterError) {

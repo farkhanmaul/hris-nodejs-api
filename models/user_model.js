@@ -267,10 +267,12 @@ async function getRequestComp(employee_id) {
          [CompletionName],
          [CompletionId],
          [TotalRequest], 
+         [RequestDate] AS Date,
          FORMAT([RequestDate],'dd MMMM yyyy') AS RequestDate
        FROM [LiteErp].[dbo].[vwCsRequestSummary]
        WHERE [CompletionId] IN ('20120500000007', '20120500000004', '20120500000003')
-       AND [EmployeeId] = '${employee_id}';
+       AND [EmployeeId] = '${employee_id}'
+       ORDER BY Date DESC;
      `;
 
       const result = await db1(query);
@@ -291,10 +293,12 @@ async function getRequestReject(employee_id) {
          [CompletionName],
          [CompletionId],
          [TotalRequest], 
+         [RequestDate] AS Date,
          FORMAT([RequestDate],'dd MMMM yyyy') AS RequestDate
        FROM [LiteErp].[dbo].[vwCsRequestSummary]
        WHERE [CompletionId] IN ('20120500000009', '20120500000012', '20120500000013')
-       AND [EmployeeId] = '${employee_id}';
+       AND [EmployeeId] = '${employee_id}'
+       ORDER BY Date DESC;
      `;
 
       const result = await db1(query);
@@ -316,10 +320,12 @@ async function getRequestProg(employee_id) {
          [CompletionName],
          [CompletionId],
          [TotalRequest], 
+         [RequestDate] AS Date,
          FORMAT([RequestDate],'dd MMMM yyyy') AS RequestDate
        FROM [LiteErp].[dbo].[vwCsRequestSummary]
        WHERE [CompletionId] = '20120500000002'
-       AND [EmployeeId] = '${employee_id}';
+       AND [EmployeeId] = '${employee_id}'
+       ORDER BY Date DESC;
      `;
 
       const result = await db1(query);
@@ -338,7 +344,7 @@ async function getRequestDet(employee_id, RequestFormId) {
          [ProjectFullName],
          [NextCheckerName],
          [CompletionName],
-         [CompletionId],
+         [CompletionId],      
          [TotalRequest], 
          FORMAT([RequestDate],'dd MMMM yyyy') AS RequestDate
        FROM [LiteErp].[dbo].[vwCsRequestSummary]

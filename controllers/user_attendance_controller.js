@@ -327,6 +327,14 @@ const upload = multer({ storage });
 // Function to save attendance photo
 async function saveAttendancePhoto(req, res) {
    upload.single("photo")(req, res, function (err) {
+      const { employee_id, type } = req.body;
+
+      if (!validation.validateUserInput(employee_id) || !validation.validateUserInput(type)) {
+         response(HTTP_STATUS.BAD_REQUEST, "98", "Invalid user input", {}, res, req);
+         return; // Exit the function if input is invalid
+      }
+
+      // console.log(req.file);
       if (err instanceof multer.MulterError) {
          console.error("Multer Error:", err);
          response(HTTP_STATUS.BAD_REQUEST, "98", "Error uploading photo", {}, res, req);

@@ -4,6 +4,7 @@ const verifyToken = require("../middleware/verify_token.js");
 const userController = require("../controllers/user_controller.js");
 const userAttendanceController = require("../controllers/user_attendance_controller.js");
 const userLeaveController = require("../controllers/user_leave_controller.js");
+const userClaimController = require("../controllers/user_claim_controller.js");
 const portalController = require("../controllers/portal_controller.js");
 const response = require("../middleware/response");
 const { HTTP_STATUS, RESPONSE_CODES, RESPONSE_MESSAGES } = require("../utils/globals.js");
@@ -32,10 +33,10 @@ router.post("/user/post-attendance-photo", userAttendanceController.saveAttendan
 // router.post("/user/get-attendance-photo", verifyToken, userAttendanceController.getAttendancePhoto);
 
 // CLAIM
-router.post("/user/get-claim-completed", verifyToken, userController.getRequestCompleted);
-router.post("/user/get-claim-detail", verifyToken, userController.getRequestDetail);
-router.post("/user/get-claim-rejected", verifyToken, userController.getRequestRejected);
-router.post("/user/get-claim-progress", verifyToken, userController.getRequestProgress);
+router.post("/user/get-claim-completed", verifyToken, userClaimController.getRequestCompleted);
+router.post("/user/get-claim-detail", verifyToken, userClaimController.getRequestDetail);
+router.post("/user/get-claim-rejected", verifyToken, userClaimController.getRequestRejected);
+router.post("/user/get-claim-progress", verifyToken, userClaimController.getRequestProgress);
 
 // LEAVE
 router.post("/user/get-leave-list-approved", verifyToken, userLeaveController.getLeaveListApprove);
@@ -43,7 +44,7 @@ router.post("/user/get-leave-list-not-approved", verifyToken, userLeaveControlle
 router.post("/user/get-leave-detail", verifyToken, userLeaveController.getLeaveDetail);
 router.post("/user/get-leave-plafonds", verifyToken, userLeaveController.getLeavePlafonds);
 
-router.post("/user/get-medical-plafonds", verifyToken, userController.getMedicalPlafonds);
+router.post("/user/get-medical-plafonds", verifyToken, userClaimController.getMedicalPlafonds);
 
 // PORTAL
 router.post("/portal/login-email", portalController.loginEmailPortal);

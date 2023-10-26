@@ -165,7 +165,7 @@ async function recordEmployeePresence(
 }
 
 async function getPresenceData(employee_id, date) {
-   const query = `SELECT * FROM user_attendance WHERE employee_id = ? AND DATE(datetime) = ? ORDER BY datetime DESC`;
+   const query = `SELECT employee_id, longitude, altitude, latitude, datetime, location_name, action, notes FROM user_attendance WHERE employee_id = ? AND DATE(datetime) = ? ORDER BY datetime DESC`;
    const result = await db2.query(query, [employee_id, date]);
    return result[0];
 }
@@ -238,7 +238,7 @@ function getLastAttendance(employee_id) {
 }
 
 async function getAttendanceHistory(employee_id, start_date, end_date) {
-   const query = `SELECT * FROM user_attendance WHERE employee_id = ? AND datetime >= ? AND datetime <= ? ORDER BY datetime DESC`;
+   const query = `SELECT employee_id, longitude, altitude, latitude, datetime, location_name, action, notes FROM user_attendance WHERE employee_id = ? AND datetime >= ? AND datetime <= ? ORDER BY datetime DESC`;
    const result = await db2.query(query, [employee_id, start_date, end_date]);
    return result[0];
 }
@@ -466,7 +466,7 @@ WHERE plr.[EmployeeId] = '${employee_id}'
 async function getAttendanceTimeRangeByTime(currentTime) {
    try {
       const query = `
-       SELECT *
+       SELECT range_name, start_time, end_time
        FROM attendance_time_range
        WHERE ? >= start_time AND ? <= end_time
      `;
@@ -482,7 +482,7 @@ async function getAttendanceTimeRangeByTime(currentTime) {
 async function getWorkingHour() {
    try {
       const query = `
-       SELECT *
+       SELECT range_name, start_time, end_time
        FROM attendance_time_range
        WHERE range_name="Work Time"
      `;

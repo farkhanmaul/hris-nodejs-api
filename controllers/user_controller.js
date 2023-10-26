@@ -81,7 +81,7 @@ async function loginWA(req, res) {
 
          const data = {
             destination,
-            message: `This message originated from ACA, \nThis is your OTP code : \n*${otp}* \nPlease do not share your OTP code to anyone. We never ask for your personal OTP code.`,
+            message: `This message originated from ACA Mobile, \nThis is your OTP code : \n*${otp}* \nPlease do not share your OTP code to anyone. We never ask for your personal OTP code.`,
          };
 
          await userModel.sendOTPbyWhatsApp(

@@ -156,11 +156,12 @@ async function recordEmployeePresence(
    datetime,
    location_name,
    action,
-   notes
+   notes,
+   photo
 ) {
-   const query = `INSERT INTO user_attendance (employee_id, longitude, altitude, latitude, datetime, location_name, action, notes) 
-                  VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
-   await db2.query(query, [employee_id, longitude, altitude, latitude, datetime, location_name, action, notes]);
+   const query = `INSERT INTO user_attendance (employee_id, longitude, altitude, latitude, datetime, location_name, action, notes, photo) 
+                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+   await db2.query(query, [employee_id, longitude, altitude, latitude, datetime, location_name, action, notes, photo]);
 }
 
 async function getPresenceData(employee_id, date) {

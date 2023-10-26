@@ -9,7 +9,7 @@ const fs = require("fs");
 const FormData = require("form-data");
 
 async function attendance(req, res) {
-   const { employee_id, longitude, altitude, latitude, location_name, action, notes } = req.body;
+   const { employee_id, longitude, altitude, latitude, location_name, action, notes, photo } = req.body;
    // Validate employee_id, longitude, altitude, latitude, location_name, action, and notes
    const employee_idValid = validation.validateUserInput(employee_id);
    const longitudeValid = validation.validateUserInput(longitude);
@@ -44,7 +44,8 @@ async function attendance(req, res) {
          datetime,
          location_name,
          action,
-         notes
+         notes,
+         photo
       );
       // Send the regular success response
       response(HTTP_STATUS.OK, "00", "Employee presence recorded successfully", {}, res, req);
@@ -325,7 +326,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // Function to save attendance photo
-async function saveAttendancePhoto(req, res) {
+async function saveAttendancePhotoMulter(req, res) {
    upload.single("photo")(req, res, function (err) {
       const { employee_id, type } = req.body;
 
@@ -359,5 +360,5 @@ module.exports = {
    getAttendanceHistory,
    getAttendanceToday,
    getAttendanceRecent,
-   saveAttendancePhoto,
+   saveAttendancePhotoMulter,
 };

@@ -360,7 +360,6 @@ async function saveAttendancePhotoMulter(req, res) {
          return; // Exit the function if input is invalid
       }
 
-      // console.log(req.file);
       if (err instanceof multer.MulterError) {
          console.error("Multer Error:", err);
          response(HTTP_STATUS.BAD_REQUEST, "98", "Error uploading photo", { error: err.code }, res, req);

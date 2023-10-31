@@ -11,6 +11,7 @@ async function verifyToken(req, res, next) {
    if (!apiKey || !employee_id) {
       return response(HTTP_STATUS.UNAUTHORIZED, "90", "Unauthorized", {}, res, req);
    }
+
    const isEmployeeIdValid = validation.validateUserInput(employee_id);
    const isAPIKeyValid = validation.validateUserInput(apiKey);
 

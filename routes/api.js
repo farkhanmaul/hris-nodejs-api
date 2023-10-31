@@ -30,6 +30,7 @@ router.post("/user/get-attendance-recent", verifyToken, userAttendanceController
 router.post("/user/get-attendance-history", verifyToken, userAttendanceController.getAttendanceHistory);
 
 router.post("/user/save-attendance-photo", userAttendanceController.saveAttendancePhotoMulter);
+// router.post("/user/save-attendance-photo", userAttendanceController.saveAttendancePhotoEncode);
 // router.post("/user/get-attendance-photo", verifyToken, userAttendanceController.getAttendancePhoto);
 
 // CLAIM

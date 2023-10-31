@@ -36,7 +36,7 @@ async function attendance(req, res) {
    try {
       const datetime = new Date();
 
-      await userModel.recordEmployeePresence(
+      const insertedRow = await userModel.recordEmployeePresence(
          employee_id,
          longitude,
          altitude,
@@ -47,13 +47,15 @@ async function attendance(req, res) {
          notes,
          photo
       );
-      // Send the regular success response
-      response(HTTP_STATUS.OK, "00", "Employee presence recorded successfully", {}, res, req);
+
+      // Send the success response with the inserted row's data
+      response(HTTP_STATUS.OK, "00", "Employee presence recorded successfully", insertedRow, res, req);
    } catch (error) {
       console.error("Internal Server Error:", error);
       response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Internal Server Error", {}, res, req);
    }
 }
+
 async function getAttendanceClock(req, res) {
    const { employee_id, date, action } = req.body;
    if (
@@ -310,25 +312,48 @@ const storage = multer.diskStorage({
    filename: (req, file, cb) => {
       // const timestamp = Date.now();
       const employeeId = req.body.employee_id;
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = String(now.getMonth() + 1).padStart(2, "0");
-      const day = String(now.getDate()).padStart(2, "0");
-      const datetime = `${year}${month}${day}`;
+
+      function formatDate(date) {
+         const year = date.getFullYear();
+         const month = date.getMonth() + 1;
+         const day = date.getDate();
+         const hour = date.getHours();
+         const minute = date.getMinutes();
+         const second = date.getSeconds();
+         const formattedDate = `${year}${month}${day}${hour}${minute}${second}`;
+         return formattedDate;
+      }
+      const date = new Date();
+      const formattedDate = formatDate(date);
 
       const type = req.body.type;
       const extname = path.extname(file.originalname);
-      const filename = `${employeeId}_${datetime}_${type}${extname}`;
+      const filename = `${employeeId}_${formattedDate}_${type}${extname}`;
       cb(null, filename);
    },
 });
 
-const upload = multer({ storage });
+const upload = multer({
+   storage,
+   limits: {
+      fileSize: 1 * 1024 * 1024, // 1MB file size limit
+   },
+   fileFilter: (req, file, cb) => {
+      const allowedFileExtensions = [".jpg", ".jpeg", ".png"]; // Allowed file extensions
+
+      const extname = path.extname(file.originalname);
+      if (!allowedFileExtensions.includes(extname)) {
+         return cb(new Error("Invalid file type. Only JPG, JPEG, and PNG files are allowed."));
+      }
+
+      cb(null, true);
+   },
+});
 
 // Function to save attendance photo
 async function saveAttendancePhotoMulter(req, res) {
-   upload.single("photo")(req, res, function (err) {
-      const { employee_id, type } = req.body;
+   upload.single("photo")(req, res, async function (err) {
+      const { employee_id, type, id } = req.body;
 
       if (!validation.validateUserInput(employee_id) || !validation.validateUserInput(type)) {
          response(HTTP_STATUS.BAD_REQUEST, "98", "Invalid user input", {}, res, req);
@@ -338,13 +363,18 @@ async function saveAttendancePhotoMulter(req, res) {
       // console.log(req.file);
       if (err instanceof multer.MulterError) {
          console.error("Multer Error:", err);
-         response(HTTP_STATUS.BAD_REQUEST, "98", "Error uploading photo", {}, res, req);
+         response(HTTP_STATUS.BAD_REQUEST, "98", "Error uploading photo", { error: err.code }, res, req);
       } else if (err) {
          console.error("Unknown Error:", err);
          response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Internal Server Error", {}, res, req);
       } else {
          try {
-            // await userModel.saveAttendancePhoto(employee_id, datetime, attendance_type, photoFileName);
+            const filePath = req.file.path; // Get the path of the uploaded photo
+            await userModel.insertEmployeePhoto(
+               employee_id,
+               filePath,
+               id // Pass the file path to the insertEmployeePhoto function
+            );
             response(HTTP_STATUS.OK, "00", "Attendance photo saved successfully", {}, res, req);
          } catch (error) {
             console.error("Internal Server Error:", error);

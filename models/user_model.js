@@ -89,7 +89,7 @@ async function sendOTPbyEmail(receiver, otp, expired_at, employee_id, device_id)
       if (error) {
          console.error("Error storing Device Id in database:", error);
       } else {
-         console.log("OTP stored in database");
+         console.log("User Device stored in database");
       }
    });
 }
@@ -161,7 +161,28 @@ async function recordEmployeePresence(
 ) {
    const query = `INSERT INTO user_attendance (employee_id, longitude, altitude, latitude, datetime, location_name, action, notes, photo) 
                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-   await db2.query(query, [employee_id, longitude, altitude, latitude, datetime, location_name, action, notes, photo]);
+   const result = await db2.query(query, [
+      employee_id,
+      longitude,
+      altitude,
+      latitude,
+      datetime,
+      location_name,
+      action,
+      notes,
+      photo,
+   ]);
+
+   // Fetch the inserted row from the database using the attendance_id
+   const fetchQuery = `SELECT id FROM user_attendance WHERE employee_id = ? AND action = ? ORDER BY id DESC LIMIT 1`;
+   const fetchedResult = await db2.query(fetchQuery, [employee_id, action]);
+   // Return the inserted row's data
+   return fetchedResult[0][0];
+}
+
+async function insertEmployeePhoto(employee_id, photo, id) {
+   const query = `UPDATE user_attendance SET photo = ? WHERE employee_id = ? AND id = ?`;
+   await db2.query(query, [photo, employee_id, id]);
 }
 
 async function getPresenceData(employee_id, date) {
@@ -501,6 +522,7 @@ module.exports = {
    sendOTPbyWhatsApp,
    storeUserToken,
    recordEmployeePresence,
+   insertEmployeePhoto,
    calculateDuration,
    getLastAttendance,
    getUserMobilePhones,

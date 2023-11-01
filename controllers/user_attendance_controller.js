@@ -355,7 +355,11 @@ async function saveAttendancePhotoMulter(req, res) {
    upload.single("photo")(req, res, async function (err) {
       const { employee_id, type, id } = req.body;
 
-      if (!validation.validateUserInput(employee_id) || !validation.validateUserInput(type)) {
+      if (
+         !validation.validateUserInput(employee_id) ||
+         !validation.validateUserInput(type) ||
+         !validation.validateUserInput(id)
+      ) {
          response(HTTP_STATUS.BAD_REQUEST, "98", "Invalid user input", {}, res, req);
          return; // Exit the function if input is invalid
       }

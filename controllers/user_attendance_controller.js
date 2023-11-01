@@ -9,7 +9,7 @@ const fs = require("fs");
 const FormData = require("form-data");
 
 async function attendance(req, res) {
-   const { employee_id, longitude, altitude, latitude, location_name, action, notes, photo } = req.body;
+   const { employee_id, longitude, altitude, latitude, location_name, action, notes } = req.body;
    // Validate employee_id, longitude, altitude, latitude, location_name, action, and notes
    const employee_idValid = validation.validateUserInput(employee_id);
    const longitudeValid = validation.validateUserInput(longitude);
@@ -44,8 +44,7 @@ async function attendance(req, res) {
          datetime,
          location_name,
          action,
-         notes,
-         photo
+         notes
       );
 
       // Send the success response with the inserted row's data

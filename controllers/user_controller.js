@@ -262,7 +262,7 @@ async function updateGlobalVariables(req, res) {
 
 async function selectGlobalVariables(req, res) {
    try {
-      const variables = await userModel.selectGlobalVariables();
+      const variables = await userModel.allSelectGlobalVariables();
       response(HTTP_STATUS.OK, "00", "Success to Retrieve Variables", { variables }, res, req);
    } catch (error) {
       console.error("Failed to Retrieve", error);
@@ -293,7 +293,7 @@ module.exports = {
    verifyTokenHandler,
    getProfile,
    insertGlobalVariables,
+   updateGlobalVariables,
    selectGlobalVariables,
    deleteGlobalVariables,
-   updateGlobalVariables,
 };

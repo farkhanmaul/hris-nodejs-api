@@ -36,6 +36,10 @@ async function attendance(req, res) {
    try {
       const datetime = new Date();
 
+      // Get the global variable values
+      const globalVariable = "forceAttendancePhoto";
+      const attendancePhotoStatus = await userModel.specificSelectGlobalVariables(globalVariable);
+
       const insertedRow = await userModel.recordEmployeePresence(
          employee_id,
          longitude,
@@ -47,8 +51,13 @@ async function attendance(req, res) {
          notes
       );
 
+      const responseData = {
+         id: insertedRow.id,
+         forceAttendancePhoto: attendancePhotoStatus.value,
+      };
+
       // Send the success response with the inserted row's data
-      response(HTTP_STATUS.OK, "00", "Employee presence recorded successfully", insertedRow, res, req);
+      response(HTTP_STATUS.OK, "00", "Employee presence recorded successfully", responseData, res, req);
    } catch (error) {
       console.error("Internal Server Error:", error);
       response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Internal Server Error", {}, res, req);

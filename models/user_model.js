@@ -515,9 +515,9 @@ async function getWorkingHour() {
 }
 
 async function insertGlobalVariables(key_name, value) {
-   const insertQuery = `INSERT INTO global_variables (key_name) VALUES (?, ?)`;
+   const query = `INSERT INTO global_variables (key_name, value) VALUES (?, ?)`;
 
-   db2.query(insertQuery, [key_name, value], (error, results) => {
+   db2.query(query, [key_name, value], (error, results) => {
       if (error) {
          console.error("Error:", error);
       } else {
@@ -526,34 +526,28 @@ async function insertGlobalVariables(key_name, value) {
    });
 }
 
-async function selectGlobalVariables(key_name, value) {
-   const insertQuery = `SELECT key_name, value FROM global_variables`;
+async function updateGlobalVariables(key_name, value) {
+   const query = `UPDATE global_variables SET value = ? WHERE key_name = ?`;
 
-   db2.query(insertQuery, [key_name, value], (error, results) => {
+   db2.query(query, [value, key_name], (error, results) => {
       if (error) {
          console.error("Error:", error);
       } else {
          console.log("Success");
       }
    });
+}
+
+async function selectGlobalVariables() {
+   const query = `SELECT key_name, value FROM global_variables`;
+   const result = await db2.query(query);
+   return result[0];
 }
 
 async function deleteGlobalVariables(key_name, value) {
-   const insertQuery = `DELETE FROM global_variables WHERE key_name = ?`;
+   const query = `DELETE FROM global_variables WHERE key_name = ?`;
 
-   db2.query(insertQuery, [key_name, value], (error, results) => {
-      if (error) {
-         console.error("Error:", error);
-      } else {
-         console.log("Success");
-      }
-   });
-}
-
-async function updateGlobalVariables(key_name, new_value) {
-   const updateQuery = `UPDATE global_variables SET value = ? WHERE key_name = ?`;
-
-   db2.query(updateQuery, [new_value, key_name], (error, results) => {
+   db2.query(query, [key_name, value], (error, results) => {
       if (error) {
          console.error("Error:", error);
       } else {

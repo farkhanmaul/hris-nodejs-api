@@ -30,8 +30,13 @@ router.post("/user/get-attendance-recent", verifyToken, userAttendanceController
 router.post("/user/get-attendance-history", verifyToken, userAttendanceController.getAttendanceHistory);
 
 router.post("/user/save-attendance-photo", verifyToken, userAttendanceController.saveAttendancePhotoMulter);
-// router.post("/user/save-attendance-photo", userAttendanceController.saveAttendancePhotoEncode);
 // router.post("/user/get-attendance-photo", verifyToken, userAttendanceController.getAttendancePhoto);
+
+// GLOBAL VARIABLES
+router.post("/user/insert-global-variable", verifyToken, userController.insertGlobalVariables);
+router.post("/user/update-global-variable", verifyToken, userController.updateGlobalVariables);
+router.post("/user/select-global-variable", verifyToken, userController.selectGlobalVariables);
+router.post("/user/delete-global-variable", verifyToken, userController.deleteGlobalVariables);
 
 // CLAIM
 router.post("/user/get-claim-completed", verifyToken, userClaimController.getRequestCompleted);

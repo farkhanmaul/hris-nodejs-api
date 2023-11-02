@@ -245,6 +245,20 @@ async function insertGlobalVariables(req, res) {
       response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Internal Server Error", {}, res, req);
    }
 }
+async function updateGlobalVariables(req, res) {
+   const { key_name, value } = req.body;
+   if (!validation.validateUserInput(key_name) || !validation.validateUserInput(value)) {
+      response(HTTP_STATUS.BAD_REQUEST, "98", "Invalid user input", {}, res, req);
+      return;
+   }
+   try {
+      await userModel.updateGlobalVariables(key_name, value);
+      response(HTTP_STATUS.OK, "00", "Success to Update Variable", {}, res, req);
+   } catch (error) {
+      console.error("Failed to Update", error);
+      response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Internal Server Error", {}, res, req);
+   }
+}
 
 async function selectGlobalVariables(req, res) {
    try {
@@ -267,21 +281,6 @@ async function deleteGlobalVariables(req, res) {
       response(HTTP_STATUS.OK, "00", "Success to Delete Variable", {}, res, req);
    } catch (error) {
       console.error("Failed to Delete", error);
-      response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Internal Server Error", {}, res, req);
-   }
-}
-
-async function updateGlobalVariables(req, res) {
-   const { key_name, value } = req.body;
-   if (!validation.validateUserInput(key_name) || !validation.validateUserInput(value)) {
-      response(HTTP_STATUS.BAD_REQUEST, "98", "Invalid user input", {}, res, req);
-      return;
-   }
-   try {
-      await userModel.updateGlobalVariables(key_name, value);
-      response(HTTP_STATUS.OK, "00", "Success to Update Variable", {}, res, req);
-   } catch (error) {
-      console.error("Failed to Update", error);
       response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Internal Server Error", {}, res, req);
    }
 }

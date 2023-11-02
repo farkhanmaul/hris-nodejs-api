@@ -514,6 +514,54 @@ async function getWorkingHour() {
    }
 }
 
+async function insertGlobalVariables(key_name, value) {
+   const insertQuery = `INSERT INTO global_variables (key_name) VALUES (?, ?)`;
+
+   db2.query(insertQuery, [key_name, value], (error, results) => {
+      if (error) {
+         console.error("Error:", error);
+      } else {
+         console.log("Success");
+      }
+   });
+}
+
+async function selectGlobalVariables(key_name, value) {
+   const insertQuery = `SELECT key_name, value FROM global_variables`;
+
+   db2.query(insertQuery, [key_name, value], (error, results) => {
+      if (error) {
+         console.error("Error:", error);
+      } else {
+         console.log("Success");
+      }
+   });
+}
+
+async function deleteGlobalVariables(key_name, value) {
+   const insertQuery = `DELETE FROM global_variables WHERE key_name = ?`;
+
+   db2.query(insertQuery, [key_name, value], (error, results) => {
+      if (error) {
+         console.error("Error:", error);
+      } else {
+         console.log("Success");
+      }
+   });
+}
+
+async function updateGlobalVariables(key_name, new_value) {
+   const updateQuery = `UPDATE global_variables SET value = ? WHERE key_name = ?`;
+
+   db2.query(updateQuery, [new_value, key_name], (error, results) => {
+      if (error) {
+         console.error("Error:", error);
+      } else {
+         console.log("Success");
+      }
+   });
+}
+
 module.exports = {
    closeToken,
    sendOTPbyEmail,
@@ -541,4 +589,8 @@ module.exports = {
    getLeaveDet,
    getAttendanceTimeRangeByTime,
    getWorkingHour,
+   selectGlobalVariables,
+   insertGlobalVariables,
+   deleteGlobalVariables,
+   updateGlobalVariables,
 };

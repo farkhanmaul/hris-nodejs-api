@@ -316,7 +316,16 @@ async function getAttendanceRecent(req, res) {
 
 // Multer configuration
 const storage = multer.diskStorage({
-   destination: "./uploads/",
+   destination: async (req, file, cb) => {
+      try {
+         // Get the global variable values
+         const globalVariable = "destinationAttendancePhoto";
+         const destination = await userModel.specificSelectGlobalVariables(globalVariable);
+         cb(null, destination.value);
+      } catch (error) {
+         cb(error);
+      }
+   },
    filename: (req, file, cb) => {
       // const timestamp = Date.now();
       const employeeId = req.body.employee_id;
@@ -333,7 +342,6 @@ const storage = multer.diskStorage({
       }
       const date = new Date();
       const formattedDate = formatDate(date);
-
       const type = req.body.type;
       const extname = path.extname(file.originalname);
       const filename = `${employeeId}_${formattedDate}_${type}${extname}`;

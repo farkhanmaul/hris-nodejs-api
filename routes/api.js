@@ -6,12 +6,15 @@ const userAttendanceController = require("../controllers/user_attendance_control
 const userLeaveController = require("../controllers/user_leave_controller.js");
 const userClaimController = require("../controllers/user_claim_controller.js");
 const portalController = require("../controllers/portal_controller.js");
-const response = require("../middleware/response");
-const { HTTP_STATUS, RESPONSE_CODES, RESPONSE_MESSAGES } = require("../utils/globals.js");
 
 // STATUS
 router.get("/", (req, res) => {
-   response(HTTP_STATUS.OK, "00", "API is running", {}, res, req);
+   // response(HTTP_STATUS.OK, "00", "API is running", {}, res, req);
+   res.status(200).json({
+      respCode: "00",
+      respMsg: "API is running",
+      data: {},
+   });
 });
 
 // AUTH
@@ -28,9 +31,7 @@ router.post("/user/get-attendance-today", verifyToken, userAttendanceController.
 router.post("/user/get-attendance-clock", verifyToken, userAttendanceController.getAttendanceClock);
 router.post("/user/get-attendance-recent", verifyToken, userAttendanceController.getAttendanceRecent);
 router.post("/user/get-attendance-history", verifyToken, userAttendanceController.getAttendanceHistory);
-
 router.post("/user/save-attendance-photo", verifyToken, userAttendanceController.saveAttendancePhotoMulter);
-// router.post("/user/get-attendance-photo", verifyToken, userAttendanceController.getAttendancePhoto);
 
 // GLOBAL VARIABLES
 router.post("/user/insert-global-variable", verifyToken, userController.insertGlobalVariables);
@@ -51,6 +52,7 @@ router.post("/user/get-leave-detail", verifyToken, userLeaveController.getLeaveD
 router.post("/user/get-leave-plafonds", verifyToken, userLeaveController.getLeavePlafonds);
 
 router.post("/user/get-medical-plafonds", verifyToken, userClaimController.getMedicalPlafonds);
+router.post("/room/get-room", verifyToken, userClaimController.getRoomDummy);
 
 // PORTAL
 router.post("/portal/login-email", portalController.loginEmailPortal);

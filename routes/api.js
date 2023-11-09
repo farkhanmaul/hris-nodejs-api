@@ -6,6 +6,7 @@ const userAttendanceController = require("../controllers/user_attendance_control
 const userLeaveController = require("../controllers/user_leave_controller.js");
 const userClaimController = require("../controllers/user_claim_controller.js");
 const portalController = require("../controllers/portal_controller.js");
+const roomController = require("../controllers/room_controller.js");
 
 // STATUS
 router.get("/", (req, res) => {
@@ -17,12 +18,17 @@ router.get("/", (req, res) => {
    });
 });
 
+// PORTAL
+router.post("/portal/login-email", portalController.loginEmailPortal);
+router.post("/portal/login-wa", portalController.loginWAPortal);
+router.post("/portal/verify-otp", portalController.verifyOTPportal);
+
 // AUTH
 router.post("/user/login-email", userController.loginEmail);
 router.post("/user/login-wa", userController.loginWA);
-router.post("/user/logout", verifyToken, userController.logout);
 router.post("/user/verify-otp", userController.verifyOTP);
 router.post("/user/verify-token", userController.verifyTokenHandler);
+router.post("/user/logout", verifyToken, userController.logout);
 router.post("/user/get-profile", verifyToken, userController.getProfile);
 
 // ATTENDANCE
@@ -32,6 +38,9 @@ router.post("/user/get-attendance-clock", verifyToken, userAttendanceController.
 router.post("/user/get-attendance-recent", verifyToken, userAttendanceController.getAttendanceRecent);
 router.post("/user/get-attendance-history", verifyToken, userAttendanceController.getAttendanceHistory);
 router.post("/user/save-attendance-photo", verifyToken, userAttendanceController.saveAttendancePhotoMulter);
+
+// ROOM
+router.post("/room/booking", verifyToken, roomController.roomBooking);
 
 // GLOBAL VARIABLES
 router.post("/user/insert-global-variable", verifyToken, userController.insertGlobalVariables);
@@ -53,10 +62,5 @@ router.post("/user/get-leave-plafonds", verifyToken, userLeaveController.getLeav
 
 router.post("/user/get-medical-plafonds", verifyToken, userClaimController.getMedicalPlafonds);
 router.post("/room/get-room", verifyToken, userClaimController.getRoomDummy);
-
-// PORTAL
-router.post("/portal/login-email", portalController.loginEmailPortal);
-router.post("/portal/login-wa", portalController.loginWAPortal);
-router.post("/portal/verify-otp", portalController.verifyOTPportal);
 
 module.exports = router;

@@ -64,6 +64,6 @@ router.post("/user/get-leave-detail", verifyToken, userLeaveController.getLeaveD
 router.post("/user/get-leave-plafonds", verifyToken, userLeaveController.getLeavePlafonds);
 
 router.post("/user/get-medical-plafonds", verifyToken, userClaimController.getMedicalPlafonds);
-router.post("/room/get-room", verifyToken, userClaimController.getRoomDummy);
+router.post("/room/get-room-dummy", verifyToken, userClaimController.getRoomDummy);
 
 module.exports = router;

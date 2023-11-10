@@ -41,6 +41,8 @@ router.post("/user/save-attendance-photo", verifyToken, userAttendanceController
 
 // ROOM
 router.post("/room/booking", verifyToken, roomController.roomBooking);
+router.post("/room/get-room", verifyToken, roomController.getRoom);
+router.post("/room/get-room-specific", verifyToken, roomController.getRoomById);
 
 // GLOBAL VARIABLES
 router.post("/user/insert-global-variable", verifyToken, userController.insertGlobalVariables);

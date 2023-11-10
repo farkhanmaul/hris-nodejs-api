@@ -29,4 +29,23 @@ async function insertRoomBooking(
    // Return the inserted row's data
    return fetchedResult[0][0];
 }
-module.exports = { insertRoomBooking };
+
+async function getRoomData() {
+   const query = `
+      SELECT id, room_name, capacity, location, room_image, floor_location, projector, microphone, whiteboard, webcam, availability, additional_notes
+      FROM room_header
+   `;
+   const result = await db2.query(query);
+   return result[0];
+}
+async function getRoomDataById(room_id) {
+   const query = `
+   SELECT id, room_name, capacity, location, room_image, floor_location, projector, microphone, whiteboard, webcam, availability, additional_notes
+      FROM room_header
+   WHERE id = ?
+`;
+   const result = await db2.query(query, [room_id]);
+   return result[0];
+}
+
+module.exports = { insertRoomBooking, getRoomData, getRoomDataById };

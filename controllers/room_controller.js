@@ -6,7 +6,7 @@ const response = require("../middleware/response");
 
 async function roomBooking(req, res) {
    const { room_id, booker_employee_id, pic_employee_id, start_time, end_time, meeting_topic } = req.body;
-   // Validate room_id, booker_employee_id, pic_employee_id, start_time, end_time, and meeting_topic
+
    const room_idValid = validation.validateUserInput(room_id);
    const booker_employee_idValid = validation.validateUserInput(booker_employee_id);
    const pic_employee_idValid = validation.validateUserInput(pic_employee_id);
@@ -41,5 +41,44 @@ async function roomBooking(req, res) {
       response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Internal Server Error", {}, res, req);
    }
 }
+async function getRoom(req, res) {
+   const { employee_id } = req.body;
+   if (!validation.validateUserInput(employee_id)) {
+      response(HTTP_STATUS.BAD_REQUEST, "98", "Invalid user input", {}, res, req);
+      return; // Exit the function if input is invalid
+   }
+   try {
+      const result = await roomModel.getRoomData();
 
-module.exports = { roomBooking };
+      if (!result) {
+         response(HTTP_STATUS.NOT_FOUND, "01", "No room found with the specified ID", null, res, req);
+      } else {
+         response(HTTP_STATUS.OK, "00", "Room data retrieved successfully", result, res, req);
+      }
+   } catch (error) {
+      console.error("Failed to retrieve room data:", error);
+      response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Failed to retrieve room data", null, res, req);
+   }
+}
+
+async function getRoomById(req, res) {
+   const { employee_id, room_id } = req.body;
+   if (!validation.validateUserInput(employee_id) || !validation.validateUserInput(room_id)) {
+      response(HTTP_STATUS.BAD_REQUEST, "98", "Invalid user input", {}, res, req);
+      return; // Exit the function if input is invalid
+   }
+   try {
+      const result = await roomModel.getRoomDataById(room_id);
+
+      if (!result) {
+         response(HTTP_STATUS.NOT_FOUND, "01", "No room found with the specified ID", null, res, req);
+      } else {
+         response(HTTP_STATUS.OK, "00", "Room data retrieved successfully", result, res, req);
+      }
+   } catch (error) {
+      console.error("Failed to retrieve room data:", error);
+      response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Failed to retrieve room data", null, res, req);
+   }
+}
+
+module.exports = { roomBooking, getRoom, getRoomById };

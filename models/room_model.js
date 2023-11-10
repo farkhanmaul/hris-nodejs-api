@@ -47,5 +47,21 @@ async function getRoomDataById(room_id) {
    const result = await db2.query(query, [room_id]);
    return result[0];
 }
+async function getAllEmployees() {
+   try {
+      const query = `
+         SELECT e.EmployeeFullName, e.EmployeeId, j.JobTitleLabel
+         FROM dbo.HrEmployee e
+         INNER JOIN dbo.HrEmploymentHistory eh ON e.EmployeeId = eh.EmployeeId
+         INNER JOIN dbo.HrReferenceJobTitle j ON eh.JobTitleId = j.JobTitleId
+         WHERE eh.IsExists = '1';
+      `;
 
-module.exports = { insertRoomBooking, getRoomData, getRoomDataById };
+      const result = await db1(query);
+
+      return result;
+   } catch (error) {
+      throw error;
+   }
+}
+module.exports = { insertRoomBooking, getRoomData, getRoomDataById, getAllEmployees };

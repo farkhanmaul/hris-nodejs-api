@@ -39,16 +39,6 @@ async function getRoomData() {
    return result[0];
 }
 
-async function getRoomDataById(room_id) {
-   const query = `
-   SELECT id, room_name, capacity, location, room_image, floor_location, projector, microphone, whiteboard, webcam, availability, additional_notes
-      FROM room_header
-   WHERE id = ?
-`;
-   const result = await db2.query(query, [room_id]);
-   return result[0];
-}
-
 async function getAllEmployees() {
    try {
       const query = `
@@ -64,4 +54,4 @@ async function getAllEmployees() {
       throw error;
    }
 }
-module.exports = { insertRoomBooking, getRoomData, getRoomDataById, getAllEmployees };
+module.exports = { insertRoomBooking, getRoomData, getAllEmployees };

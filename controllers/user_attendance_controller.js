@@ -270,44 +270,39 @@ async function getAttendanceRecent(req, res) {
    try {
       const lastAttendance = await userModel.getLastAttendance(employee_id);
 
-      if (!lastAttendance) {
-         response(HTTP_STATUS.NOT_FOUND, "01", "Data not found", {}, res, req);
+      const nowTime = new Date();
+      const currentTime = nowTime.toLocaleTimeString("en-US", {
+         hour12: false,
+         hour: "2-digit",
+         minute: "2-digit",
+         second: "2-digit",
+      });
+
+      // Retrieve the relevant absence time range based on the current timestamp
+      const absenceTimeRange = await userModel.getAttendanceTimeRangeByTime(currentTime);
+      const workTimeRange = await userModel.getWorkingHour();
+
+      let greeting;
+
+      if (currentTime >= "05:00:00" && currentTime < "12:00:00") {
+         greeting = "Good morning";
+      } else if (currentTime >= "12:00:00" && currentTime < "18:00:00") {
+         greeting = "Good afternoon";
+      } else if (currentTime >= "18:00:00" && currentTime < "21:00:00") {
+         greeting = "Good evening";
       } else {
-         // Get the current timestamp
-         const nowTime = new Date();
-         const currentTime = nowTime.toLocaleTimeString("en-US", {
-            hour12: false,
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-         });
-
-         // Retrieve the relevant absence time range based on the current timestamp
-         const absenceTimeRange = await userModel.getAttendanceTimeRangeByTime(currentTime);
-         const workTimeRange = await userModel.getWorkingHour();
-
-         let greeting;
-
-         if (currentTime >= "05:00:00" && currentTime < "12:00:00") {
-            greeting = "Good morning";
-         } else if (currentTime >= "12:00:00" && currentTime < "18:00:00") {
-            greeting = "Good afternoon";
-         } else if (currentTime >= "18:00:00" && currentTime < "21:00:00") {
-            greeting = "Good evening";
-         } else {
-            greeting = "Good night";
-         }
-
-         const responsePayload = {
-            ...lastAttendance,
-            currentTime,
-            greeting,
-            absenceTimeRange,
-            workTimeRange,
-         };
-
-         response(HTTP_STATUS.OK, "00", "Last attendance data retrieved successfully", responsePayload, res, req);
+         greeting = "Good night";
       }
+
+      const responsePayload = {
+         ...lastAttendance,
+         currentTime,
+         greeting,
+         absenceTimeRange,
+         workTimeRange,
+      };
+
+      response(HTTP_STATUS.OK, "00", "Last attendance data retrieved successfully", responsePayload, res, req);
    } catch (error) {
       console.error("Failed to retrieve last attendance data:", error);
       response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Failed to retrieve last attendance data", {}, res, req);

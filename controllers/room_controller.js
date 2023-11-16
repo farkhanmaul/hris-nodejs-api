@@ -93,17 +93,18 @@ async function getEmployee(req, res) {
       if (!result || !result.recordset || !result.recordset.length) {
          response(HTTP_STATUS.NOT_FOUND, "01", "No employees found", {}, res, req);
       } else {
-         const employees = result.recordset.map((employee) => ({
-            EmployeeFullName: employee.EmployeeFullName,
-            EmployeeId: employee.EmployeeId,
-            JobTitleLabel: employee.JobTitleLabel,
-         }));
-
-         response(HTTP_STATUS.OK, "00", "Employees retrieved successfully", employees, res, req);
+         // const data = result.recordset.map((employee) => Object.values(employee));
+         // response(HTTP_STATUS.OK, "00", "Employees retrieved successfully", result.recordset, res, req);
+         res.status(200).json({
+            respCode: "00",
+            respMsg: "Employees retrieved successfully",
+            data: result.recordset,
+         });
       }
    } catch (error) {
       console.error("Failed to retrieve employees:", error);
       response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Internal Server Error", {}, res, req);
    }
 }
+
 module.exports = { roomBooking, getRoom, getRoomById, getEmployee };

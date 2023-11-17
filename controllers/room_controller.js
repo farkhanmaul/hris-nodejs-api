@@ -14,7 +14,14 @@ async function roomBooking(req, res) {
    const end_timeValid = validation.validateUserInput(end_time);
    const meeting_topicValid = validation.validateUserInput(meeting_topic);
 
-   if (!room_idValid || !booker_employee_idValid || !start_timeValid || !end_timeValid || !meeting_topicValid) {
+   if (
+      !room_idValid ||
+      !booker_employee_idValid ||
+      !pic_employee_idValid ||
+      !start_timeValid ||
+      !end_timeValid ||
+      !meeting_topicValid
+   ) {
       // Handle the case where any of the user inputs are potentially malicious
       response(HTTP_STATUS.BAD_REQUEST, "98", "Invalid user input", {}, res, req);
       return; // Return early to prevent further processing

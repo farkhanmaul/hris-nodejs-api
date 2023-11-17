@@ -7,17 +7,19 @@ async function insertRoomBooking(
    room_id,
    booker_employee_id,
    pic_employee_id,
+   date,
    start_time,
    end_time,
    datetime,
    meeting_topic
 ) {
-   const query = `INSERT INTO room_booking (room_id, booker_employee_id, pic_employee_id, start_time, end_time, meeting_topic) 
-                  VALUES (?, ?, ?, ?, ?, ?)`;
+   const query = `INSERT INTO room_booking (room_id, booker_employee_id, pic_employee_id, date, start_time, end_time, meeting_topic) 
+                  VALUES (?, ?, ?, ?, ?, ?, ?)`;
    const result = await db2.query(query, [
       room_id,
       booker_employee_id,
       pic_employee_id,
+      date,
       start_time,
       end_time,
       meeting_topic,
@@ -54,4 +56,33 @@ async function getAllEmployees() {
       throw error;
    }
 }
-module.exports = { insertRoomBooking, getRoomData, getAllEmployees };
+
+async function getActiveBookings(employee_id) {
+   try {
+      const currentDatetime = new Date();
+
+      // Retrieve active bookings for the specified employee ID from the database
+      const query = `SELECT * FROM room_booking WHERE booker_employee_id = ? AND end_time > ?`;
+      const activeBookings = await db2.query(query, [employee_id, currentDatetime]);
+
+      return activeBookings;
+   } catch (error) {
+      throw error;
+   }
+}
+
+async function getHistoryBookings(employee_id) {
+   try {
+      const currentDatetime = new Date();
+
+      // Retrieve past bookings for the specified employee ID from the database
+      const query = `SELECT * FROM room_booking WHERE booker_employee_id = ? AND end_time <= ?`;
+      const pastBookings = await db2.query(query, [employee_id, currentDatetime]);
+
+      return pastBookings;
+   } catch (error) {
+      throw error;
+   }
+}
+
+module.exports = { insertRoomBooking, getRoomData, getAllEmployees, getActiveBookings, getHistoryBookings };

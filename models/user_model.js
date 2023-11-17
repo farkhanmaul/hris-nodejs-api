@@ -251,9 +251,20 @@ async function sendOTPbyWhatsApp(
    }
 }
 
-function getLastAttendance(employee_id) {
-   const query = `SELECT action FROM user_attendance WHERE employee_id = ? ORDER BY datetime DESC LIMIT 1`;
-   return db2.query(query, [employee_id]).then((result) => result[0][0]);
+async function getLastAttendance(employee_id) {
+   try {
+      const query = `SELECT action FROM user_attendance WHERE employee_id = ? ORDER BY datetime DESC LIMIT 1`;
+      const result = await db2.query(query, [employee_id]);
+
+      if (result && result[0] && result[0][0]) {
+         return result[0][0];
+      } else {
+         return "undefined";
+      }
+   } catch (error) {
+      console.error("Error:", error);
+      return null;
+   }
 }
 
 async function getAttendanceHistory(employee_id, start_date, end_date) {

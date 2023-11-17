@@ -5,11 +5,12 @@ const { HTTP_STATUS, RESPONSE_CODES, RESPONSE_MESSAGES } = require("../utils/glo
 const response = require("../middleware/response");
 
 async function roomBooking(req, res) {
-   const { room_id, booker_employee_id, pic_employee_id, start_time, end_time, meeting_topic, guest } = req.body;
+   const { room_id, booker_employee_id, pic_employee_id, date, start_time, end_time, meeting_topic, guest } = req.body;
 
    const room_idValid = validation.validateUserInput(room_id);
    const booker_employee_idValid = validation.validateUserInput(booker_employee_id);
    const pic_employee_idValid = validation.validateUserInput(pic_employee_id);
+   const dateValid = validation.validateUserInput(date);
    const start_timeValid = validation.validateUserInput(start_time);
    const end_timeValid = validation.validateUserInput(end_time);
    const meeting_topicValid = validation.validateUserInput(meeting_topic);
@@ -18,6 +19,7 @@ async function roomBooking(req, res) {
       !room_idValid ||
       !booker_employee_idValid ||
       !pic_employee_idValid ||
+      !dateValid ||
       !start_timeValid ||
       !end_timeValid ||
       !meeting_topicValid
@@ -35,6 +37,7 @@ async function roomBooking(req, res) {
          room_id,
          booker_employee_id,
          pic_employee_id,
+         date,
          start_time,
          end_time,
          datetime,
@@ -42,12 +45,13 @@ async function roomBooking(req, res) {
       );
 
       // Send the success response with the inserted row's data
-      response(HTTP_STATUS.OK, "00", "Room booking created successfully", { guest }, res, req);
+      response(HTTP_STATUS.OK, "00", "Room booking created successfully", insertedRow, res, req);
    } catch (error) {
       console.error("Internal Server Error:", error);
       response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Internal Server Error", {}, res, req);
    }
 }
+
 async function getRoom(req, res) {
    const { employee_id } = req.body;
    if (!validation.validateUserInput(employee_id)) {
@@ -94,4 +98,35 @@ async function getEmployee(req, res) {
    }
 }
 
-module.exports = { roomBooking, getRoom, getEmployee };
+async function getActiveBooking(req, res) {
+   const { employee_id } = req.body;
+   if (!validation.validateUserInput(employee_id)) {
+      response(HTTP_STATUS.BAD_REQUEST, "98", "Invalid user input", {}, res, req);
+      return; // Exit the function if input is invalid
+   }
+   try {
+      const activeBookings = await roomModel.getActiveBookings(employee_id);
+
+      response(HTTP_STATUS.OK, "00", "Active bookings retrieved successfully", { activeBookings }, res, req);
+   } catch (error) {
+      console.error("Internal Server Error:", error);
+      response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Internal Server Error", {}, res, req);
+   }
+}
+
+async function getHistoryBooking(req, res) {
+   const { employee_id } = req.body;
+   if (!validation.validateUserInput(employee_id)) {
+      response(HTTP_STATUS.BAD_REQUEST, "98", "Invalid user input", {}, res, req);
+      return; // Exit the function if input is invalid
+   }
+   try {
+      const pastBookings = await roomModel.getHistoryBookings(employee_id);
+
+      response(HTTP_STATUS.OK, "00", "Past bookings retrieved successfully", { pastBookings }, res, req);
+   } catch (error) {
+      console.error("Internal Server Error:", error);
+      response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Internal Server Error", {}, res, req);
+   }
+}
+module.exports = { roomBooking, getRoom, getEmployee, getActiveBooking, getHistoryBooking };

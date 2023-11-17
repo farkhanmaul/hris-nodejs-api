@@ -35,13 +35,15 @@ router.post("/user/get-profile", verifyToken, userController.getProfile);
 router.post("/user/attendance", verifyToken, userAttendanceController.attendance);
 router.post("/user/get-attendance-today", verifyToken, userAttendanceController.getAttendanceToday);
 router.post("/user/get-attendance-clock", verifyToken, userAttendanceController.getAttendanceClock);
-router.post("/user/get-attendance-recent", verifyToken, userAttendanceController.getAttendanceRecent);
 router.post("/user/get-attendance-history", verifyToken, userAttendanceController.getAttendanceHistory);
 router.post("/user/save-attendance-photo", verifyToken, userAttendanceController.saveAttendancePhotoMulter);
+router.post("/user/get-attendance-status", verifyToken, userAttendanceController.getAttendanceRecent);
 
 // ROOM
 router.post("/room/booking", verifyToken, roomController.roomBooking);
 router.post("/room/get-room", verifyToken, roomController.getRoom);
+router.post("/room/get-booking-active", verifyToken, roomController.getActiveBooking);
+router.post("/room/get-booking-history", verifyToken, roomController.getHistoryBooking);
 router.post("/room/get-all-employee", verifyToken, roomController.getEmployee);
 
 // GLOBAL VARIABLES

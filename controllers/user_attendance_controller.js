@@ -36,10 +36,6 @@ async function attendance(req, res) {
    try {
       const datetime = new Date();
 
-      // Get the global variable values
-      const globalVariable = "forceAttendancePhoto";
-      const attendancePhotoStatus = await userModel.specificSelectGlobalVariables(globalVariable);
-
       const insertedRow = await userModel.recordEmployeePresence(
          employee_id,
          longitude,
@@ -53,7 +49,6 @@ async function attendance(req, res) {
 
       const responseData = {
          id: insertedRow.id,
-         forceAttendancePhoto: attendancePhotoStatus.value,
       };
 
       // Send the success response with the inserted row's data
@@ -293,9 +288,23 @@ async function getAttendanceRecent(req, res) {
       } else {
          greeting = "Good night";
       }
+      // Get the global variable forceAttendancePhoto values
+      const forceAttendancePhoto = "force_attendance_photo";
+      const attendancePhotoStatus = await userModel.specificSelectGlobalVariables(forceAttendancePhoto);
+
+      // Get the global variable  values
+      const onlyClockIn = "only_clock_in";
+      const onlyClockInStatus = await userModel.specificSelectGlobalVariables(onlyClockIn);
+
+      // Get the global variable  values
+      const intervalBookingTime = "interval_booking_time";
+      const intervalStatus = await userModel.specificSelectGlobalVariables(intervalBookingTime);
 
       const responsePayload = {
-         ...lastAttendance,
+         lastAction: lastAttendance.action,
+         force_attendance_photo: attendancePhotoStatus.value,
+         only_clock_in: onlyClockInStatus.value,
+         interval_booking_time: intervalStatus.value,
          currentTime,
          greeting,
          absenceTimeRange,

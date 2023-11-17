@@ -5,7 +5,7 @@ const { HTTP_STATUS, RESPONSE_CODES, RESPONSE_MESSAGES } = require("../utils/glo
 const response = require("../middleware/response");
 
 async function roomBooking(req, res) {
-   const { room_id, booker_employee_id, pic_employee_id, start_time, end_time, meeting_topic } = req.body;
+   const { room_id, booker_employee_id, pic_employee_id, start_time, end_time, meeting_topic, guest } = req.body;
 
    const room_idValid = validation.validateUserInput(room_id);
    const booker_employee_idValid = validation.validateUserInput(booker_employee_id);
@@ -42,7 +42,7 @@ async function roomBooking(req, res) {
       );
 
       // Send the success response with the inserted row's data
-      response(HTTP_STATUS.OK, "00", "Room booking created successfully", {}, res, req);
+      response(HTTP_STATUS.OK, "00", "Room booking created successfully", { guest }, res, req);
    } catch (error) {
       console.error("Internal Server Error:", error);
       response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Internal Server Error", {}, res, req);

@@ -135,63 +135,10 @@ async function getMedicalPlafonds(req, res) {
    }
 }
 
-async function getRoomDummy(req, res) {
-   const { employee_id } = req.body;
-   // Validate the user input
-   const isInputValid = validation.validateUserInput(employee_id);
-
-   if (!isInputValid) {
-      response(HTTP_STATUS.BAD_REQUEST, "98", "Invalid user input", {}, res, req);
-      return;
-   }
-
-   try {
-      // Dummy response for plafonds
-      const rooms = [
-         {
-            roomName: "Kapuas",
-            location: "5th Floor",
-            maxPeople: 10,
-            facilities: ["Projector", "Microphone", "Whiteboard"],
-            isAvailable: true,
-         },
-         {
-            roomName: "Musi",
-            location: "3rd Floor",
-            maxPeople: 20,
-            facilities: ["Projector", "Whiteboard"],
-            isAvailable: false,
-         },
-
-         {
-            roomName: "Mahakam",
-            location: "3rd Floor",
-            maxPeople: 20,
-            facilities: ["Projector", "Whiteboard"],
-            isAvailable: false,
-         },
-         {
-            roomName: "Membrano",
-            location: "3rd Floor",
-            maxPeople: 20,
-            facilities: ["Projector", "Whiteboard"],
-            isAvailable: false,
-         },
-         // Add more room objects as needed
-      ];
-
-      response(HTTP_STATUS.OK, "00", "Plafonds retrieved successfully", rooms, res, req);
-   } catch (error) {
-      console.error("Failed to retrieve plafonds:", error);
-      response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Internal Server Error", {}, res, req);
-   }
-}
-
 module.exports = {
    getRequestCompleted,
    getRequestRejected,
    getRequestProgress,
    getRequestDetail,
    getMedicalPlafonds,
-   getRoomDummy,
 };

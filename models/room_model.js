@@ -44,10 +44,15 @@ async function getRoomData() {
 async function getAllEmployees() {
    try {
       const query = `
-      SELECT e.EmployeeFullName, e.EmployeeId
-      FROM dbo.HrEmployee e
+      SELECT 
+      e.EmployeeId, e.EmployeeFullName,
+      j.JobTitleLabel
+   FROM 
+      dbo.HrEmployee e
       INNER JOIN dbo.HrEmploymentHistory eh ON e.EmployeeId = eh.EmployeeId
-      WHERE eh.IsExists = '1';
+      INNER JOIN dbo.HrReferenceJobTitle j ON eh.JobTitleId = j.JobTitleId
+      WHERE 
+      eh.IsExists = '1';
       `;
 
       const result = await db1(query);

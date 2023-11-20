@@ -73,7 +73,7 @@ async function getAllEmployees() {
 async function getActiveBookings(employee_id) {
    try {
       const currentDatetime = new Date();
-
+      currentDatetime.setHours(0, 0, 0, 0);
       // Retrieve active bookings for the specified employee ID from the database
       const query = `SELECT id, room_id, booker_employee_id, pic_employee_id, date, start_time, end_time, created_at, meeting_topic 
                FROM room_booking 

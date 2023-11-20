@@ -583,6 +583,27 @@ async function deleteGlobalVariables(key_name) {
    });
 }
 
+async function getUserFullName(employee_id) {
+   try {
+      const query = `
+      SELECT 
+         e.EmployeeFullName
+      FROM 
+         dbo.HrEmployee e
+      WHERE 
+         e.EmployeeId = '${employee_id}';
+   `;
+      const result = await db1(query);
+      if (result.length > 0) {
+         return result[0].EmployeeFullName; // Returning only the EmployeeFullName
+      } else {
+         return null;
+      }
+   } catch (error) {
+      throw error;
+   }
+}
+
 module.exports = {
    closeToken,
    sendOTPbyEmail,

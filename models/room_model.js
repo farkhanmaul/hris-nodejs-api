@@ -70,7 +70,7 @@ async function getActiveBookings(employee_id) {
       const query = `SELECT * FROM room_booking WHERE booker_employee_id = ? AND end_time > ?`;
       const activeBookings = await db2.query(query, [employee_id, currentDatetime]);
 
-      return activeBookings;
+      return activeBookings[0];
    } catch (error) {
       throw error;
    }
@@ -84,7 +84,7 @@ async function getHistoryBookings(employee_id) {
       const query = `SELECT * FROM room_booking WHERE booker_employee_id = ? AND end_time <= ?`;
       const pastBookings = await db2.query(query, [employee_id, currentDatetime]);
 
-      return pastBookings;
+      return pastBookings[0];
    } catch (error) {
       throw error;
    }

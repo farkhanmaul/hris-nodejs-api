@@ -75,9 +75,22 @@ async function getActiveBookings(employee_id) {
       const currentDatetime = new Date();
       currentDatetime.setHours(0, 0, 0, 0);
       // Retrieve active bookings for the specified employee ID from the database
-      const query = `SELECT id, room_id, booker_employee_id, pic_employee_id, date, start_time, end_time, created_at, meeting_topic 
-               FROM room_booking 
-               WHERE (booker_employee_id = ? OR pic_employee_id = ?) AND date >= ? ORDER BY date ASC, start_time ASC`;
+      const query = `
+      SELECT rb.id, rb.room_id, rb.booker_employee_id, rb.pic_employee_id, rb.date, rb.start_time, rb.end_time, rb.created_at, rb.meeting_topic, rh.room_name, (
+        SELECT GROUP_CONCAT(employee_id SEPARATOR ', ')
+        FROM room_booking_guest
+        WHERE booking_id = rb.id
+      ) AS guest,
+      (
+        SELECT COUNT(employee_id)
+        FROM room_booking_guest
+        WHERE booking_id = rb.id
+      ) AS guestAmount
+      FROM room_booking rb
+      INNER JOIN room_header rh ON rb.room_id = rh.id
+      WHERE (rb.booker_employee_id = ? OR rb.pic_employee_id = ?) AND rb.date >= ?
+      ORDER BY rb.date ASC, rb.start_time ASC
+    `;
       const activeBookings = await db2.query(query, [employee_id, employee_id, currentDatetime]);
 
       const formattedBookings = activeBookings[0].map((booking) => {
@@ -102,9 +115,22 @@ async function getHistoryBookings(employee_id) {
       const currentDatetime = new Date();
       currentDatetime.setHours(0, 0, 0, 0);
       // Retrieve past bookings for the specified employee ID from the database
-      const query = `SELECT id, room_id, booker_employee_id, pic_employee_id, date, start_time, end_time, created_at, meeting_topic 
-      FROM room_booking 
-      WHERE (booker_employee_id = ? OR pic_employee_id = ?) AND date < ? ORDER BY date ASC, start_time ASC`;
+      const query = `
+      SELECT rb.id, rb.room_id, rb.booker_employee_id, rb.pic_employee_id, rb.date, rb.start_time, rb.end_time, rb.created_at, rb.meeting_topic, rh.room_name, (
+        SELECT GROUP_CONCAT(employee_id SEPARATOR ', ')
+        FROM room_booking_guest
+        WHERE booking_id = rb.id
+      ) AS guest,
+      (
+        SELECT COUNT(employee_id)
+        FROM room_booking_guest
+        WHERE booking_id = rb.id
+      ) AS guestAmount
+      FROM room_booking rb
+      INNER JOIN room_header rh ON rb.room_id = rh.id
+      WHERE (rb.booker_employee_id = ? OR rb.pic_employee_id = ?) AND rb.date < ?
+      ORDER BY rb.date ASC, rb.start_time ASC
+    `;
       const pastBookings = await db2.query(query, [employee_id, employee_id, currentDatetime]);
 
       // Convert the date to the desired format for each booking

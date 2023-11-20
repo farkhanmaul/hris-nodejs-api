@@ -323,7 +323,7 @@ const storage = multer.diskStorage({
    destination: async (req, file, cb) => {
       try {
          // Get the global variable values
-         const globalVariable = "destinationAttendancePhoto";
+         const globalVariable = "destination_attendance_photo";
          const destination = await userModel.specificSelectGlobalVariables(globalVariable);
          cb(null, destination.value);
       } catch (error) {

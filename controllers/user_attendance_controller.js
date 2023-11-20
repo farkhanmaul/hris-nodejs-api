@@ -296,6 +296,14 @@ async function getAttendanceRecent(req, res) {
       const onlyClockIn = "only_clock_in";
       const onlyClockInStatus = await userModel.specificSelectGlobalVariables(onlyClockIn);
 
+      // Get action if Only Clock In
+      let actionOnlyClockIn;
+      if (onlyClockInStatus.value === "ON") {
+         actionOnlyClockIn = "Clock In";
+      } else {
+         actionOnlyClockIn = null;
+      }
+
       // Get the global variable  values
       const intervalBookingTime = "interval_booking_time";
       const intervalStatus = await userModel.specificSelectGlobalVariables(intervalBookingTime);
@@ -304,6 +312,7 @@ async function getAttendanceRecent(req, res) {
          lastAction: lastAttendance.action,
          force_attendance_photo: attendancePhotoStatus.value,
          only_clock_in: onlyClockInStatus.value,
+         action_only_clock_in: actionOnlyClockIn,
          interval_booking_time: intervalStatus.value,
          currentTime,
          greeting,

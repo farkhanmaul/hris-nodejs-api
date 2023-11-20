@@ -30,8 +30,6 @@ async function roomBooking(req, res) {
    }
 
    try {
-      const datetime = new Date();
-
       // Insert the room booking record into the database
       const insertedRow = await roomModel.insertRoomBooking(
          room_id,
@@ -40,8 +38,8 @@ async function roomBooking(req, res) {
          date,
          start_time,
          end_time,
-         datetime,
-         meeting_topic
+         meeting_topic,
+         guest
       );
 
       // Send the success response with the inserted row's data
@@ -106,8 +104,11 @@ async function getActiveBooking(req, res) {
    }
    try {
       const activeBookings = await roomModel.getActiveBookings(employee_id);
-
-      response(HTTP_STATUS.OK, "00", "Active bookings retrieved successfully", { activeBookings }, res, req);
+      if (!activeBookings || !activeBookings.length) {
+         response(HTTP_STATUS.NOT_FOUND, "01", "Data not found", {}, res, req);
+      } else {
+         response(HTTP_STATUS.OK, "00", "Active bookings retrieved successfully", activeBookings, res, req);
+      }
    } catch (error) {
       console.error("Internal Server Error:", error);
       response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Internal Server Error", {}, res, req);
@@ -121,9 +122,12 @@ async function getHistoryBooking(req, res) {
       return; // Exit the function if input is invalid
    }
    try {
-      const pastBookings = await roomModel.getHistoryBookings(employee_id);
-
-      response(HTTP_STATUS.OK, "00", "Past bookings retrieved successfully", { pastBookings }, res, req);
+      const historyBookings = await roomModel.getHistoryBookings(employee_id);
+      if (!historyBookings || !historyBookings.length) {
+         response(HTTP_STATUS.NOT_FOUND, "01", "Data not found", {}, res, req);
+      } else {
+         response(HTTP_STATUS.OK, "00", "History bookings retrieved successfully", historyBookings, res, req);
+      }
    } catch (error) {
       console.error("Internal Server Error:", error);
       response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Internal Server Error", {}, res, req);

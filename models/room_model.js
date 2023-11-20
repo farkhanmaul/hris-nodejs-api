@@ -121,4 +121,33 @@ async function getHistoryBookings(employee_id) {
    }
 }
 
-module.exports = { insertRoomBooking, getRoomData, getAllEmployees, getActiveBookings, getHistoryBookings };
+async function getBookingsByRoomAndDate(room_id, date) {
+   try {
+      const query = `SELECT room_id, booker_employee_id, pic_employee_id, date, start_time, end_time, meeting_topic
+                     FROM room_booking
+                     WHERE room_id = ? AND date = ?`;
+      const bookings = await db2.query(query, [room_id, date]);
+
+      const formattedBookings = bookings[0].map((booking) => {
+         const formattedDate = validation.formatDate(new Date(booking.date));
+
+         return {
+            ...booking,
+            date: formattedDate,
+         };
+      });
+
+      return formattedBookings;
+   } catch (error) {
+      throw error;
+   }
+}
+
+module.exports = {
+   insertRoomBooking,
+   getRoomData,
+   getAllEmployees,
+   getActiveBookings,
+   getHistoryBookings,
+   getBookingsByRoomAndDate,
+};

@@ -44,6 +44,7 @@ router.post("/room/booking", verifyToken, roomController.roomBooking);
 router.post("/room/get-room", verifyToken, roomController.getRoom);
 router.post("/room/get-booking-active", verifyToken, roomController.getActiveBooking);
 router.post("/room/get-booking-history", verifyToken, roomController.getHistoryBooking);
+router.post("/room/get-booking-by-room", verifyToken, roomController.getBookingByRoom);
 router.post("/room/get-all-employee", verifyToken, roomController.getEmployee);
 
 // GLOBAL VARIABLES

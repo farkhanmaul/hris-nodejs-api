@@ -77,15 +77,17 @@ async function getActiveBookings(employee_id) {
       // Retrieve active bookings for the specified employee ID from the database
       const query = `SELECT id, room_id, booker_employee_id, pic_employee_id, date, start_time, end_time, created_at, meeting_topic 
                FROM room_booking 
-               WHERE (booker_employee_id = ? OR pic_employee_id = ?) AND date >= ?`;
+               WHERE (booker_employee_id = ? OR pic_employee_id = ?) AND date >= ? ORDER BY date ASC, start_time ASC`;
       const activeBookings = await db2.query(query, [employee_id, employee_id, currentDatetime]);
 
       const formattedBookings = activeBookings[0].map((booking) => {
          const formattedDate = validation.formatDate(new Date(booking.date));
+         const formattedCreatedAt = validation.formatDate(new Date(booking.created_at));
 
          return {
             ...booking,
             date: formattedDate,
+            created_at: formattedCreatedAt,
          };
       });
 
@@ -98,20 +100,22 @@ async function getActiveBookings(employee_id) {
 async function getHistoryBookings(employee_id) {
    try {
       const currentDatetime = new Date();
-
+      currentDatetime.setHours(0, 0, 0, 0);
       // Retrieve past bookings for the specified employee ID from the database
       const query = `SELECT id, room_id, booker_employee_id, pic_employee_id, date, start_time, end_time, created_at, meeting_topic 
       FROM room_booking 
-      WHERE (booker_employee_id = ? OR pic_employee_id = ?) AND date < ?`;
+      WHERE (booker_employee_id = ? OR pic_employee_id = ?) AND date < ? ORDER BY date ASC, start_time ASC`;
       const pastBookings = await db2.query(query, [employee_id, employee_id, currentDatetime]);
 
       // Convert the date to the desired format for each booking
       const formattedBookings = pastBookings[0].map((booking) => {
          const formattedDate = validation.formatDate(new Date(booking.date));
+         const formattedCreatedAt = validation.formatDate(new Date(booking.created_at));
 
          return {
             ...booking,
             date: formattedDate,
+            created_at: formattedCreatedAt,
          };
       });
 

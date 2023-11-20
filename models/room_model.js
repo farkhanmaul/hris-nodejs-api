@@ -1,8 +1,7 @@
 const db1 = require("../config/database1");
 const db2 = require("../config/database2");
-const db3 = require("../config/database3");
 const validation = require("../utils/validation");
-const response = require("../middleware/response");
+const userModel = require("../models/user_model");
 
 async function insertRoomBooking(
    room_id,
@@ -80,7 +79,7 @@ async function getActiveBookings(employee_id) {
         SELECT GROUP_CONCAT(employee_id SEPARATOR ', ')
         FROM room_booking_guest
         WHERE booking_id = rb.id
-      ) AS guest,
+      ) AS guest_ids,
       (
         SELECT COUNT(employee_id)
         FROM room_booking_guest
@@ -93,18 +92,29 @@ async function getActiveBookings(employee_id) {
     `;
       const activeBookings = await db2.query(query, [employee_id, employee_id, currentDatetime]);
 
-      const formattedBookings = activeBookings[0].map((booking) => {
+      // Convert the date to the desired format for each booking
+      const formattedBookings = activeBookings[0].map(async (booking) => {
          const formattedDate = validation.formatDate(new Date(booking.date));
          const formattedCreatedAt = validation.formatDate(new Date(booking.created_at));
+
+         const bookerFullName = await userModel.getUserFullName(booking.booker_employee_id);
+         const picFullName = await userModel.getUserFullName(booking.pic_employee_id);
+
+         // Convert guest IDs to guest full names
+         const guestIds = booking.guest_ids ? booking.guest_ids.split(", ") : [];
+         const guestFullNames = await Promise.all(guestIds.map((guestId) => userModel.getUserFullName(guestId)));
 
          return {
             ...booking,
             date: formattedDate,
             created_at: formattedCreatedAt,
+            booker_employee_fullname: bookerFullName,
+            pic_employee_fullname: picFullName,
+            guest_fullnames: guestFullNames,
          };
       });
 
-      return formattedBookings;
+      return Promise.all(formattedBookings);
    } catch (error) {
       throw error;
    }
@@ -120,7 +130,7 @@ async function getHistoryBookings(employee_id) {
         SELECT GROUP_CONCAT(employee_id SEPARATOR ', ')
         FROM room_booking_guest
         WHERE booking_id = rb.id
-      ) AS guest,
+      ) AS guest_ids,
       (
         SELECT COUNT(employee_id)
         FROM room_booking_guest
@@ -134,18 +144,28 @@ async function getHistoryBookings(employee_id) {
       const pastBookings = await db2.query(query, [employee_id, employee_id, currentDatetime]);
 
       // Convert the date to the desired format for each booking
-      const formattedBookings = pastBookings[0].map((booking) => {
+      const formattedBookings = pastBookings[0].map(async (booking) => {
          const formattedDate = validation.formatDate(new Date(booking.date));
          const formattedCreatedAt = validation.formatDate(new Date(booking.created_at));
+
+         const bookerFullName = await userModel.getUserFullName(booking.booker_employee_id);
+         const picFullName = await userModel.getUserFullName(booking.pic_employee_id);
+
+         // Convert guest IDs to guest full names
+         const guestIds = booking.guest_ids ? booking.guest_ids.split(", ") : [];
+         const guestFullNames = await Promise.all(guestIds.map((guestId) => userModel.getUserFullName(guestId)));
 
          return {
             ...booking,
             date: formattedDate,
             created_at: formattedCreatedAt,
+            booker_employee_fullname: bookerFullName,
+            pic_employee_fullname: picFullName,
+            guest_fullnames: guestFullNames,
          };
       });
 
-      return formattedBookings;
+      return Promise.all(formattedBookings);
    } catch (error) {
       throw error;
    }

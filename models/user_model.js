@@ -1,7 +1,5 @@
 const db1 = require("../config/database1");
 const db2 = require("../config/database2");
-const db3 = require("../config/database3");
-const response = require("../middleware/response");
 const nodemailer = require("nodemailer");
 const axios = require("axios");
 const Mailgen = require("mailgen");
@@ -586,16 +584,14 @@ async function deleteGlobalVariables(key_name) {
 async function getUserFullName(employee_id) {
    try {
       const query = `
-      SELECT 
-         e.EmployeeFullName
-      FROM 
-         dbo.HrEmployee e
-      WHERE 
-         e.EmployeeId = '${employee_id}';
-   `;
+         SELECT EmployeeFullName
+         FROM dbo.HrEmployee
+         WHERE EmployeeId = '${employee_id}';`;
       const result = await db1(query);
-      if (result.length > 0) {
-         return result[0].EmployeeFullName; // Returning only the EmployeeFullName
+
+      if (result.recordset && result.recordset.length > 0) {
+         const { EmployeeFullName } = result.recordset[0];
+         return EmployeeFullName;
       } else {
          return null;
       }
@@ -636,4 +632,5 @@ module.exports = {
    insertGlobalVariables,
    deleteGlobalVariables,
    updateGlobalVariables,
+   getUserFullName,
 };

@@ -205,22 +205,31 @@ async function getHistoryBookings(employee_id) {
 
 async function getBookingsByRoomAndDate(room_id, date) {
    try {
-      const query = `SELECT room_id, booker_employee_id, pic_employee_id, date, start_time, end_time, meeting_topic
+      const query = `SELECT pic_employee_id, start_time, end_time, meeting_topic
                      FROM room_booking
                      WHERE room_id = ? AND date = ?
                      ORDER BY date ASC, start_time ASC`;
       const bookings = await db2.query(query, [room_id, date]);
 
-      const formattedBookings = bookings[0].map((booking) => {
-         const formattedDate = validation.formatDate(new Date(booking.date));
+      const transformedBookings = {};
+      const employeeIds = bookings[0].map((booking) => booking.pic_employee_id);
+      const employeeFullNames = await Promise.all(
+         employeeIds.map((employeeId) => userModel.getUserFullName(employeeId))
+      );
 
-         return {
-            ...booking,
-            date: formattedDate,
-         };
+      bookings[0].forEach((booking, index) => {
+         if (!transformedBookings[date]) {
+            transformedBookings[date] = [];
+         }
+         transformedBookings[date].push({
+            meeting_topic: booking.meeting_topic,
+            start_time: booking.start_time,
+            end_time: booking.end_time,
+            pic_employee_id: employeeFullNames[index],
+         });
       });
 
-      return formattedBookings;
+      return transformedBookings;
    } catch (error) {
       throw error;
    }

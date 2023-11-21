@@ -143,7 +143,7 @@ async function getBookingByRoom(req, res) {
 
    try {
       const BookingByRoom = await roomModel.getBookingsByRoomAndDate(room_id, date);
-      if (!BookingByRoom || !BookingByRoom.length) {
+      if (!BookingByRoom) {
          response(HTTP_STATUS.NOT_FOUND, "01", "Data not found", {}, res, req);
       } else {
          response(HTTP_STATUS.OK, "00", "Active bookings retrieved successfully", BookingByRoom, res, req);

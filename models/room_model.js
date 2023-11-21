@@ -75,7 +75,18 @@ async function getActiveBookings(employee_id) {
       currentDatetime.setHours(0, 0, 0, 0);
       // Retrieve active bookings for the specified employee ID from the database
       const query = `
-      SELECT rb.id, rb.room_id, rb.booker_employee_id, rb.pic_employee_id, rb.date, rb.start_time, rb.end_time, rb.created_at, rb.meeting_topic, rh.room_name, (
+      SELECT 
+         rb.id, 
+         rb.room_id, 
+         rb.booker_employee_id, 
+         rb.pic_employee_id, 
+         rb.date, 
+         rb.start_time, 
+         rb.end_time, 
+         rb.created_at, 
+         rb.meeting_topic, 
+         rh.room_name, 
+      (
         SELECT GROUP_CONCAT(employee_id SEPARATOR ', ')
         FROM room_booking_guest
         WHERE booking_id = rb.id
@@ -85,8 +96,9 @@ async function getActiveBookings(employee_id) {
         FROM room_booking_guest
         WHERE booking_id = rb.id
       ) AS guestAmount
-      FROM room_booking rb
-      INNER JOIN room_header rh ON rb.room_id = rh.id
+      FROM 
+         room_booking rb
+         INNER JOIN room_header rh ON rb.room_id = rh.id
       WHERE (rb.booker_employee_id = ? OR rb.pic_employee_id = ?) AND rb.date >= ?
       ORDER BY rb.date ASC, rb.start_time ASC
     `;
@@ -126,7 +138,18 @@ async function getHistoryBookings(employee_id) {
       currentDatetime.setHours(0, 0, 0, 0);
       // Retrieve past bookings for the specified employee ID from the database
       const query = `
-      SELECT rb.id, rb.room_id, rb.booker_employee_id, rb.pic_employee_id, rb.date, rb.start_time, rb.end_time, rb.created_at, rb.meeting_topic, rh.room_name, (
+      SELECT 
+         rb.id, 
+         rb.room_id, 
+         rb.booker_employee_id, 
+         rb.pic_employee_id, 
+         rb.date, 
+         rb.start_time, 
+         rb.end_time, 
+         rb.created_at, 
+         rb.meeting_topic, 
+         rh.room_name, 
+      (
         SELECT GROUP_CONCAT(employee_id SEPARATOR ', ')
         FROM room_booking_guest
         WHERE booking_id = rb.id
@@ -136,8 +159,9 @@ async function getHistoryBookings(employee_id) {
         FROM room_booking_guest
         WHERE booking_id = rb.id
       ) AS guestAmount
-      FROM room_booking rb
-      INNER JOIN room_header rh ON rb.room_id = rh.id
+      FROM 
+         room_booking rb
+         INNER JOIN room_header rh ON rb.room_id = rh.id
       WHERE (rb.booker_employee_id = ? OR rb.pic_employee_id = ?) AND rb.date < ?
       ORDER BY rb.date ASC, rb.start_time ASC
     `;

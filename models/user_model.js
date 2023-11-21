@@ -491,14 +491,14 @@ WHERE plr.[EmployeeId] = '${employee_id}'
    }
 }
 
-async function getAttendanceTimeRangeByTime(currentTime) {
+async function getAttendanceTimeRangeByTime(current_time) {
    try {
       const query = `
        SELECT range_name, start_time, end_time
        FROM attendance_time_range
        WHERE ? >= start_time AND ? <= end_time
      `;
-      const result = await db2.query(query, [currentTime, currentTime]);
+      const result = await db2.query(query, [current_time, current_time]);
 
       return result[0].length > 0 ? result[0][0] : null;
    } catch (error) {

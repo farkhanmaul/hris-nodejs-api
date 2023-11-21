@@ -266,7 +266,7 @@ async function getAttendanceRecent(req, res) {
       const lastAttendance = await userModel.getLastAttendance(employee_id);
 
       const nowTime = new Date();
-      const currentTime = nowTime.toLocaleTimeString("en-US", {
+      const current_time = nowTime.toLocaleTimeString("en-US", {
          hour12: false,
          hour: "2-digit",
          minute: "2-digit",
@@ -274,16 +274,16 @@ async function getAttendanceRecent(req, res) {
       });
 
       // Retrieve the relevant absence time range based on the current timestamp
-      const absenceTimeRange = await userModel.getAttendanceTimeRangeByTime(currentTime);
-      const workTimeRange = await userModel.getWorkingHour();
+      const absence_time_range = await userModel.getAttendanceTimeRangeByTime(current_time);
+      const work_time_range = await userModel.getWorkingHour();
 
       let greeting;
 
-      if (currentTime >= "05:00:00" && currentTime < "12:00:00") {
+      if (current_time >= "05:00:00" && current_time < "12:00:00") {
          greeting = "Good morning";
-      } else if (currentTime >= "12:00:00" && currentTime < "18:00:00") {
+      } else if (current_time >= "12:00:00" && current_time < "18:00:00") {
          greeting = "Good afternoon";
-      } else if (currentTime >= "18:00:00" && currentTime < "21:00:00") {
+      } else if (current_time >= "18:00:00" && current_time < "21:00:00") {
          greeting = "Good evening";
       } else {
          greeting = "Good night";
@@ -309,15 +309,15 @@ async function getAttendanceRecent(req, res) {
       const intervalStatus = await userModel.specificSelectGlobalVariables(intervalBookingTime);
 
       const responsePayload = {
-         lastAction: lastAttendance.action,
+         last_action: lastAttendance.action,
          force_attendance_photo: attendancePhotoStatus.value,
          only_clock_in: onlyClockInStatus.value,
          action_only_clock_in: actionOnlyClockIn,
          interval_booking_time: intervalStatus.value,
-         currentTime,
+         current_time,
          greeting,
-         absenceTimeRange,
-         workTimeRange,
+         absence_time_range,
+         work_time_range,
       };
 
       response(HTTP_STATUS.OK, "00", "Last attendance data retrieved successfully", responsePayload, res, req);

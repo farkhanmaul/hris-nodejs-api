@@ -30,28 +30,32 @@ async function roomBooking(req, res) {
 
    try {
       const existingBookings = await roomModel.getBookingsByRoomAndDate(room_id, date);
-      const overlappingBooking = existingBookings[date].find((booking) => {
-         const bookingStartTime = new Date(`${date}T${booking.start_time}`);
-         const bookingEndTime = new Date(`${date}T${booking.end_time}`);
-         const newStartTime = new Date(`${date}T${start_time}`);
-         const newEndTime = new Date(`${date}T${end_time}`);
-         return (
-            (newStartTime >= bookingStartTime && newStartTime < bookingEndTime) ||
-            (newEndTime > bookingStartTime && newEndTime <= bookingEndTime) ||
-            (newStartTime <= bookingStartTime && newEndTime >= bookingEndTime)
-         );
-      });
 
-      if (overlappingBooking) {
-         response(
-            HTTP_STATUS.BAD_REQUEST,
-            "97",
-            "Room is already booked for the specified date and time interval",
-            {},
-            res,
-            req
-         );
-         return;
+      // Check if there are any existing bookings for the specified date
+      if (existingBookings[date] && existingBookings[date].length > 0) {
+         const overlappingBooking = existingBookings[date].find((booking) => {
+            const bookingStartTime = new Date(`${date}T${booking.start_time}`);
+            const bookingEndTime = new Date(`${date}T${booking.end_time}`);
+            const newStartTime = new Date(`${date}T${start_time}`);
+            const newEndTime = new Date(`${date}T${end_time}`);
+            return (
+               (newStartTime >= bookingStartTime && newStartTime < bookingEndTime) ||
+               (newEndTime > bookingStartTime && newEndTime <= bookingEndTime) ||
+               (newStartTime <= bookingStartTime && newEndTime >= bookingEndTime)
+            );
+         });
+
+         if (overlappingBooking) {
+            response(
+               HTTP_STATUS.BAD_REQUEST,
+               "97",
+               "Room is already booked for the specified date and time interval",
+               {},
+               res,
+               req
+            );
+            return;
+         }
       }
 
       const insertedRow = await roomModel.insertRoomBooking(

@@ -171,7 +171,7 @@ async function getHistoryBookings(employee_id) {
         FROM room_booking_guest
         WHERE employee_id = ?
       )) AND rb.date < ?
-      ORDER BY rb.date ASC, rb.start_time ASC
+      ORDER BY rb.date DESC, rb.start_time ASC
     `;
       const pastBookings = await db2.query(query, [employee_id, employee_id, employee_id, currentDatetime]);
 

@@ -24,13 +24,36 @@ async function roomBooking(req, res) {
       !end_timeValid ||
       !meeting_topicValid
    ) {
-      // Handle the case where any of the user inputs are potentially malicious
       response(HTTP_STATUS.BAD_REQUEST, "98", "Invalid user input", {}, res, req);
-      return; // Return early to prevent further processing
+      return;
    }
 
    try {
-      // Insert the room booking record into the database
+      const existingBookings = await roomModel.getBookingsByRoomAndDate(room_id, date);
+      const overlappingBooking = existingBookings[date].find((booking) => {
+         const bookingStartTime = new Date(`${date}T${booking.start_time}`);
+         const bookingEndTime = new Date(`${date}T${booking.end_time}`);
+         const newStartTime = new Date(`${date}T${start_time}`);
+         const newEndTime = new Date(`${date}T${end_time}`);
+         return (
+            (newStartTime >= bookingStartTime && newStartTime < bookingEndTime) ||
+            (newEndTime > bookingStartTime && newEndTime <= bookingEndTime) ||
+            (newStartTime <= bookingStartTime && newEndTime >= bookingEndTime)
+         );
+      });
+
+      if (overlappingBooking) {
+         response(
+            HTTP_STATUS.BAD_REQUEST,
+            "97",
+            "Room is already booked for the specified date and time interval",
+            {},
+            res,
+            req
+         );
+         return;
+      }
+
       const insertedRow = await roomModel.insertRoomBooking(
          room_id,
          booker_employee_id,
@@ -42,7 +65,6 @@ async function roomBooking(req, res) {
          guest
       );
 
-      // Send the success response with the inserted row's data
       response(HTTP_STATUS.OK, "00", "Room booking created successfully", insertedRow, res, req);
    } catch (error) {
       console.error("Internal Server Error:", error);

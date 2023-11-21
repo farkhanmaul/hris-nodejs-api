@@ -99,10 +99,14 @@ async function getActiveBookings(employee_id) {
       FROM 
          room_booking rb
          INNER JOIN room_header rh ON rb.room_id = rh.id
-      WHERE (rb.booker_employee_id = ? OR rb.pic_employee_id = ?) AND rb.date >= ?
+      WHERE (rb.booker_employee_id = ? OR rb.pic_employee_id = ? OR rb.id IN (
+        SELECT booking_id
+        FROM room_booking_guest
+        WHERE employee_id = ?
+      )) AND rb.date >= ?
       ORDER BY rb.date ASC, rb.start_time ASC
     `;
-      const activeBookings = await db2.query(query, [employee_id, employee_id, currentDatetime]);
+      const activeBookings = await db2.query(query, [employee_id, employee_id, employee_id, currentDatetime]);
 
       // Convert the date to the desired format for each booking
       const formattedBookings = activeBookings[0].map(async (booking) => {
@@ -162,10 +166,14 @@ async function getHistoryBookings(employee_id) {
       FROM 
          room_booking rb
          INNER JOIN room_header rh ON rb.room_id = rh.id
-      WHERE (rb.booker_employee_id = ? OR rb.pic_employee_id = ?) AND rb.date < ?
+      WHERE (rb.booker_employee_id = ? OR rb.pic_employee_id = ? OR rb.id IN (
+        SELECT booking_id
+        FROM room_booking_guest
+        WHERE employee_id = ?
+      )) AND rb.date < ?
       ORDER BY rb.date ASC, rb.start_time ASC
     `;
-      const pastBookings = await db2.query(query, [employee_id, employee_id, currentDatetime]);
+      const pastBookings = await db2.query(query, [employee_id, employee_id, employee_id, currentDatetime]);
 
       // Convert the date to the desired format for each booking
       const formattedBookings = pastBookings[0].map(async (booking) => {

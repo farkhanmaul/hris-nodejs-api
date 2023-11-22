@@ -170,15 +170,20 @@ async function getHistoryBooking(req, res) {
 }
 
 async function getBookingByRoom(req, res) {
-   const { room_id, date } = req.body;
-   if (!validation.validateUserInput(room_id) || !validation.validateUserInput(date)) {
+   const { employee_id, room_id, date } = req.body;
+   if (
+      !validation.validateUserInput(employee_id) ||
+      !validation.validateUserInput(room_id) ||
+      !validation.validateUserInput(date)
+   ) {
       response(HTTP_STATUS.BAD_REQUEST, "98", "Invalid user input", {}, res, req);
       return; // Exit the function if input is invalid
    }
 
    try {
       const BookingByRoom = await roomModel.getBookingsByRoomAndDate(room_id, date);
-      if (!BookingByRoom) {
+
+      if (Object.keys(BookingByRoom).length === 0) {
          response(HTTP_STATUS.NOT_FOUND, "01", "Data not found", {}, res, req);
       } else {
          response(HTTP_STATUS.OK, "00", "Active bookings retrieved successfully", BookingByRoom, res, req);

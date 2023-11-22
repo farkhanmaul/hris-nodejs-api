@@ -1,7 +1,6 @@
 const userModel = require("../models/user_model");
 const validation = require("../utils/validation");
 const { HTTP_STATUS, RESPONSE_CODES, RESPONSE_MESSAGES } = require("../utils/globals.js");
-const verifyToken = require("../middleware/verify_token.js");
 const response = require("../middleware/response");
 
 async function getRequestCompleted(req, res) {

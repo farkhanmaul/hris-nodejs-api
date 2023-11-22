@@ -226,10 +226,11 @@ async function getHistoryBookings(employee_id) {
 
 async function getBookingsByRoomAndDate(room_id, date) {
    try {
-      const query = `SELECT pic_employee_id, start_time, end_time, meeting_topic
-                     FROM room_booking
-                     WHERE room_id = ? AND date = ?
-                     ORDER BY date ASC, start_time ASC`;
+      const query = `SELECT rh.room_name, rb.pic_employee_id, rb.start_time, rb.end_time, rb.meeting_topic
+               FROM room_booking rb
+               JOIN room_header rh ON rh.id = rb.room_id
+               WHERE rb.room_id = ? AND rb.date = ?
+               ORDER BY rb.date ASC, rb.start_time ASC`;
       const bookings = await db2.query(query, [room_id, date]);
 
       const transformedBookings = {};
@@ -243,6 +244,7 @@ async function getBookingsByRoomAndDate(room_id, date) {
             transformedBookings[date] = [];
          }
          transformedBookings[date].push({
+            room_name: booking.room_name,
             meeting_topic: booking.meeting_topic,
             start_time: booking.start_time,
             end_time: booking.end_time,

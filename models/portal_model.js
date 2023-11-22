@@ -1,7 +1,5 @@
 const db1 = require("../config/database1");
-const db2 = require("../config/database2");
 const db3 = require("../config/database3");
-const response = require("../middleware/response");
 const nodemailer = require("nodemailer");
 const axios = require("axios");
 const Mailgen = require("mailgen");

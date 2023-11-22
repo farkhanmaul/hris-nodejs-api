@@ -73,40 +73,52 @@ async function getActiveBookings(employee_id) {
    try {
       const currentDatetime = new Date();
       currentDatetime.setHours(0, 0, 0, 0);
+      const currentTime = new Date().toLocaleTimeString("en-US", { hour12: false });
+
       // Retrieve active bookings for the specified employee ID from the database
       const query = `
-      SELECT 
-         rb.id, 
-         rb.room_id, 
-         rb.booker_employee_id, 
-         rb.pic_employee_id, 
-         rb.date, 
-         rb.start_time, 
-         rb.end_time, 
-         rb.created_at, 
-         rb.meeting_topic, 
-         rh.room_name, 
-      (
-        SELECT GROUP_CONCAT(employee_id SEPARATOR ', ')
-        FROM room_booking_guest
-        WHERE booking_id = rb.id
-      ) AS guest_ids,
-      (
-        SELECT COUNT(employee_id)
-        FROM room_booking_guest
-        WHERE booking_id = rb.id
-      ) AS guestAmount
-      FROM 
-         room_booking rb
-         INNER JOIN room_header rh ON rb.room_id = rh.id
-      WHERE (rb.booker_employee_id = ? OR rb.pic_employee_id = ? OR rb.id IN (
-        SELECT booking_id
-        FROM room_booking_guest
-        WHERE employee_id = ?
-      )) AND rb.date >= ?
-      ORDER BY rb.date ASC, rb.start_time ASC
-    `;
-      const activeBookings = await db2.query(query, [employee_id, employee_id, employee_id, currentDatetime]);
+        SELECT 
+          rb.id, 
+          rb.room_id, 
+          rb.booker_employee_id, 
+          rb.pic_employee_id, 
+          rb.date, 
+          rb.start_time, 
+          rb.end_time, 
+          rb.created_at, 
+          rb.meeting_topic, 
+          rh.room_name, 
+          (
+            SELECT GROUP_CONCAT(employee_id SEPARATOR ', ')
+            FROM room_booking_guest
+            WHERE booking_id = rb.id
+          ) AS guest_ids,
+          (
+            SELECT COUNT(employee_id)
+            FROM room_booking_guest
+            WHERE booking_id = rb.id
+          ) AS guestAmount
+        FROM 
+          room_booking rb
+          INNER JOIN room_header rh ON rb.room_id = rh.id
+        WHERE 
+          (rb.booker_employee_id = ? OR rb.pic_employee_id = ? OR rb.id IN (
+            SELECT booking_id
+            FROM room_booking_guest
+            WHERE employee_id = ?
+          )) 
+          AND rb.date >= ? 
+          AND rb.end_time >= ?
+        ORDER BY rb.date ASC, rb.start_time ASC
+      `;
+
+      const activeBookings = await db2.query(query, [
+         employee_id,
+         employee_id,
+         employee_id,
+         currentDatetime,
+         currentTime,
+      ]);
 
       // Convert the date to the desired format for each booking
       const formattedBookings = activeBookings[0].map(async (booking) => {
@@ -140,6 +152,8 @@ async function getHistoryBookings(employee_id) {
    try {
       const currentDatetime = new Date();
       currentDatetime.setHours(0, 0, 0, 0);
+      const currentTime = new Date().toLocaleTimeString("en-US", { hour12: false });
+
       // Retrieve past bookings for the specified employee ID from the database
       const query = `
       SELECT 
@@ -170,10 +184,17 @@ async function getHistoryBookings(employee_id) {
         SELECT booking_id
         FROM room_booking_guest
         WHERE employee_id = ?
-      )) AND rb.date < ?
+      )) AND rb.date <= ? 
+      AND rb.end_time < ?
       ORDER BY rb.date DESC, rb.start_time ASC
     `;
-      const pastBookings = await db2.query(query, [employee_id, employee_id, employee_id, currentDatetime]);
+      const pastBookings = await db2.query(query, [
+         employee_id,
+         employee_id,
+         employee_id,
+         currentDatetime,
+         currentTime,
+      ]);
 
       // Convert the date to the desired format for each booking
       const formattedBookings = pastBookings[0].map(async (booking) => {

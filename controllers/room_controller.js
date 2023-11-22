@@ -28,6 +28,15 @@ async function roomBooking(req, res) {
       return;
    }
 
+   const bookingDate = new Date(date);
+   const dayOfWeek = bookingDate.getDay();
+
+   // Check if the booking date is a weekend (Saturday or Sunday)
+   if (dayOfWeek === 0) {
+      response(HTTP_STATUS.BAD_REQUEST, "96", "Failed to make booking on weekends", {}, res, req);
+      return;
+   }
+
    try {
       const existingBookings = await roomModel.getBookingsByRoomAndDate(room_id, date);
 

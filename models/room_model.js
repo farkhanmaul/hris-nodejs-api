@@ -248,7 +248,7 @@ async function getBookingsByRoomAndDate(room_id, date) {
             meeting_topic: booking.meeting_topic,
             start_time: booking.start_time,
             end_time: booking.end_time,
-            pic_employee_id: employeeFullNames[index],
+            pic_employee_fullname: employeeFullNames[index],
          });
       });
 

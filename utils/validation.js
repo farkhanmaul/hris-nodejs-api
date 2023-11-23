@@ -34,7 +34,7 @@ function validateUserInput(userInput) {
    }
 
    const userInputString = String(userInput);
-   const sqlKeywords = ["SELECT", "INSERT", "UPDATE", "DELETE", "DROP", "TABLE", "--"];
+   const sqlKeywords = ["SELECT", "DROP", "TABLE"];
    const forbiddenCharacters = ["'", '"', ";", "--"];
 
    for (let i = 0; i < sqlKeywords.length; i++) {

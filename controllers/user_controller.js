@@ -245,6 +245,7 @@ async function insertGlobalVariables(req, res) {
       response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Internal Server Error", {}, res, req);
    }
 }
+
 async function updateGlobalVariables(req, res) {
    const { key_name, value } = req.body;
    if (!validation.validateUserInput(key_name) || !validation.validateUserInput(value)) {

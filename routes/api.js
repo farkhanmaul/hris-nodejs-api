@@ -7,6 +7,7 @@ const userLeaveController = require("../controllers/user_leave_controller.js");
 const userClaimController = require("../controllers/user_claim_controller.js");
 const portalController = require("../controllers/portal_controller.js");
 const roomController = require("../controllers/room_controller.js");
+const globalController = require("../controllers/global_controller.js");
 
 // STATUS
 router.get("/", (req, res) => {
@@ -23,7 +24,7 @@ router.post("/portal/login-email", portalController.loginEmailPortal);
 router.post("/portal/login-wa", portalController.loginWAPortal);
 router.post("/portal/verify-otp", portalController.verifyOTPportal);
 
-// AUTH
+// USER
 router.post("/user/login-email", userController.loginEmail);
 router.post("/user/login-wa", userController.loginWA);
 router.post("/user/verify-otp", userController.verifyOTP);
@@ -43,27 +44,27 @@ router.post("/user/get-attendance-status", verifyToken, userAttendanceController
 // ROOM
 router.post("/room/booking", verifyToken, roomController.roomBooking);
 router.post("/room/get-room", verifyToken, roomController.getRoom);
-router.post("/room/get-booking-active", verifyToken, roomController.getActiveBooking);
+router.post("/room/get-booking-active", verifyToken, roomController.getActiveBookingHandler);
 router.post("/room/get-booking-history", verifyToken, roomController.getHistoryBooking);
 router.post("/room/get-booking-by-room", verifyToken, roomController.getBookingByRoom);
 router.post("/room/get-all-employee", verifyToken, roomController.getEmployee);
 
 // GLOBAL VARIABLES
-router.post("/user/insert-global-variable", verifyToken, userController.insertGlobalVariables);
-router.post("/user/update-global-variable", verifyToken, userController.updateGlobalVariables);
-router.post("/user/select-global-variable", verifyToken, userController.selectGlobalVariables);
-router.post("/user/delete-global-variable", verifyToken, userController.deleteGlobalVariables);
+router.post("/global/insert-global-variable", verifyToken, globalController.insertGlobalVariables);
+router.post("/global/update-global-variable", verifyToken, globalController.updateGlobalVariables);
+router.post("/global/select-global-variable", verifyToken, globalController.selectGlobalVariables);
+router.post("/global/delete-global-variable", verifyToken, globalController.deleteGlobalVariables);
 
 // CLAIM
-router.post("/user/get-claim-completed", verifyToken, userClaimController.getRequestCompleted);
-router.post("/user/get-claim-detail", verifyToken, userClaimController.getRequestDetail);
-router.post("/user/get-claim-rejected", verifyToken, userClaimController.getRequestRejected);
-router.post("/user/get-claim-progress", verifyToken, userClaimController.getRequestProgress);
+router.post("/user/get-claim-completed", verifyToken, userClaimController.getClaimCompleted);
+router.post("/user/get-claim-detail", verifyToken, userClaimController.getClaimDetail);
+router.post("/user/get-claim-rejected", verifyToken, userClaimController.getClaimRejected);
+router.post("/user/get-claim-progress", verifyToken, userClaimController.getClaimOnProgress);
 
 // LEAVE
-router.post("/user/get-leave-list-approved", verifyToken, userLeaveController.getLeaveListApprove);
-router.post("/user/get-leave-list-not-approved", verifyToken, userLeaveController.getLeaveListNotApprove);
-router.post("/user/get-leave-detail", verifyToken, userLeaveController.getLeaveDetail);
+router.post("/user/get-leave-list-approved", verifyToken, userLeaveController.getLeaveListApproved);
+router.post("/user/get-leave-list-not-approved", verifyToken, userLeaveController.getLeaveListNotApproved);
+router.post("/user/get-leave-detail", verifyToken, userLeaveController.getLeaveDetails);
 router.post("/user/get-leave-plafonds", verifyToken, userLeaveController.getLeavePlafonds);
 
 router.post("/user/get-medical-plafonds", verifyToken, userClaimController.getMedicalPlafonds);

@@ -1,4 +1,6 @@
 const userModel = require("../models/user_model");
+const globalModel = require("../models/global_model");
+const userAttendanceModel = require("../models/user_attendance_model");
 const validation = require("../utils/validation");
 const { HTTP_STATUS, RESPONSE_CODES, RESPONSE_MESSAGES } = require("../utils/globals.js");
 const response = require("../middleware/response");
@@ -36,7 +38,7 @@ async function attendance(req, res) {
    try {
       const datetime = new Date();
 
-      const insertedRow = await userModel.recordEmployeePresence(
+      const insertedRow = await userAttendanceModel.recordEmployeePresence(
          employee_id,
          longitude,
          altitude,
@@ -77,7 +79,7 @@ async function getAttendanceClock(req, res) {
       return; // Exit the function if input is invalid
    }
    try {
-      const result = await userModel.getClockTimeData(employee_id, date, action);
+      const result = await userAttendanceModel.getClockTimeData(employee_id, date, action);
 
       if (!result || result.length === 0) {
          response(
@@ -140,7 +142,11 @@ async function getAttendanceHistory(req, res) {
       const end_datePlusOneDay = new Date(end_date);
       end_datePlusOneDay.setDate(end_datePlusOneDay.getDate() + 1);
 
-      const attendanceData = await userModel.getAttendanceHistory(employee_id, start_date, end_datePlusOneDay);
+      const attendanceData = await userAttendanceModel.getHistoryAttendanceData(
+         employee_id,
+         start_date,
+         end_datePlusOneDay
+      );
 
       if (!attendanceData || attendanceData.length === 0) {
          response(HTTP_STATUS.NOT_FOUND, "01", "No presence data found for the specified date range", {}, res, req);
@@ -188,7 +194,7 @@ async function getAttendanceHistory(req, res) {
             const clockBreakIn = dayData.find((data) => data.action === "Clock Break In");
             const clockOut = dayData.find((data) => data.action === "Clock Out");
 
-            const duration = userModel.calculateDuration(clockIn, clockOut);
+            const duration = userAttendanceModel.calculateDuration(clockIn, clockOut);
 
             combinedData.push({
                day,
@@ -217,7 +223,7 @@ async function getAttendanceToday(req, res) {
       return;
    }
    try {
-      const result = await userModel.getPresenceData(employee_id, date);
+      const result = await userAttendanceModel.getPresenceData(employee_id, date);
 
       if (!result || result.length === 0) {
          response(HTTP_STATUS.NOT_FOUND, "01", "No presence data found for the specified date", {}, res, req);
@@ -263,7 +269,7 @@ async function getAttendanceRecent(req, res) {
       return;
    }
    try {
-      const lastAttendance = await userModel.getLastAttendance(employee_id);
+      const lastAttendance = await userAttendanceModel.getLastAttendance(employee_id);
 
       const nowTime = new Date();
       const current_time = nowTime.toLocaleTimeString("en-US", {
@@ -274,8 +280,8 @@ async function getAttendanceRecent(req, res) {
       });
 
       // Retrieve the relevant absence time range based on the current timestamp
-      const absence_time_range = await userModel.getAttendanceTimeRangeByTime(current_time);
-      const work_time_range = await userModel.getWorkingHour();
+      const absence_time_range = await userAttendanceModel.getAttendanceTimeRangeByTime(current_time);
+      const work_time_range = await userAttendanceModel.getWorkingHour();
 
       let greeting;
 
@@ -290,11 +296,11 @@ async function getAttendanceRecent(req, res) {
       }
       // Get the global variable forceAttendancePhoto values
       const forceAttendancePhoto = "force_attendance_photo";
-      const attendancePhotoStatus = await userModel.specificSelectGlobalVariables(forceAttendancePhoto);
+      const attendancePhotoStatus = await globalModel.specificSelectGlobalVariables(forceAttendancePhoto);
 
       // Get the global variable  values
       const onlyClockIn = "only_clock_in";
-      const onlyClockInStatus = await userModel.specificSelectGlobalVariables(onlyClockIn);
+      const onlyClockInStatus = await globalModel.specificSelectGlobalVariables(onlyClockIn);
 
       // Get action if Only Clock In
       let actionOnlyClockIn;
@@ -306,7 +312,7 @@ async function getAttendanceRecent(req, res) {
 
       // Get the global variable  values
       const intervalBookingTime = "interval_booking_time";
-      const intervalStatus = await userModel.specificSelectGlobalVariables(intervalBookingTime);
+      const intervalStatus = await globalModel.specificSelectGlobalVariables(intervalBookingTime);
 
       const responsePayload = {
          last_action: lastAttendance.action,
@@ -333,7 +339,7 @@ const storage = multer.diskStorage({
       try {
          // Get the global variable values
          const globalVariable = "destination_attendance_photo";
-         const destination = await userModel.specificSelectGlobalVariables(globalVariable);
+         const destination = await globalModel.specificSelectGlobalVariables(globalVariable);
          cb(null, destination.value);
       } catch (error) {
          cb(error);
@@ -402,7 +408,7 @@ async function saveAttendancePhotoMulter(req, res) {
       } else {
          try {
             const filePath = req.file.path; // Get the path of the uploaded photo
-            await userModel.insertEmployeePhoto(
+            await userAttendanceModel.insertEmployeePhoto(
                employee_id,
                filePath,
                id // Pass the file path to the insertEmployeePhoto function

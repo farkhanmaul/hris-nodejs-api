@@ -1,9 +1,10 @@
 const userModel = require("../models/user_model");
+const userClaimModel = require("../models/user_claim_model");
 const validation = require("../utils/validation");
 const { HTTP_STATUS, RESPONSE_CODES, RESPONSE_MESSAGES } = require("../utils/globals.js");
 const response = require("../middleware/response");
 
-async function getRequestCompleted(req, res) {
+async function getClaimCompleted(req, res) {
    const { employee_id } = req.body;
 
    // Validate the user input
@@ -15,7 +16,7 @@ async function getRequestCompleted(req, res) {
    }
 
    try {
-      const requestData = await userModel.getRequestComp(employee_id);
+      const requestData = await userClaimModel.getRequestCompleted(employee_id);
 
       if (!requestData || !requestData.recordset || !requestData.recordset.length) {
          response(HTTP_STATUS.NOT_FOUND, "01", "Data not found", {}, res, req);
@@ -28,7 +29,7 @@ async function getRequestCompleted(req, res) {
    }
 }
 
-async function getRequestRejected(req, res) {
+async function getClaimRejected(req, res) {
    const { employee_id } = req.body;
 
    // Validate the user input
@@ -40,7 +41,7 @@ async function getRequestRejected(req, res) {
    }
 
    try {
-      const requestData = await userModel.getRequestReject(employee_id);
+      const requestData = await userClaimModel.getRequestReject(employee_id);
 
       if (!requestData || !requestData.recordset || !requestData.recordset.length) {
          response(HTTP_STATUS.NOT_FOUND, "01", "Data not found", {}, res, req);
@@ -53,7 +54,7 @@ async function getRequestRejected(req, res) {
    }
 }
 
-async function getRequestProgress(req, res) {
+async function getClaimOnProgress(req, res) {
    const { employee_id } = req.body;
 
    // Validate the user input
@@ -65,7 +66,7 @@ async function getRequestProgress(req, res) {
    }
 
    try {
-      const requestData = await userModel.getRequestProg(employee_id);
+      const requestData = await userClaimModel.getRequestProgress(employee_id);
 
       if (!requestData || !requestData.recordset || !requestData.recordset.length) {
          response(HTTP_STATUS.NOT_FOUND, "01", "Data not found", {}, res, req);
@@ -78,7 +79,7 @@ async function getRequestProgress(req, res) {
    }
 }
 
-async function getRequestDetail(req, res) {
+async function getClaimDetail(req, res) {
    const { employee_id, RequestFormId } = req.body;
 
    // Validate the user input
@@ -90,7 +91,7 @@ async function getRequestDetail(req, res) {
    }
 
    try {
-      const requestData = await userModel.getRequestDet(employee_id, RequestFormId);
+      const requestData = await userClaimModel.getRequestDetail(employee_id, RequestFormId);
 
       if (!requestData || !requestData.recordset || !requestData.recordset.length) {
          response(HTTP_STATUS.NOT_FOUND, "01", "Data not found", {}, res, req);
@@ -135,9 +136,9 @@ async function getMedicalPlafonds(req, res) {
 }
 
 module.exports = {
-   getRequestCompleted,
-   getRequestRejected,
-   getRequestProgress,
-   getRequestDetail,
+   getClaimCompleted,
+   getClaimRejected,
+   getClaimOnProgress,
+   getClaimDetail,
    getMedicalPlafonds,
 };

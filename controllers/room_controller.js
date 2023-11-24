@@ -130,7 +130,7 @@ async function getEmployee(req, res) {
    }
 }
 
-async function getActiveBooking(req, res) {
+async function getActiveBookingHandler(req, res) {
    const { employee_id } = req.body;
    if (!validation.validateUserInput(employee_id)) {
       response(HTTP_STATUS.BAD_REQUEST, "98", "Invalid user input", {}, res, req);
@@ -193,4 +193,11 @@ async function getBookingByRoom(req, res) {
    }
 }
 
-module.exports = { roomBooking, getRoom, getEmployee, getActiveBooking, getHistoryBooking, getBookingByRoom };
+module.exports = {
+   roomBooking,
+   getRoom,
+   getEmployee,
+   getActiveBookingHandler,
+   getHistoryBooking,
+   getBookingByRoom,
+};

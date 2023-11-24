@@ -149,6 +149,6 @@ async function verifyOTPportal(req, res) {
 
 module.exports = {
    loginEmailPortal,
-   verifyOTPportal,
    loginWAPortal,
+   verifyOTPportal,
 };

@@ -142,10 +142,10 @@ async function getUserOTPportal(employee_id) {
 }
 
 module.exports = {
-   checkEmployeeExistence,
-   getUserEmail,
    sendOTPbyEmailPortal,
-   getUserMobilePhones,
    sendOTPbyWhatsAppPortal,
+   getUserEmail,
+   getUserMobilePhones,
    getUserOTPportal,
+   checkEmployeeExistence,
 };

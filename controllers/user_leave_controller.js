@@ -1,4 +1,5 @@
 const userModel = require("../models/user_model");
+const userLeaveModel = require("../models/user_leave_model");
 const validation = require("../utils/validation");
 const { HTTP_STATUS, RESPONSE_CODES, RESPONSE_MESSAGES } = require("../utils/globals.js");
 const response = require("../middleware/response");
@@ -15,7 +16,7 @@ async function getLeavePlafonds(req, res) {
    }
 
    try {
-      const leaveData = await userModel.getLeavePlaf(employee_id);
+      const leaveData = await userLeaveModel.getLeavePlafondData(employee_id);
 
       if (!leaveData || !leaveData.recordset || !leaveData.recordset.length) {
          response(HTTP_STATUS.NOT_FOUND, "01", "Data not found", {}, res, req);
@@ -30,7 +31,7 @@ async function getLeavePlafonds(req, res) {
    }
 }
 
-async function getLeaveListApprove(req, res) {
+async function getLeaveListApproved(req, res) {
    const { employee_id } = req.body;
 
    // Validate the user input
@@ -42,7 +43,7 @@ async function getLeaveListApprove(req, res) {
    }
 
    try {
-      const leaveData = await userModel.getLeaveListApprove(employee_id);
+      const leaveData = await userLeaveModel.getLeaveApprove(employee_id);
 
       if (!leaveData || !leaveData.recordset || !leaveData.recordset.length) {
          response(HTTP_STATUS.NOT_FOUND, "01", "Data not found", {}, res, req);
@@ -55,7 +56,7 @@ async function getLeaveListApprove(req, res) {
    }
 }
 
-async function getLeaveListNotApprove(req, res) {
+async function getLeaveListNotApproved(req, res) {
    const { employee_id } = req.body;
 
    // Validate the user input
@@ -67,7 +68,7 @@ async function getLeaveListNotApprove(req, res) {
    }
 
    try {
-      const leaveData = await userModel.getLeaveListNotApprove(employee_id);
+      const leaveData = await userLeaveModel.getLeaveNotApprove(employee_id);
 
       if (!leaveData || !leaveData.recordset || !leaveData.recordset.length) {
          response(HTTP_STATUS.NOT_FOUND, "01", "Data not found", {}, res, req);
@@ -80,7 +81,7 @@ async function getLeaveListNotApprove(req, res) {
    }
 }
 
-async function getLeaveDetail(req, res) {
+async function getLeaveDetails(req, res) {
    const { employee_id, RequestFormId } = req.body;
 
    // Validate the user input
@@ -92,7 +93,7 @@ async function getLeaveDetail(req, res) {
    }
 
    try {
-      const leaveData = await userModel.getLeaveDet(employee_id, RequestFormId);
+      const leaveData = await userLeaveModel.getLeaveDetailData(employee_id, RequestFormId);
 
       if (!leaveData || !leaveData.recordset || !leaveData.recordset.length) {
          response(HTTP_STATUS.NOT_FOUND, "01", "Data not found", {}, res, req);
@@ -107,7 +108,7 @@ async function getLeaveDetail(req, res) {
 
 module.exports = {
    getLeavePlafonds,
-   getLeaveListApprove,
-   getLeaveListNotApprove,
-   getLeaveDetail,
+   getLeaveListApproved,
+   getLeaveListNotApproved,
+   getLeaveDetails,
 };

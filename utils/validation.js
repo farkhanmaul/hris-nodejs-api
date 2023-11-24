@@ -34,14 +34,7 @@ function validateUserInput(userInput) {
    }
 
    const userInputString = String(userInput);
-   const sqlKeywords = ["SELECT", "DROP", "TABLE"];
    const forbiddenCharacters = ["'", '"', ";", "--"];
-
-   for (let i = 0; i < sqlKeywords.length; i++) {
-      if (userInputString.toUpperCase().includes(sqlKeywords[i])) {
-         return false;
-      }
-   }
 
    for (let i = 0; i < forbiddenCharacters.length; i++) {
       if (userInputString.includes(forbiddenCharacters[i])) {

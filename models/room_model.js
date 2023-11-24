@@ -88,6 +88,7 @@ async function getActiveBookings(employee_id) {
           rb.created_at, 
           rb.meeting_topic, 
           rh.room_name, 
+          rh.location,
           (
             SELECT GROUP_CONCAT(employee_id SEPARATOR ', ')
             FROM room_booking_guest
@@ -107,8 +108,13 @@ async function getActiveBookings(employee_id) {
             FROM room_booking_guest
             WHERE employee_id = ?
           )) 
-          AND rb.date >= ? 
-          AND rb.end_time >= ?
+          AND (
+            (rb.date > CURRENT_DATE)
+            OR (
+                rb.date = CURRENT_DATE 
+                AND rb.end_time > CURRENT_TIME
+            )
+         )
         ORDER BY rb.date ASC, rb.start_time ASC
       `;
 
@@ -167,6 +173,7 @@ async function getHistoryBookings(employee_id) {
          rb.created_at, 
          rb.meeting_topic, 
          rh.room_name, 
+         rh.location, 
       (
         SELECT GROUP_CONCAT(employee_id SEPARATOR ', ')
         FROM room_booking_guest

@@ -6,9 +6,6 @@ async function getRequestCompleted(employee_id) {
        SELECT TOP (1000)
          [RefRequestTypeName],
          [RequestFormId],
-         [ProjectFullName],
-         [NextCheckerName],
-         [CompletionName],
          [CompletionId],
          [TotalRequest], 
          [RequestDate] AS Date,
@@ -33,9 +30,6 @@ async function getRequestReject(employee_id) {
        SELECT TOP (1000)
          [RefRequestTypeName],
          [RequestFormId],
-         [ProjectFullName],
-         [NextCheckerName],
-         [CompletionName],
          [CompletionId],
          [TotalRequest], 
          [RequestDate] AS Date,
@@ -60,9 +54,6 @@ async function getRequestProgress(employee_id) {
        SELECT TOP (1000)
          [RefRequestTypeName],
          [RequestFormId],
-         [ProjectFullName],
-         [NextCheckerName],
-         [CompletionName],
          [CompletionId],
          [TotalRequest], 
          [RequestDate] AS Date,

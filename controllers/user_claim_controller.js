@@ -116,8 +116,8 @@ async function getMedicalPlafonds(req, res) {
    try {
       // Dummy response for plafonds
       const plafonds = {
-         amount: "10.000.000",
-         expiredDate: "1 Aug 2023",
+         amount: "coming soon",
+         expiredDate: "1 Jan 2023",
       };
 
       const { amount, expiredDate } = plafonds;

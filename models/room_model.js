@@ -43,6 +43,7 @@ async function getRoomData() {
    const query = `
       SELECT id, room_name, capacity, location, room_image, floor_location, projector, microphone, whiteboard, webcam, availability, additional_notes
       FROM room_header
+      ORDER BY capacity DESC
    `;
    const result = await db2.query(query);
    return result[0];

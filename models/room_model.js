@@ -184,8 +184,13 @@ async function getHistoryBookings(employee_id) {
         SELECT booking_id
         FROM room_booking_guest
         WHERE employee_id = ?
-      )) AND rb.date <= ? 
-      AND rb.end_time < ?
+      )) AND (
+         (rb.date < CURRENT_DATE)
+         OR (
+             rb.date = CURRENT_DATE 
+             AND rb.start_time < CURRENT_TIME
+         )
+     )
       ORDER BY rb.date DESC, rb.start_time ASC
     `;
       const pastBookings = await db2.query(query, [

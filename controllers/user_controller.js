@@ -286,6 +286,31 @@ async function deleteGlobalVariables(req, res) {
    }
 }
 
+async function getVersion(req, res) {
+   const { employee_id } = req.body;
+   // Validate the user input
+   const isInputValid = validation.validateUserInput(employee_id);
+
+   if (!isInputValid) {
+      response(HTTP_STATUS.BAD_REQUEST, "98", "Invalid user input", {}, res, req);
+      return;
+   }
+   try {
+      // Get the global variable  values
+      const apiVersion = "version";
+      const version = await userModel.specificSelectGlobalVariables(apiVersion);
+
+      const responsePayload = {
+         version: version.value,
+      };
+
+      response(HTTP_STATUS.OK, "00", "Version data retrieved successfully", responsePayload, res, req);
+   } catch (error) {
+      console.error("Failed to retrieve version:", error);
+      response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Failed to retrieve version", {}, res, req);
+   }
+}
+
 module.exports = {
    loginEmail,
    loginWA,
@@ -297,4 +322,5 @@ module.exports = {
    updateGlobalVariables,
    selectGlobalVariables,
    deleteGlobalVariables,
+   getVersion,
 };

@@ -30,6 +30,7 @@ router.post("/user/verify-otp", userController.verifyOTP);
 router.post("/user/verify-token", userController.verifyTokenHandler);
 router.post("/user/logout", verifyToken, userController.logout);
 router.post("/user/get-profile", verifyToken, userController.getProfile);
+router.post("/user/get-version", verifyToken, userController.getVersion);
 
 // ATTENDANCE
 router.post("/user/attendance", verifyToken, userAttendanceController.attendance);

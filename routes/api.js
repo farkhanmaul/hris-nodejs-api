@@ -7,7 +7,7 @@ const userLeaveController = require("../controllers/user_leave_controller.js");
 const userClaimController = require("../controllers/user_claim_controller.js");
 const portalController = require("../controllers/portal_controller.js");
 const roomController = require("../controllers/room_controller.js");
-const roomFirebaseController = require("../controllers/room_firebase_controller.js");
+const notificationController = require("../controllers/notification_controller.js");
 const globalController = require("../controllers/global_controller.js");
 
 // STATUS
@@ -50,8 +50,9 @@ router.post("/room/get-booking-history", verifyToken, roomController.getHistoryB
 router.post("/room/get-booking-by-room", verifyToken, roomController.getBookingByRoom);
 router.post("/room/get-all-employee", verifyToken, roomController.getEmployee);
 
-// ROOM NOTIFICATION
-router.post("/room/try-notif", verifyToken, roomFirebaseController.sendPushNotificationHandler);
+// NOTIFICATION
+router.post("/notification/try-notif", verifyToken, notificationController.sendPushNotificationHandler);
+router.post("/notification/get-inbox", verifyToken, notificationController.getNotificationInbox);
 
 // GLOBAL VARIABLES
 router.post("/global/insert-global-variable", verifyToken, globalController.insertGlobalVariables);

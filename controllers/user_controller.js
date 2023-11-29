@@ -249,10 +249,6 @@ async function getVersion(req, res) {
       return;
    }
    try {
-      // Get the app version
-      const appVersionKey = "app_version";
-      const appVersion = await globalModel.specificSelectGlobalVariables(appVersionKey);
-
       // Get the API version
       const apiVersionKey = "api_version";
       const apiVersion = await globalModel.specificSelectGlobalVariables(apiVersionKey);
@@ -262,7 +258,6 @@ async function getVersion(req, res) {
       const updateVersion = await globalModel.specificSelectGlobalVariables(forceUpdateVersion);
 
       const responsePayload = {
-         app_version: appVersion.value,
          api_version: apiVersion.value,
          force_mobile_update_version: updateVersion.value,
       };

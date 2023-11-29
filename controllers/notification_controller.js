@@ -1,6 +1,5 @@
 const admin = require("firebase-admin");
 const notificationModel = require("../models/notification_model");
-
 const validation = require("../utils/validation");
 const { HTTP_STATUS, RESPONSE_CODES, RESPONSE_MESSAGES } = require("../utils/globals.js");
 const response = require("../middleware/response");

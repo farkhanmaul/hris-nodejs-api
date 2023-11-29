@@ -1,8 +1,4 @@
 const db1 = require("../config/database1");
-const db2 = require("../config/database2");
-const nodemailer = require("nodemailer");
-const axios = require("axios");
-const Mailgen = require("mailgen");
 
 async function getLeavePlafondData(employee_id) {
    try {

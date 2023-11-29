@@ -6,8 +6,6 @@ const response = require("../middleware/response");
 
 const multer = require("multer");
 const path = require("path");
-const fs = require("fs");
-const FormData = require("form-data");
 
 async function attendance(req, res) {
    const { employee_id, longitude, altitude, latitude, location_name, action, notes } = req.body;

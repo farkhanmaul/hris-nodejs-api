@@ -3,7 +3,6 @@ const db2 = require("../config/database2");
 const nodemailer = require("nodemailer");
 const axios = require("axios");
 const Mailgen = require("mailgen");
-const globalModel = require("./global_model");
 
 async function getUserEmail(employee_id) {
    try {

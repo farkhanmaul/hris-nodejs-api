@@ -4,6 +4,7 @@ const validation = require("../utils/validation");
 const { HTTP_STATUS, RESPONSE_CODES, RESPONSE_MESSAGES } = require("../utils/globals.js");
 const response = require("../middleware/response");
 const fs = require("fs");
+const FormData = require("form-data");
 const multer = require("multer");
 const path = require("path");
 
@@ -418,7 +419,6 @@ const storage = multer.diskStorage({
          if (!fs.existsSync(destinationPath)) {
             fs.mkdirSync(destinationPath, { recursive: true });
          }
-
          cb(null, destination.value);
       } catch (error) {
          cb(error);
@@ -501,6 +501,7 @@ async function saveAttendancePhotoMulter(req, res) {
       } else {
          try {
             const filePath = req.file.path; // Get the path of the uploaded photo
+
             await userAttendanceModel.insertEmployeePhoto(
                employee_id,
                filePath,

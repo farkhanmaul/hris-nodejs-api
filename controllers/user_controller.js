@@ -1,5 +1,6 @@
 const userModel = require("../models/user_model");
 const globalModel = require("../models/global_model");
+const notificationModel = require("../models/notification_model");
 const validation = require("../utils/validation");
 const { HTTP_STATUS, RESPONSE_CODES, RESPONSE_MESSAGES } = require("../utils/globals.js");
 const verifyToken = require("../middleware/verify_token.js");
@@ -7,12 +8,11 @@ const response = require("../middleware/response");
 
 // login endpoint
 async function loginEmail(req, res) {
-   const { employee_id, device_id } = req.body;
+   const { employee_id } = req.body;
 
    const isEmployeeIdValid = validation.validateUserInput(employee_id);
-   const isDeviceIdValid = validation.validateUserInput(device_id);
 
-   if (!isEmployeeIdValid || !isDeviceIdValid) {
+   if (!isEmployeeIdValid) {
       response(HTTP_STATUS.BAD_REQUEST, "98", "Invalid user input", {}, res, req);
       return;
    }
@@ -26,7 +26,7 @@ async function loginEmail(req, res) {
          const otp = validation.generateOTP();
          const expired_at = validation.generateExpirationDate();
 
-         await userModel.sendOTPbyEmail(email, otp, expired_at, employee_id, device_id);
+         await userModel.sendOTPbyEmail(email, otp, expired_at, employee_id);
 
          response(HTTP_STATUS.OK, "00", "Employee Found, OTP Sent to Email", { destination: email }, res, req);
       }
@@ -37,12 +37,11 @@ async function loginEmail(req, res) {
 }
 
 async function loginWA(req, res) {
-   const { employee_id, device_id } = req.body;
+   const { employee_id } = req.body;
    // Validate the user input
    const isEmployeeIdValid = validation.validateUserInput(employee_id);
-   const isDeviceIdValid = validation.validateUserInput(device_id);
 
-   if (!isEmployeeIdValid || !isDeviceIdValid) {
+   if (!isEmployeeIdValid) {
       response(HTTP_STATUS.BAD_REQUEST, "98", "Invalid user input", {}, res, req);
       return;
    }
@@ -92,7 +91,6 @@ async function loginWA(req, res) {
             employee_id,
             created_at,
             destination,
-            device_id,
             url,
             headers,
             data
@@ -169,7 +167,16 @@ async function verifyOTP(req, res) {
                // Store the employee_id, token, and expiration date in the database
                await userModel.insertUserToken(employee_id, token, expirationDate);
 
-               response(HTTP_STATUS.OK, "00", "OTP verified", { token, expirationDate }, res, req);
+               // Store the Firebase token in the user_fbtoken table
+               const { fbtoken } = req.body;
+               if (fbtoken) {
+                  await notificationModel.storeFirebaseToken(employee_id, fbtoken);
+               }
+               const { device_id } = req.body;
+               if (device_id) {
+                  await userModel.insertUserDeviceId(employee_id, device_id);
+               }
+               response(HTTP_STATUS.OK, "00", "OTP verified", { token }, res, req);
             } else {
                // OTP is incorrect
                response(HTTP_STATUS.NOT_FOUND, "03", "OTP is incorrect", {}, res, req);

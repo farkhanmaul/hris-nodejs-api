@@ -21,7 +21,7 @@ async function getUserEmail(employee_id) {
    }
 }
 
-async function sendOTPbyEmail(receiver, otp, expired_at, employee_id, device_id) {
+async function sendOTPbyEmail(receiver, otp, expired_at, employee_id) {
    const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -80,15 +80,6 @@ async function sendOTPbyEmail(receiver, otp, expired_at, employee_id, device_id)
          console.error("Error storing OTP in database:", error);
       } else {
          console.log("OTP stored in database");
-      }
-   });
-
-   const query2 = `INSERT INTO user_device (employee_id, device_id, inserted_at, updated_at) VALUES (?, ?, ?,?)`;
-   db2.query(query2, [employee_id, device_id, created_at, created_at], (error, results) => {
-      if (error) {
-         console.error("Error storing Device Id in database:", error);
-      } else {
-         console.log("User Device stored in database");
       }
    });
 }
@@ -169,22 +160,8 @@ async function getUserMobilePhones(employee_id) {
    }
 }
 
-async function sendOTPbyWhatsApp(
-   email,
-   otp,
-   expired_at,
-   employee_id,
-   created_at,
-   destination,
-   device_id,
-   url,
-   headers,
-   data
-) {
+async function sendOTPbyWhatsApp(email, otp, expired_at, employee_id, created_at, destination, url, headers, data) {
    try {
-      const query2 = `INSERT INTO user_device (employee_id, device_id, inserted_at, updated_at) VALUES (?, ?, ?, ?)`;
-      await db2.query(query2, [employee_id, device_id, created_at, created_at]);
-
       const insertQuery = `INSERT INTO user_otp (email, otp, expired_at, employee_id, created_at, no_hp) VALUES (?, ?, ?, ?, ?, ?)`;
       await db2.query(insertQuery, [email, otp, expired_at, employee_id, created_at, destination]);
 
@@ -216,6 +193,24 @@ async function getUserFullName(employee_id) {
    }
 }
 
+async function insertUserDeviceId(employee_id, deviceId) {
+   const selectQuery = `SELECT COUNT(*) AS count FROM user_device WHERE employee_id = ?`;
+   const insertQuery = `INSERT INTO user_device (employee_id, device_id, inserted_at, updated_at) VALUES (?, ?, ?, ?)`;
+   const updateQuery = `UPDATE user_device SET device_id = ?, updated_at = ? WHERE employee_id = ?`;
+   const created_at = new Date(); // Current datetime value for the inserted_at and updated_at columns
+
+   const [rows] = await db2.query(selectQuery, [employee_id]);
+   const count = rows[0].count;
+
+   if (count > 0) {
+      // Employee ID already exists, perform an update
+      await db2.query(updateQuery, [deviceId, created_at, employee_id]);
+   } else {
+      // Employee ID does not exist, perform an insert
+      await db2.query(insertQuery, [employee_id, deviceId, created_at, created_at]);
+   }
+}
+
 module.exports = {
    sendOTPbyEmail,
    sendOTPbyWhatsApp,
@@ -226,5 +221,6 @@ module.exports = {
    getUserProfile,
    getUserFullName,
    insertUserToken,
+   insertUserDeviceId,
    closeToken,
 };

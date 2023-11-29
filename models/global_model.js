@@ -37,7 +37,7 @@ async function deleteGlobalVariables(key_name) {
       const query = `DELETE FROM global_variables WHERE key_name = ?`;
       const result = await db2.query(query, [key_name]);
 
-      if (result && result.affectedRows > 0) {
+      if (result && result[0].affectedRows > 0) {
          // Key deletion successful
       } else {
          throw new Error("Key not found");
@@ -52,7 +52,7 @@ async function updateGlobalVariables(key_name, value) {
       const query = `UPDATE global_variables SET value = ? WHERE key_name = ?`;
       const result = await db2.query(query, [value, key_name]);
 
-      if (result && result.affectedRows > 0) {
+      if (result && result[0].affectedRows > 0) {
          // Key update successful
       } else {
          throw new Error("Key not found");

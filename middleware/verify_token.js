@@ -16,7 +16,7 @@ async function verifyToken(req, res, next) {
    const isAPIKeyValid = validation.validateUserInput(apiKey);
 
    if (!isAPIKeyValid) {
-      response(HTTP_STATUS.BAD_REQUEST, "98", "Invalid user input", {}, res, req);
+      response(HTTP_STATUS.BAD_REQUEST, RESPONSE_CODES.INVALID_INPUT, RESPONSE_MESSAGES.INVALID_INPUT, {}, res, req);
       return;
    }
 
@@ -45,11 +45,18 @@ async function verifyToken(req, res, next) {
       if (typeof next === "function") {
          next();
       } else {
-         return response(HTTP_STATUS.OK, "00", "Success", {}, res, req);
+         return response(HTTP_STATUS.OK, RESPONSE_CODES.SUCCESS, "Success", {}, res, req);
       }
    } catch (error) {
       console.error("Failed to verify token:", error);
-      return response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Internal Server Error", {}, res, req);
+      return response(
+         HTTP_STATUS.INTERNAL_SERVER_ERROR,
+         RESPONSE_CODES.SERVER_ERROR,
+         RESPONSE_MESSAGES.SERVER_ERROR,
+         {},
+         res,
+         req
+      );
    }
 }
 

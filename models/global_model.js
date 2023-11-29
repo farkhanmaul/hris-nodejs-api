@@ -28,34 +28,40 @@ async function insertGlobalVariables(key_name, value) {
    db2.query(query, [key_name, value], (error, results) => {
       if (error) {
          console.error("Error:", error);
-      } else {
-         console.log("Success");
       }
    });
 }
 
 async function deleteGlobalVariables(key_name) {
-   const query = `DELETE FROM global_variables WHERE key_name = ?`;
+   try {
+      const query = `DELETE FROM global_variables WHERE key_name = ?`;
+      const result = await db2.query(query, [key_name]);
 
-   db2.query(query, [key_name], (error, results) => {
-      if (error) {
-         console.error("Error:", error);
+      if (result && result.affectedRows > 0) {
+         // Key deletion successful
       } else {
-         console.log("Success");
+         throw new Error("Key not found");
       }
-   });
+   } catch (error) {
+      throw error;
+   }
 }
+
 async function updateGlobalVariables(key_name, value) {
-   const query = `UPDATE global_variables SET value = ? WHERE key_name = ?`;
+   try {
+      const query = `UPDATE global_variables SET value = ? WHERE key_name = ?`;
+      const result = await db2.query(query, [value, key_name]);
 
-   db2.query(query, [value, key_name], (error, results) => {
-      if (error) {
-         console.error("Error:", error);
+      if (result && result.affectedRows > 0) {
+         // Key update successful
       } else {
-         console.log("Success");
+         throw new Error("Key not found");
       }
-   });
+   } catch (error) {
+      throw error;
+   }
 }
+
 module.exports = {
    allSelectGlobalVariables,
    specificSelectGlobalVariables,

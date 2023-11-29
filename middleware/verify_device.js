@@ -1,10 +1,6 @@
 // const db2 = require("../config/database");
 // const response = require("./response");
-// const {
-//    HTTP_STATUS,
-//    RESPONSE_CODES,
-//    RESPONSE_MESSAGES,
-// } = require("../utils/globals.js");
+// const { HTTP_STATUS, RESPONSE_CODES, RESPONSE_MESSAGES } = require("../utils/globals.js");
 
 // async function verifyDevice(req, res, next) {
 //    const device_id = req.body.device_id;
@@ -23,11 +19,11 @@
 //       if (typeof next === "function") {
 //          next();
 //       } else {
-//          return response(HTTP_STATUS.OK, "00", "Success", {}, res, req);
+//          return response(HTTP_STATUS.OK, RESPONSE_CODES.SUCCESS, "Success", {}, res, req);
 //       }
 //    } catch (error) {
 //       console.error("Failed to verify device:", error);
-//       return response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Internal Server Error", {}, res, req);
+//       return response(HTTP_STATUS.INTERNAL_SERVER_ERROR, RESPONSE_CODES.SERVER_ERROR, RESPONSE_MESSAGES.SERVER_ERROR, {}, res, req);
 //    }
 // }
 

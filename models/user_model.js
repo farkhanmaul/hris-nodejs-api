@@ -77,8 +77,6 @@ async function sendOTPbyEmail(receiver, otp, expired_at, employee_id) {
    db2.query(query, [receiver, otp, expired_at, employee_id, created_at, no_hp], (error, results) => {
       if (error) {
          console.error("Error storing OTP in database:", error);
-      } else {
-         console.log("OTP stored in database");
       }
    });
 }

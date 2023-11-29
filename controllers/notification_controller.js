@@ -40,20 +40,41 @@ async function sendPushNotificationHandler(req, res) {
 async function getNotificationInbox(req, res) {
    const { employee_id } = req.body;
    if (!validation.validateUserInput(employee_id)) {
-      response(HTTP_STATUS.BAD_REQUEST, "98", "Invalid user input", {}, res, req);
+      response(HTTP_STATUS.BAD_REQUEST, RESPONSE_CODES.INVALID_INPUT, RESPONSE_MESSAGES.INVALID_INPUT, {}, res, req);
       return; // Exit the function if input is invalid
    }
    try {
       const result = await notificationModel.getNotificationData(employee_id);
 
       if (!result) {
-         response(HTTP_STATUS.NOT_FOUND, "01", "No notifications found for the specified employee ID", null, res, req);
+         response(
+            HTTP_STATUS.NOT_FOUND,
+            RESPONSE_CODES.NOT_FOUND,
+            "No notifications found for the specified employee ID",
+            null,
+            res,
+            req
+         );
       } else {
-         response(HTTP_STATUS.OK, "00", "Notification data retrieved successfully", result[0], res, req);
+         response(
+            HTTP_STATUS.OK,
+            RESPONSE_CODES.SUCCESS,
+            "Notification data retrieved successfully",
+            result[0],
+            res,
+            req
+         );
       }
    } catch (error) {
       console.error("Failed to retrieve notification data:", error);
-      response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Failed to retrieve notification data", null, res, req);
+      response(
+         HTTP_STATUS.INTERNAL_SERVER_ERROR,
+         RESPONSE_CODES.SERVER_ERROR,
+         "Failed to retrieve notification data",
+         null,
+         res,
+         req
+      );
    }
 }
 

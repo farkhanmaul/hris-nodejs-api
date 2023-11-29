@@ -28,7 +28,7 @@ async function attendance(req, res) {
       !notesValid
    ) {
       // Handle the case where any of the user inputs are potentially malicious
-      response(HTTP_STATUS.BAD_REQUEST, "98", "Invalid user input", {}, res, req);
+      response(HTTP_STATUS.BAD_REQUEST, RESPONSE_CODES.INVALID_INPUT, RESPONSE_MESSAGES.INVALID_INPUT, {}, res, req);
       return; // Return early to prevent further processing
    }
 
@@ -51,10 +51,24 @@ async function attendance(req, res) {
       };
 
       // Send the success response with the inserted row's data
-      response(HTTP_STATUS.OK, "00", "Employee presence recorded successfully", responseData, res, req);
+      response(
+         HTTP_STATUS.OK,
+         RESPONSE_CODES.SUCCESS,
+         "Employee presence recorded successfully",
+         responseData,
+         res,
+         req
+      );
    } catch (error) {
       console.error("Internal Server Error:", error);
-      response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Internal Server Error", {}, res, req);
+      response(
+         HTTP_STATUS.INTERNAL_SERVER_ERROR,
+         RESPONSE_CODES.SERVER_ERROR,
+         RESPONSE_MESSAGES.SERVER_ERROR,
+         {},
+         res,
+         req
+      );
    }
 }
 
@@ -67,7 +81,7 @@ async function getAttendanceClock(req, res) {
    ) {
       response(
          HTTP_STATUS.BAD_REQUEST,
-         "Invalid user input",
+         RESPONSE_MESSAGES.INVALID_INPUT,
          "User input contains potentially malicious characters",
          null,
          res,
@@ -81,7 +95,7 @@ async function getAttendanceClock(req, res) {
       if (!result || result.length === 0) {
          response(
             HTTP_STATUS.NOT_FOUND,
-            "01",
+            RESPONSE_CODES.NOT_FOUND,
             "No clock data found for the specified date and action",
             { hasClockToday: false },
             res,
@@ -98,7 +112,7 @@ async function getAttendanceClock(req, res) {
          const action = result[0].action;
          response(
             HTTP_STATUS.OK,
-            "00",
+            RESPONSE_CODES.SUCCESS,
             "Clock time retrieved successfully",
             {
                clockTime,
@@ -114,7 +128,7 @@ async function getAttendanceClock(req, res) {
       console.error("Failed to retrieve clock time:", error);
       response(
          HTTP_STATUS.INTERNAL_SERVER_ERROR,
-         "99",
+         RESPONSE_CODES.SERVER_ERROR,
          "Failed to retrieve clock time",
          { hasClockToday: false },
          res,
@@ -131,7 +145,7 @@ async function getAttendanceHistory(req, res) {
       !validation.validateUserInput(start_date) ||
       !validation.validateUserInput(end_date)
    ) {
-      response(HTTP_STATUS.BAD_REQUEST, "98", "Invalid user input", {}, res, req);
+      response(HTTP_STATUS.BAD_REQUEST, RESPONSE_CODES.INVALID_INPUT, RESPONSE_MESSAGES.INVALID_INPUT, {}, res, req);
       return; // Exit the function if input is invalid
    }
 
@@ -146,7 +160,14 @@ async function getAttendanceHistory(req, res) {
       );
 
       if (!attendanceData || attendanceData.length === 0) {
-         response(HTTP_STATUS.NOT_FOUND, "01", "No presence data found for the specified date range", {}, res, req);
+         response(
+            HTTP_STATUS.NOT_FOUND,
+            RESPONSE_CODES.NOT_FOUND,
+            "No presence data found for the specified date range",
+            {},
+            res,
+            req
+         );
          return; // Exit the function if no data found
       }
 
@@ -206,24 +227,45 @@ async function getAttendanceHistory(req, res) {
          responsePayload = combinedData;
       }
 
-      response(HTTP_STATUS.OK, "00", "Presence data retrieved successfully", responsePayload, res, req);
+      response(
+         HTTP_STATUS.OK,
+         RESPONSE_CODES.SUCCESS,
+         "Presence data retrieved successfully",
+         responsePayload,
+         res,
+         req
+      );
    } catch (error) {
       console.error("Internal Server Error:", error);
-      response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Internal Server Error", {}, res, req);
+      response(
+         HTTP_STATUS.INTERNAL_SERVER_ERROR,
+         RESPONSE_CODES.SERVER_ERROR,
+         RESPONSE_MESSAGES.SERVER_ERROR,
+         {},
+         res,
+         req
+      );
    }
 }
 
 async function getAttendanceToday(req, res) {
    const { employee_id, date } = req.body;
    if (!validation.validateUserInput(employee_id) || !validation.validateUserInput(date)) {
-      response(HTTP_STATUS.BAD_REQUEST, "98", "Invalid user input", {}, res, req);
+      response(HTTP_STATUS.BAD_REQUEST, RESPONSE_CODES.INVALID_INPUT, RESPONSE_MESSAGES.INVALID_INPUT, {}, res, req);
       return;
    }
    try {
       const result = await userAttendanceModel.getPresenceData(employee_id, date);
 
       if (!result || result.length === 0) {
-         response(HTTP_STATUS.NOT_FOUND, "01", "No presence data found for the specified date", {}, res, req);
+         response(
+            HTTP_STATUS.NOT_FOUND,
+            RESPONSE_CODES.NOT_FOUND,
+            "No presence data found for the specified date",
+            {},
+            res,
+            req
+         );
       } else {
          const attendanceData = result.map((row) => {
             const datetime = new Date(row.datetime);
@@ -248,11 +290,25 @@ async function getAttendanceToday(req, res) {
             };
          });
 
-         response(HTTP_STATUS.OK, "00", "Presence data retrieved successfully", attendanceData, res, req);
+         response(
+            HTTP_STATUS.OK,
+            RESPONSE_CODES.SUCCESS,
+            "Presence data retrieved successfully",
+            attendanceData,
+            res,
+            req
+         );
       }
    } catch (error) {
       console.error("Internal Server Error:", error);
-      response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Internal Server Error", {}, res, req);
+      response(
+         HTTP_STATUS.INTERNAL_SERVER_ERROR,
+         RESPONSE_CODES.SERVER_ERROR,
+         RESPONSE_MESSAGES.SERVER_ERROR,
+         {},
+         res,
+         req
+      );
    }
 }
 
@@ -262,7 +318,7 @@ async function getAttendanceRecent(req, res) {
    const isInputValid = validation.validateUserInput(employee_id);
 
    if (!isInputValid) {
-      response(HTTP_STATUS.BAD_REQUEST, "98", "Invalid user input", {}, res, req);
+      response(HTTP_STATUS.BAD_REQUEST, RESPONSE_CODES.INVALID_INPUT, RESPONSE_MESSAGES.INVALID_INPUT, {}, res, req);
       return;
    }
    try {
@@ -323,10 +379,24 @@ async function getAttendanceRecent(req, res) {
          work_time_range,
       };
 
-      response(HTTP_STATUS.OK, "00", "Last attendance data retrieved successfully", responsePayload, res, req);
+      response(
+         HTTP_STATUS.OK,
+         RESPONSE_CODES.SUCCESS,
+         "Last attendance data retrieved successfully",
+         responsePayload,
+         res,
+         req
+      );
    } catch (error) {
       console.error("Failed to retrieve last attendance data:", error);
-      response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Failed to retrieve last attendance data", {}, res, req);
+      response(
+         HTTP_STATUS.INTERNAL_SERVER_ERROR,
+         RESPONSE_CODES.SERVER_ERROR,
+         "Failed to retrieve last attendance data",
+         {},
+         res,
+         req
+      );
    }
 }
 
@@ -392,16 +462,30 @@ async function saveAttendancePhotoMulter(req, res) {
          !validation.validateUserInput(type) ||
          !validation.validateUserInput(id)
       ) {
-         response(HTTP_STATUS.BAD_REQUEST, "98", "Invalid user input", {}, res, req);
+         response(HTTP_STATUS.BAD_REQUEST, RESPONSE_CODES.INVALID_INPUT, RESPONSE_MESSAGES.INVALID_INPUT, {}, res, req);
          return; // Exit the function if input is invalid
       }
 
       if (err instanceof multer.MulterError) {
          console.error("Multer Error:", err);
-         response(HTTP_STATUS.BAD_REQUEST, "98", "Error uploading photo", { error: err.code }, res, req);
+         response(
+            HTTP_STATUS.BAD_REQUEST,
+            RESPONSE_CODES.INVALID_INPUT,
+            "Error uploading photo",
+            { error: err.code },
+            res,
+            req
+         );
       } else if (err) {
          console.error("Unknown Error:", err);
-         response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Internal Server Error", {}, res, req);
+         response(
+            HTTP_STATUS.INTERNAL_SERVER_ERROR,
+            RESPONSE_CODES.SERVER_ERROR,
+            RESPONSE_MESSAGES.SERVER_ERROR,
+            {},
+            res,
+            req
+         );
       } else {
          try {
             const filePath = req.file.path; // Get the path of the uploaded photo
@@ -410,10 +494,17 @@ async function saveAttendancePhotoMulter(req, res) {
                filePath,
                id // Pass the file path to the insertEmployeePhoto function
             );
-            response(HTTP_STATUS.OK, "00", "Attendance photo saved successfully", {}, res, req);
+            response(HTTP_STATUS.OK, RESPONSE_CODES.SUCCESS, "Attendance photo saved successfully", {}, res, req);
          } catch (error) {
             console.error("Internal Server Error:", error);
-            response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Internal Server Error", {}, res, req);
+            response(
+               HTTP_STATUS.INTERNAL_SERVER_ERROR,
+               RESPONSE_CODES.SERVER_ERROR,
+               RESPONSE_MESSAGES.SERVER_ERROR,
+               {},
+               res,
+               req
+            );
          }
       }
    });

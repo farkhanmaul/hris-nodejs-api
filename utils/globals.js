@@ -18,7 +18,6 @@ const RESPONSE_CODES = {
 
 // Define the RESPONSE_MESSAGES object
 const RESPONSE_MESSAGES = {
-   SUCCESS: "Success",
    NOT_FOUND: "Data Not Found",
    INVALID_INPUT: "Invalid user input",
    SERVER_ERROR: "Internal Server Error",

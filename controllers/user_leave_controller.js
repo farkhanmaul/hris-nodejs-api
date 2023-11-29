@@ -1,4 +1,3 @@
-const userModel = require("../models/user_model");
 const userLeaveModel = require("../models/user_leave_model");
 const validation = require("../utils/validation");
 const { HTTP_STATUS, RESPONSE_CODES, RESPONSE_MESSAGES } = require("../utils/globals.js");

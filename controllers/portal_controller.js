@@ -1,7 +1,6 @@
 const portalModel = require("../models/portal_model");
 const validation = require("../utils/validation");
 const { HTTP_STATUS, RESPONSE_CODES, RESPONSE_MESSAGES } = require("../utils/globals.js");
-const verifyToken = require("../middleware/verify_token.js");
 const response = require("../middleware/response");
 
 // login endpoint

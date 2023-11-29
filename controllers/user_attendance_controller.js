@@ -1,4 +1,3 @@
-const userModel = require("../models/user_model");
 const globalModel = require("../models/global_model");
 const userAttendanceModel = require("../models/user_attendance_model");
 const validation = require("../utils/validation");

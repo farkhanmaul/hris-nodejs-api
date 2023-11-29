@@ -249,18 +249,28 @@ async function getVersion(req, res) {
       return;
    }
    try {
-      // Get the global variable  values
-      const apiVersion = "version";
-      const version = await globalModel.specificSelectGlobalVariables(apiVersion);
+      // Get the app version
+      const appVersionKey = "app_version";
+      const appVersion = await globalModel.specificSelectGlobalVariables(appVersionKey);
+
+      // Get the API version
+      const apiVersionKey = "api_version";
+      const apiVersion = await globalModel.specificSelectGlobalVariables(apiVersionKey);
+
+      // Get the API version
+      const forceUpdateVersion = "force_mobile_update_version";
+      const updateVersion = await globalModel.specificSelectGlobalVariables(forceUpdateVersion);
 
       const responsePayload = {
-         version: version.value,
+         app_version: appVersion.value,
+         api_version: apiVersion.value,
+         force_mobile_update_version: updateVersion.value,
       };
 
       response(HTTP_STATUS.OK, "00", "Version data retrieved successfully", responsePayload, res, req);
    } catch (error) {
-      console.error("Failed to retrieve version:", error);
-      response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Failed to retrieve version", {}, res, req);
+      console.error("Failed to retrieve versions:", error);
+      response(HTTP_STATUS.INTERNAL_SERVER_ERROR, "99", "Failed to retrieve versions", {}, res, req);
    }
 }
 

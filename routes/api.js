@@ -12,7 +12,6 @@ const globalController = require("../controllers/global_controller.js");
 
 // STATUS
 router.get("/", (req, res) => {
-   // response(HTTP_STATUS.OK, "00", "API is running", {}, res, req);
    res.status(200).json({
       respCode: "00",
       respMsg: "API is running",

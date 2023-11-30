@@ -41,7 +41,7 @@ async function getNotificationInbox(req, res) {
    const { employee_id } = req.body;
    if (!validation.validateUserInput(employee_id)) {
       response(HTTP_STATUS.BAD_REQUEST, RESPONSE_CODES.INVALID_INPUT, RESPONSE_MESSAGES.INVALID_INPUT, {}, res, req);
-      return; // Exit the function if input is invalid
+      return;
    }
    try {
       const result = await notificationModel.getNotificationData(employee_id);

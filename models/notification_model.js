@@ -14,7 +14,7 @@ async function getNotificationData(employee_id) {
 async function storeFirebaseToken(employee_id, firebaseToken) {
    const selectQuery = `SELECT COUNT(*) AS count FROM user_fbtoken WHERE employee_id = ?`;
    const updateQuery = `UPDATE user_fbtoken SET token = ?, created_at = ? WHERE employee_id = ?`;
-   const created_at = new Date(); // Current datetime value for the created_at column
+   const created_at = new Date();
 
    const [rows] = await db2.query(selectQuery, [employee_id]);
    const count = rows[0].count;

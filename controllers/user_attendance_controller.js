@@ -10,7 +10,7 @@ const path = require("path");
 
 async function attendance(req, res) {
    const { employee_id, longitude, altitude, latitude, location_name, action, notes } = req.body;
-   // Validate employee_id, longitude, altitude, latitude, location_name, action, and notes
+
    const employee_idValid = validation.validateUserInput(employee_id);
    const longitudeValid = validation.validateUserInput(longitude);
    const altitudeValid = validation.validateUserInput(altitude);
@@ -88,7 +88,7 @@ async function getAttendanceClock(req, res) {
          res,
          req
       );
-      return; // Exit the function if input is invalid
+      return;
    }
    try {
       const result = await userAttendanceModel.getClockTimeData(employee_id, date, action);
@@ -147,7 +147,7 @@ async function getAttendanceHistory(req, res) {
       !validation.validateUserInput(end_date)
    ) {
       response(HTTP_STATUS.BAD_REQUEST, RESPONSE_CODES.INVALID_INPUT, RESPONSE_MESSAGES.INVALID_INPUT, {}, res, req);
-      return; // Exit the function if input is invalid
+      return;
    }
 
    try {
@@ -315,7 +315,7 @@ async function getAttendanceToday(req, res) {
 
 async function getAttendanceRecent(req, res) {
    const { employee_id } = req.body;
-   // Validate the user input
+
    const isInputValid = validation.validateUserInput(employee_id);
 
    if (!isInputValid) {
@@ -425,7 +425,6 @@ const storage = multer.diskStorage({
       }
    },
    filename: (req, file, cb) => {
-      // const timestamp = Date.now();
       const employeeId = req.body.employee_id;
 
       function formatDate(date) {
@@ -476,7 +475,7 @@ async function saveAttendancePhotoMulter(req, res) {
          !validation.validateUserInput(id)
       ) {
          response(HTTP_STATUS.BAD_REQUEST, RESPONSE_CODES.INVALID_INPUT, RESPONSE_MESSAGES.INVALID_INPUT, {}, res, req);
-         return; // Exit the function if input is invalid
+         return;
       }
 
       if (err instanceof multer.MulterError) {

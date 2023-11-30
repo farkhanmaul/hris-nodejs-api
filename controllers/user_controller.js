@@ -52,7 +52,7 @@ async function loginEmail(req, res) {
 
 async function loginWA(req, res) {
    const { employee_id } = req.body;
-   // Validate the user input
+
    const isEmployeeIdValid = validation.validateUserInput(employee_id);
 
    if (!isEmployeeIdValid) {
@@ -136,7 +136,7 @@ async function logout(req, res) {
    const token = req.headers["x-api-key"];
 
    const { employee_id } = req.body;
-   // Validate the user input
+
    const isInputValid = validation.validateUserInput(employee_id);
 
    if (!isInputValid) {
@@ -249,7 +249,7 @@ async function verifyTokenHandler(req, res, next) {
 
 async function getProfile(req, res) {
    const { employee_id } = req.body;
-   // Validate the user input
+
    const isInputValid = validation.validateUserInput(employee_id);
 
    if (!isInputValid) {
@@ -297,7 +297,7 @@ async function getProfile(req, res) {
 
 async function getVersion(req, res) {
    const { employee_id } = req.body;
-   // Validate the user input
+
    const isInputValid = validation.validateUserInput(employee_id);
 
    if (!isInputValid) {

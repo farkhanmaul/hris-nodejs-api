@@ -1,6 +1,6 @@
 node_modules/
 .env
 .vscode/
-uploads/*
+uploads/attendance_photos/
 public/uploads/*
 acamobiled-firebase-adminsdk.json

@@ -7,9 +7,7 @@ const response = require("../middleware/response");
 async function loginEmailPortal(req, res) {
    const { employee_id } = req.body;
 
-   // Validate the user input
    const isInputValid = validation.validateUserInput(employee_id);
-
    if (!isInputValid) {
       response(HTTP_STATUS.BAD_REQUEST, RESPONSE_CODES.INVALID_INPUT, RESPONSE_MESSAGES.INVALID_INPUT, {}, res, req);
       return;
@@ -54,7 +52,7 @@ async function loginEmailPortal(req, res) {
 
 async function loginWAPortal(req, res) {
    const { employee_id } = req.body;
-   // Validate the user input
+
    const isEmployeeIdValid = validation.validateUserInput(employee_id);
 
    if (!isEmployeeIdValid) {

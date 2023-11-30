@@ -6,7 +6,6 @@ const response = require("../middleware/response");
 async function getLeavePlafonds(req, res) {
    const { employee_id } = req.body;
 
-   // Validate the user input
    const isInputValid = validation.validateUserInput(employee_id);
 
    if (!isInputValid) {
@@ -47,7 +46,6 @@ async function getLeavePlafonds(req, res) {
 async function getLeaveListApproved(req, res) {
    const { employee_id } = req.body;
 
-   // Validate the user input
    const isInputValid = validation.validateUserInput(employee_id);
 
    if (!isInputValid) {
@@ -86,7 +84,6 @@ async function getLeaveListApproved(req, res) {
 async function getLeaveListNotApproved(req, res) {
    const { employee_id } = req.body;
 
-   // Validate the user input
    const isInputValid = validation.validateUserInput(employee_id);
 
    if (!isInputValid) {
@@ -125,7 +122,6 @@ async function getLeaveListNotApproved(req, res) {
 async function getLeaveDetails(req, res) {
    const { employee_id, RequestFormId } = req.body;
 
-   // Validate the user input
    const isInputValid = validation.validateUserInput(employee_id);
 
    if (!isInputValid) {

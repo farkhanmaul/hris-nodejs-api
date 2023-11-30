@@ -6,7 +6,6 @@ const response = require("../middleware/response");
 async function getClaimCompleted(req, res) {
    const { employee_id } = req.body;
 
-   // Validate the user input
    const isInputValid = validation.validateUserInput(employee_id);
 
    if (!isInputValid) {
@@ -45,7 +44,6 @@ async function getClaimCompleted(req, res) {
 async function getClaimRejected(req, res) {
    const { employee_id } = req.body;
 
-   // Validate the user input
    const isInputValid = validation.validateUserInput(employee_id);
 
    if (!isInputValid) {
@@ -84,7 +82,6 @@ async function getClaimRejected(req, res) {
 async function getClaimOnProgress(req, res) {
    const { employee_id } = req.body;
 
-   // Validate the user input
    const isInputValid = validation.validateUserInput(employee_id);
 
    if (!isInputValid) {
@@ -123,7 +120,6 @@ async function getClaimOnProgress(req, res) {
 async function getClaimDetail(req, res) {
    const { employee_id, RequestFormId } = req.body;
 
-   // Validate the user input
    const isInputValid = validation.validateUserInput(employee_id);
 
    if (!isInputValid) {
@@ -161,7 +157,7 @@ async function getClaimDetail(req, res) {
 
 async function getMedicalPlafonds(req, res) {
    const { employee_id } = req.body;
-   // Validate the user input
+
    const isInputValid = validation.validateUserInput(employee_id);
 
    if (!isInputValid) {

@@ -95,7 +95,7 @@ async function getRoom(req, res) {
    const { employee_id } = req.body;
    if (!validation.validateUserInput(employee_id)) {
       response(HTTP_STATUS.BAD_REQUEST, RESPONSE_CODES.INVALID_INPUT, RESPONSE_MESSAGES.INVALID_INPUT, {}, res, req);
-      return; // Exit the function if input is invalid
+      return;
    }
    try {
       const result = await roomModel.getRoomData();
@@ -129,7 +129,7 @@ async function getEmployee(req, res) {
    const { employee_id } = req.body;
    if (!validation.validateUserInput(employee_id)) {
       response(HTTP_STATUS.BAD_REQUEST, RESPONSE_CODES.INVALID_INPUT, RESPONSE_MESSAGES.INVALID_INPUT, {}, res, req);
-      return; // Exit the function if input is invalid
+      return;
    }
    try {
       const result = await roomModel.getAllEmployees();
@@ -137,8 +137,6 @@ async function getEmployee(req, res) {
       if (!result || !result.recordset || !result.recordset.length) {
          response(HTTP_STATUS.NOT_FOUND, RESPONSE_CODES.NOT_FOUND, "No employees found", {}, res, req);
       } else {
-         // const data = result.recordset.map((employee) => Object.values(employee));
-         // response(HTTP_STATUS.OK, RESPONSE_CODES.SUCCESS, "Employees retrieved successfully", result.recordset, res, req);
          res.status(200).json({
             respCode: RESPONSE_CODES.SUCCESS,
             respMsg: "Employees retrieved successfully",
@@ -162,7 +160,7 @@ async function getActiveBookingHandler(req, res) {
    const { employee_id } = req.body;
    if (!validation.validateUserInput(employee_id)) {
       response(HTTP_STATUS.BAD_REQUEST, RESPONSE_CODES.INVALID_INPUT, RESPONSE_MESSAGES.INVALID_INPUT, {}, res, req);
-      return; // Exit the function if input is invalid
+      return;
    }
    try {
       const activeBookings = await roomModel.getActiveBookings(employee_id);
@@ -195,7 +193,7 @@ async function getHistoryBooking(req, res) {
    const { employee_id } = req.body;
    if (!validation.validateUserInput(employee_id)) {
       response(HTTP_STATUS.BAD_REQUEST, RESPONSE_CODES.INVALID_INPUT, RESPONSE_MESSAGES.INVALID_INPUT, {}, res, req);
-      return; // Exit the function if input is invalid
+      return;
    }
    try {
       const historyBookings = await roomModel.getHistoryBookings(employee_id);
@@ -232,7 +230,7 @@ async function getBookingByRoom(req, res) {
       !validation.validateUserInput(date)
    ) {
       response(HTTP_STATUS.BAD_REQUEST, RESPONSE_CODES.INVALID_INPUT, RESPONSE_MESSAGES.INVALID_INPUT, {}, res, req);
-      return; // Exit the function if input is invalid
+      return;
    }
 
    try {

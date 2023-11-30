@@ -23,7 +23,6 @@ const RESPONSE_MESSAGES = {
    SERVER_ERROR: "Internal Server Error",
 };
 
-// Define and export global variables
 module.exports = {
    HTTP_STATUS,
    RESPONSE_CODES,

@@ -135,6 +135,11 @@ async function closeToken(token) {
    await db2.query(updateQuery, [token]);
 }
 
+async function closeFbToken(employee_id) {
+   const updateQuery = `UPDATE user_fbtoken SET is_status = false WHERE employee_id = ?`;
+   await db2.query(updateQuery, [employee_id]);
+}
+
 async function getUserMobilePhones(employee_id) {
    try {
       const query = `SELECT MobilePhone1, MobilePhone2 FROM dbo.HrEmployee WHERE EmployeeId = '${employee_id}'`;
@@ -220,4 +225,5 @@ module.exports = {
    insertUserToken,
    insertUserDeviceId,
    closeToken,
+   closeFbToken,
 };

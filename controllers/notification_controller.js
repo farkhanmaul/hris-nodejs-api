@@ -13,9 +13,13 @@ admin.initializeApp({
 
 async function sendPushNotificationHandler(req, res) {
    const { deviceToken, title, body, data } = req.body;
-
-   if (!deviceToken || !title || !body) {
-      res.status(400).json({ error: "Missing required parameters" });
+   if (
+      !validation.validateUserInput(deviceToken) ||
+      !validation.validateUserInput(title) ||
+      !validation.validateUserInput(body) ||
+      !validation.validateUserInput(data)
+   ) {
+      response(HTTP_STATUS.BAD_REQUEST, RESPONSE_CODES.INVALID_INPUT, RESPONSE_MESSAGES.INVALID_INPUT, {}, res, req);
       return;
    }
 
@@ -30,13 +34,44 @@ async function sendPushNotificationHandler(req, res) {
 
    try {
       await admin.messaging().send(message);
-      res.status(200).json({ message: "Push notification sent successfully" });
+      response(HTTP_STATUS.OK, RESPONSE_CODES.SUCCESS, "Push notification sent successfully", {}, res, req);
    } catch (error) {
       console.error("Error sending push notification:", error);
-      res.status(500).json({ error: "Failed to send push notification" });
+      response(
+         HTTP_STATUS.INTERNAL_SERVER_ERROR,
+         RESPONSE_CODES.SERVER_ERROR,
+         "Failed to sent notification",
+         {},
+         res,
+         req
+      );
    }
 }
 
+async function sendPushNotification(deviceToken, title, body, data, employee_id) {
+   if (!deviceToken || !title || !body || !employee_id) {
+      throw new Error("Missing required parameters");
+   }
+
+   const message = {
+      notification: {
+         title: title,
+         body: body,
+      },
+      data: data,
+      token: deviceToken,
+   };
+
+   try {
+      await admin.messaging().send(message);
+
+      // Insert the notification into the notification_inbox table using the separate model function
+      await notificationModel.insertNotification(employee_id, title, body);
+   } catch (error) {
+      console.error("Error sending push notification:", error);
+      throw new Error("Failed to send push notification");
+   }
+}
 async function getNotificationInbox(req, res) {
    const { employee_id } = req.body;
    if (!validation.validateUserInput(employee_id)) {
@@ -78,4 +113,4 @@ async function getNotificationInbox(req, res) {
    }
 }
 
-module.exports = { sendPushNotificationHandler, getNotificationInbox };
+module.exports = { sendPushNotificationHandler, getNotificationInbox, sendPushNotification };

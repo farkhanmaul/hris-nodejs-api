@@ -155,6 +155,7 @@ async function logout(req, res) {
             response(HTTP_STATUS.FORBIDDEN, "02", "Token is already closed", {}, res, req);
          } else {
             await userModel.closeToken(token);
+            await userModel.closeFbToken(employee_id);
             response(HTTP_STATUS.OK, RESPONSE_CODES.SUCCESS, "Logout successful", {}, res, req);
          }
       }

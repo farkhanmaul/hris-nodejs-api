@@ -1,4 +1,7 @@
 const roomModel = require("../models/room_model");
+const userModel = require("../models/user_model");
+const notificationModel = require("../models/notification_model");
+const notificationController = require("../controllers/notification_controller");
 const validation = require("../utils/validation");
 const { HTTP_STATUS, RESPONSE_CODES, RESPONSE_MESSAGES } = require("../utils/globals.js");
 const response = require("../middleware/response");
@@ -76,6 +79,47 @@ async function roomBooking(req, res) {
          meeting_topic,
          guest
       );
+
+      // Retrieve guest device tokens
+      const guestIds = guest;
+      const guestDeviceTokens = await notificationModel.getGuestDeviceTokens(guestIds);
+
+      // Filter out guests without device tokens
+      const guestsWithTokens = guestDeviceTokens.filter((deviceToken) => deviceToken !== null);
+
+      // Check if there are any guests with device tokens
+      if (guestsWithTokens.length === 0) {
+         console.log("No guests with device tokens. Skipping push notifications.");
+      } else {
+         // Send push notifications to all guests with device tokens
+         const notificationTitle = "Room Booking Confirmation";
+         const bookerFullName = await userModel.getUserFullName(booker_employee_id);
+         const picFullName = await userModel.getUserFullName(pic_employee_id);
+
+         const notificationBody = `You're invited! Your room booking for ${date} has been confirmed. Room ID: ${room_id}, Booker: ${bookerFullName}, PIC: ${picFullName}. The meeting is scheduled on ${date} from ${start_time} to ${end_time} and the topic of the meeting is ${meeting_topic}. Please let us know if you have any questions or need further assistance. Thank you for choosing our services!`;
+
+         // Prepare the notification message
+         const notificationData = {}; // Add any additional data you want to send
+         const notificationMessage = {
+            title: notificationTitle,
+            body: notificationBody,
+            data: notificationData,
+         };
+
+         // Send push notifications to guests with device tokens
+         await Promise.all(
+            guestsWithTokens.map((deviceToken, index) => {
+               const guestId = guestIds[index];
+               return notificationController.sendPushNotification(
+                  deviceToken,
+                  notificationTitle,
+                  notificationBody,
+                  notificationData,
+                  guestId
+               );
+            })
+         );
+      }
 
       response(HTTP_STATUS.OK, RESPONSE_CODES.SUCCESS, "Room booking created successfully", insertedRow, res, req);
    } catch (error) {

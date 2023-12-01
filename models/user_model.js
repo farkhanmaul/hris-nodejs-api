@@ -136,7 +136,7 @@ async function closeToken(token) {
 }
 
 async function closeFbToken(employee_id) {
-   const updateQuery = `UPDATE user_fbtoken SET is_status = false WHERE employee_id = ?`;
+   const updateQuery = `UPDATE user_fbtoken SET is_active = false WHERE employee_id = ?`;
    await db2.query(updateQuery, [employee_id]);
 }
 

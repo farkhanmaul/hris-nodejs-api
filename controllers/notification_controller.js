@@ -113,4 +113,38 @@ async function getNotificationInbox(req, res) {
    }
 }
 
-module.exports = { sendPushNotificationHandler, getNotificationInbox, sendPushNotification };
+async function markNotificationAsRead(req, res) {
+   const { employee_id, notification_id } = req.body;
+   if (!validation.validateUserInput(employee_id) || !validation.validateUserInput(notification_id)) {
+      response(HTTP_STATUS.BAD_REQUEST, RESPONSE_CODES.INVALID_INPUT, RESPONSE_MESSAGES.INVALID_INPUT, {}, res, req);
+      return;
+   }
+   try {
+      const result = await notificationModel.markNotificationAsRead(notification_id);
+
+      if (result.affectedRows === 0) {
+         response(
+            HTTP_STATUS.NOT_FOUND,
+            RESPONSE_CODES.NOT_FOUND,
+            "Notification not found or already marked as read",
+            null,
+            res,
+            req
+         );
+      } else {
+         response(HTTP_STATUS.OK, RESPONSE_CODES.SUCCESS, "Notification marked as read successfully", {}, res, req);
+      }
+   } catch (error) {
+      console.error("Failed to mark notification as read:", error);
+      response(
+         HTTP_STATUS.INTERNAL_SERVER_ERROR,
+         RESPONSE_CODES.SERVER_ERROR,
+         "Failed to mark notification as read",
+         null,
+         res,
+         req
+      );
+   }
+}
+
+module.exports = { sendPushNotificationHandler, getNotificationInbox, sendPushNotification, markNotificationAsRead };

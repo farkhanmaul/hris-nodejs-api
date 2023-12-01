@@ -81,15 +81,15 @@ async function roomBooking(req, res) {
       );
 
       // Retrieve guest device tokens
-      const guestIds = guest;
-      const guestDeviceTokens = await notificationModel.getGuestDeviceTokens(guestIds);
-
-      // Filter out guests without device tokens
-      const guestsWithTokens = guestDeviceTokens.filter((deviceToken) => deviceToken !== null);
+      let guestDeviceTokens = [];
+      if (guest.length > 0) {
+         const guestIds = guest;
+         guestDeviceTokens = await notificationModel.getGuestDeviceTokens(guestIds);
+      }
 
       // Check if there are any guests with device tokens
-      if (guestsWithTokens.length === 0) {
-         console.log("No guests with device tokens. Skipping push notifications.");
+      if (guestDeviceTokens.length === 0) {
+         // No guests with device tokens
       } else {
          // Send push notifications to all guests with device tokens
          const notificationTitle = "Room Booking Confirmation";
@@ -100,15 +100,10 @@ async function roomBooking(req, res) {
 
          // Prepare the notification message
          const notificationData = {}; // Add any additional data you want to send
-         const notificationMessage = {
-            title: notificationTitle,
-            body: notificationBody,
-            data: notificationData,
-         };
 
          // Send push notifications to guests with device tokens
          await Promise.all(
-            guestsWithTokens.map((deviceToken, index) => {
+            guestDeviceTokens.map((deviceToken, index) => {
                const guestId = guestIds[index];
                return notificationController.sendPushNotification(
                   deviceToken,

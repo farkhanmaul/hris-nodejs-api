@@ -52,6 +52,7 @@ router.post("/room/get-all-employee", verifyToken, roomController.getEmployee);
 // NOTIFICATION
 router.post("/notification/try-notif", verifyToken, notificationController.sendPushNotificationHandler);
 router.post("/notification/get-inbox", verifyToken, notificationController.getNotificationInbox);
+router.post("/notification/mark-as-read", verifyToken, notificationController.markNotificationAsRead);
 
 // GLOBAL VARIABLES
 router.post("/global/insert-global-variable", verifyToken, globalController.insertGlobalVariables);

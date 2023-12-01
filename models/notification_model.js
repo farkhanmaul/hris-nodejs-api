@@ -31,7 +31,7 @@ async function storeFirebaseToken(employee_id, firebaseToken) {
 
 async function getGuestDeviceTokens(guestIds) {
    try {
-      const query = `SELECT token FROM user_fbtoken WHERE employee_id IN (?)`;
+      const query = `SELECT token FROM user_fbtoken WHERE employee_id IN (?) AND is_active = true`;
       const [rows] = await db2.query(query, [guestIds]);
       const deviceTokens = rows.map((row) => row.token);
       return deviceTokens;

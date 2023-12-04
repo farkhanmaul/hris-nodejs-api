@@ -58,20 +58,27 @@ async function sendPushNotification(deviceToken, title, body, data, employee_id)
          title: title,
          body: body,
       },
-      data: data,
+      data: {
+         ...data,
+         notification_id: "0", // Placeholder for the notification ID
+      },
       token: deviceToken,
    };
-
    try {
-      await admin.messaging().send(message);
-
       // Insert the notification into the notification_inbox table using the separate model function
-      await notificationModel.insertNotification(employee_id, title, body);
+      const notificationId = await notificationModel.insertNotification(employee_id, title, body);
+
+      // Update the notification message data with the actual notification ID
+      message.data.notification_id = notificationId;
+
+      // Send the push notification
+      await admin.messaging().send(message);
    } catch (error) {
       console.error("Error sending push notification:", error);
       throw new Error("Failed to send push notification");
    }
 }
+
 async function getNotificationInbox(req, res) {
    const { employee_id } = req.body;
    if (!validation.validateUserInput(employee_id)) {

@@ -81,12 +81,12 @@ async function roomBooking(req, res) {
       );
 
       // Retrieve guest device tokens
+
       let guestDeviceTokens = [];
       if (guest.length > 0) {
          const guestIds = guest;
          guestDeviceTokens = await notificationModel.getGuestDeviceTokens(guestIds);
       }
-
       // Check if there are any guests with device tokens
       if (guestDeviceTokens.length === 0) {
          // No guests with device tokens
@@ -95,8 +95,13 @@ async function roomBooking(req, res) {
          const notificationTitle = "Room Booking Confirmation";
          const bookerFullName = await userModel.getUserFullName(booker_employee_id);
          const picFullName = await userModel.getUserFullName(pic_employee_id);
+         const roomName = await roomModel.getRoomName(room_id);
 
-         const notificationBody = `You're invited! Your room booking for ${date} has been confirmed. Room ID: ${room_id}, Booker: ${bookerFullName}, PIC: ${picFullName}. The meeting is scheduled on ${date} from ${start_time} to ${end_time} and the topic of the meeting is ${meeting_topic}. Please let us know if you have any questions or need further assistance. Thank you for choosing our services!`;
+         const dateNew = new Date(date);
+         const options = { day: "numeric", month: "long", year: "numeric" };
+         const formattedDate = dateNew.toLocaleDateString("id-ID", options);
+
+         const notificationBody = `Invitation: Room booking confirmed for ${date}. Room : ${roomName}. Booker: ${bookerFullName}. PIC: ${picFullName}. Meeting: ${formattedDate}, ${start_time}-${end_time}. Topic: ${meeting_topic}. Thank you!`;
 
          // Prepare the notification message
          const notificationData = {}; // Add any additional data you want to send
@@ -104,7 +109,7 @@ async function roomBooking(req, res) {
          // Send push notifications to guests with device tokens
          await Promise.all(
             guestDeviceTokens.map((deviceToken, index) => {
-               const guestId = guestIds[index];
+               const guestId = guest[index];
                return notificationController.sendPushNotification(
                   deviceToken,
                   notificationTitle,

@@ -425,7 +425,7 @@ const storage = multer.diskStorage({
       }
    },
    filename: (req, file, cb) => {
-      const employeeId = req.body.employee_id;
+      const employee_id = req.body.employee_id;
 
       function formatDate(date) {
          const year = date.getFullYear();
@@ -442,7 +442,7 @@ const storage = multer.diskStorage({
       const formattedDate = formatDate(date);
       const type = req.body.type;
       const extname = path.extname(file.originalname);
-      const filename = `${employeeId}_${formattedDate}_${type}${extname}`;
+      const filename = `${employee_id}_${formattedDate}_${type}${extname}`;
       cb(null, filename);
    },
 });

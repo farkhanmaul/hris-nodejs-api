@@ -29,9 +29,10 @@ async function insertRoomBooking(
    const fetchQuery = `SELECT id FROM room_booking WHERE room_id = ? AND booker_employee_id = ? AND start_time = ? ORDER BY id DESC LIMIT 1`;
    const fetchedResult = await db2.query(fetchQuery, [room_id, booker_employee_id, start_time]);
    const bookingId = fetchedResult[0][0].id;
+
    // Insert guest data into room_booking_guest table
    if (Array.isArray(guest) && guest.length > 0) {
-      const guestValues = guest.map((employeeId) => [employeeId, bookingId]);
+      const guestValues = guest.map((employee_id) => [employee_id, bookingId]);
       const guestQuery = `INSERT INTO room_booking_guest (employee_id, booking_id) VALUES ?`;
       await db2.query(guestQuery, [guestValues]);
    }
@@ -49,18 +50,37 @@ async function getRoomData() {
    return result[0];
 }
 
+async function getRoomName(room_id) {
+   const query = `
+      SELECT room_name
+      FROM room_header
+      WHERE id = ?
+   `;
+   const result = await db2.query(query, [room_id]);
+
+   if (result[0].length > 0) {
+      return result[0][0].room_name;
+   } else {
+      return "Unknown Room";
+   }
+}
+
 async function getAllEmployees() {
    try {
       const query = `
       SELECT 
-      e.EmployeeId, e.EmployeeFullName,
-      j.JobTitleLabel
-   FROM 
-      dbo.HrEmployee e
-      INNER JOIN dbo.HrEmploymentHistory eh ON e.EmployeeId = eh.EmployeeId
-      INNER JOIN dbo.HrReferenceJobTitle j ON eh.JobTitleId = j.JobTitleId
+         ROW_NUMBER() OVER (ORDER BY e.EmployeeFullName) AS id,
+         e.EmployeeId, 
+         e.EmployeeFullName,
+         j.JobTitleLabel
+      FROM 
+         dbo.HrEmployee e
+         INNER JOIN dbo.HrEmploymentHistory eh ON e.EmployeeId = eh.EmployeeId
+         INNER JOIN dbo.HrReferenceJobTitle j ON eh.JobTitleId = j.JobTitleId
       WHERE 
-      eh.IsExists = '1';
+         e.IsExists = '1'
+         AND eh.IsExists = '1'
+      ORDER BY e.EmployeeFullName;
       `;
 
       const result = await db1(query);
@@ -247,9 +267,9 @@ async function getBookingsByRoomAndDate(room_id, date) {
       const bookings = await db2.query(query, [room_id, date]);
 
       const transformedBookings = {};
-      const employeeIds = bookings[0].map((booking) => booking.pic_employee_id);
+      const employee_ids = bookings[0].map((booking) => booking.pic_employee_id);
       const employeeFullNames = await Promise.all(
-         employeeIds.map((employeeId) => userModel.getUserFullName(employeeId))
+         employee_ids.map((employee_id) => userModel.getUserFullName(employee_id))
       );
 
       bookings[0].forEach((booking, index) => {
@@ -278,4 +298,5 @@ module.exports = {
    getActiveBookings,
    getHistoryBookings,
    getBookingsByRoomAndDate,
+   getRoomName,
 };

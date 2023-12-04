@@ -41,12 +41,25 @@ async function getGuestDeviceTokens(guestIds) {
    }
 }
 
-async function insertNotification(employeeId, title, body) {
+async function insertNotification(employee_id, title, body) {
+   const createdAt = new Date();
    const insertQuery = `
       INSERT INTO notification_inbox (employee_id, msg_title, msg_body, is_read, created_at)
-      VALUES (?, ?, ?, false, NOW())
+      VALUES (?, ?, ?, false, ?)
    `;
-   await db2.query(insertQuery, [employeeId, title, body]);
+   const result = await db2.query(insertQuery, [employee_id, title, body, createdAt]);
+
+   const fetchQuery = `
+      SELECT id FROM notification_inbox
+      WHERE employee_id = ?
+      ORDER BY created_at DESC
+      LIMIT 1
+   `;
+   const fetchedResult = await db2.query(fetchQuery, [employee_id]);
+
+   const newestId = fetchedResult[0][0].id.toString();
+
+   return newestId;
 }
 
 async function markNotificationAsRead(notification_id) {

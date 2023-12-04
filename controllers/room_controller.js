@@ -69,17 +69,6 @@ async function roomBooking(req, res) {
          }
       }
 
-      const insertedRow = await roomModel.insertRoomBooking(
-         room_id,
-         booker_employee_id,
-         pic_employee_id,
-         date,
-         start_time,
-         end_time,
-         meeting_topic,
-         guest
-      );
-
       // Retrieve guest device tokens
 
       let guestDeviceTokens = [];
@@ -92,7 +81,6 @@ async function roomBooking(req, res) {
          // No guests with device tokens
       } else {
          // Send push notifications to all guests with device tokens
-         const notificationTitle = "Room Booking Confirmation";
          const bookerFullName = await userModel.getUserFullName(booker_employee_id);
          const picFullName = await userModel.getUserFullName(pic_employee_id);
          const roomName = await roomModel.getRoomName(room_id);
@@ -101,10 +89,8 @@ async function roomBooking(req, res) {
          const options = { day: "numeric", month: "long", year: "numeric" };
          const formattedDate = dateNew.toLocaleDateString("id-ID", options);
 
+         const notificationTitle = "Meeting Reminder";
          const notificationBody = `Invitation: Room booking confirmed for ${date}. Room : ${roomName}. Booker: ${bookerFullName}. PIC: ${picFullName}. Meeting: ${formattedDate}, ${start_time}-${end_time}. Topic: ${meeting_topic}. Thank you!`;
-
-         // Prepare the notification message
-         const notificationData = {}; // Add any additional data you want to send
 
          // Send push notifications to guests with device tokens
          await Promise.all(
@@ -114,13 +100,22 @@ async function roomBooking(req, res) {
                   deviceToken,
                   notificationTitle,
                   notificationBody,
-                  notificationData,
                   guestId
                );
             })
          );
       }
 
+      const insertedRow = await roomModel.insertRoomBooking(
+         room_id,
+         booker_employee_id,
+         pic_employee_id,
+         date,
+         start_time,
+         end_time,
+         meeting_topic,
+         guest
+      );
       response(HTTP_STATUS.OK, RESPONSE_CODES.SUCCESS, "Room booking created successfully", insertedRow, res, req);
    } catch (error) {
       console.error("Internal Server Error:", error);

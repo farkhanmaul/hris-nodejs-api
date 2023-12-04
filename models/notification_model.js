@@ -31,7 +31,7 @@ async function getSpecifyNotificationData(employee_id, notification_id) {
       ORDER BY created_at DESC
    `;
    const result = await db2.query(query, [employee_id, notification_id]);
-   return result;
+   return result[0];
 }
 
 async function storeFirebaseToken(employee_id, firebaseToken) {

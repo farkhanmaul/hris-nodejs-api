@@ -48,7 +48,7 @@ async function sendPushNotificationHandler(req, res) {
    }
 }
 
-async function sendPushNotification(deviceToken, title, body, data, employee_id) {
+async function sendPushNotification(deviceToken, title, body, employee_id) {
    if (!deviceToken || !title || !body || !employee_id) {
       throw new Error("Missing required parameters");
    }
@@ -59,7 +59,6 @@ async function sendPushNotification(deviceToken, title, body, data, employee_id)
          body: body,
       },
       data: {
-         ...data,
          notification_id: "0", // Placeholder for the notification ID
       },
       token: deviceToken,

@@ -11,6 +11,29 @@ async function getNotificationData(employee_id) {
    return result;
 }
 
+async function getUnreadNotificationCount(employee_id) {
+   const query = `
+      SELECT COUNT(*) AS unread_inbox
+      FROM notification_inbox
+      WHERE employee_id = ? AND is_read = false
+   `;
+   const result = await db2.query(query, [employee_id]);
+
+   const unread_inbox = result[0][0].unread_inbox;
+   return unread_inbox || null;
+}
+
+async function getSpecifyNotificationData(employee_id, notification_id) {
+   const query = `
+      SELECT id, msg_title, msg_body, is_read, created_at
+      FROM notification_inbox
+      WHERE employee_id = ? AND id = ? 
+      ORDER BY created_at DESC
+   `;
+   const result = await db2.query(query, [employee_id, notification_id]);
+   return result;
+}
+
 async function storeFirebaseToken(employee_id, firebaseToken) {
    const selectQuery = `SELECT COUNT(*) AS count FROM user_fbtoken WHERE employee_id = ?`;
    const updateQuery = `UPDATE user_fbtoken SET token = ?, created_at = ?, is_active = true WHERE employee_id = ?`;
@@ -74,6 +97,8 @@ async function markNotificationAsRead(notification_id) {
 
 module.exports = {
    getNotificationData,
+   getSpecifyNotificationData,
+   getUnreadNotificationCount,
    getGuestDeviceTokens,
    storeFirebaseToken,
    insertNotification,

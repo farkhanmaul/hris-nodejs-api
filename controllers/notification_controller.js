@@ -120,6 +120,77 @@ async function getNotificationInbox(req, res) {
    }
 }
 
+async function getSpecifyNotificationInbox(req, res) {
+   const { employee_id, notification_id } = req.body;
+   if (!validation.validateUserInput(employee_id) || !validation.validateUserInput(notification_id)) {
+      response(HTTP_STATUS.BAD_REQUEST, RESPONSE_CODES.INVALID_INPUT, RESPONSE_MESSAGES.INVALID_INPUT, {}, res, req);
+      return;
+   }
+   try {
+      const result = await notificationModel.getSpecifyNotificationData(employee_id, notification_id);
+
+      if (!result) {
+         response(
+            HTTP_STATUS.NOT_FOUND,
+            RESPONSE_CODES.NOT_FOUND,
+            "No notifications found for the specified employee ID",
+            null,
+            res,
+            req
+         );
+      } else {
+         response(
+            HTTP_STATUS.OK,
+            RESPONSE_CODES.SUCCESS,
+            "Notification data retrieved successfully",
+            result[0],
+            res,
+            req
+         );
+      }
+   } catch (error) {
+      console.error("Failed to retrieve notification data:", error);
+      response(
+         HTTP_STATUS.INTERNAL_SERVER_ERROR,
+         RESPONSE_CODES.SERVER_ERROR,
+         "Failed to retrieve notification data",
+         null,
+         res,
+         req
+      );
+   }
+}
+
+async function getUnreadNotificationCountHandler(req, res) {
+   const { employee_id } = req.body;
+   if (!validation.validateUserInput(employee_id)) {
+      response(HTTP_STATUS.BAD_REQUEST, RESPONSE_CODES.INVALID_INPUT, RESPONSE_MESSAGES.INVALID_INPUT, {}, res, req);
+      return;
+   }
+   try {
+      const unread_inbox = await notificationModel.getUnreadNotificationCount(employee_id);
+
+      response(
+         HTTP_STATUS.OK,
+         RESPONSE_CODES.SUCCESS,
+         "Unread notification count retrieved successfully",
+         { unread_inbox },
+         res,
+         req
+      );
+   } catch (error) {
+      console.error("Failed to retrieve unread notification count:", error);
+      response(
+         HTTP_STATUS.INTERNAL_SERVER_ERROR,
+         RESPONSE_CODES.SERVER_ERROR,
+         "Failed to retrieve unread notification count",
+         null,
+         res,
+         req
+      );
+   }
+}
+
 async function markNotificationAsRead(req, res) {
    const { employee_id, notification_id } = req.body;
    if (!validation.validateUserInput(employee_id) || !validation.validateUserInput(notification_id)) {
@@ -154,4 +225,11 @@ async function markNotificationAsRead(req, res) {
    }
 }
 
-module.exports = { sendPushNotificationHandler, getNotificationInbox, sendPushNotification, markNotificationAsRead };
+module.exports = {
+   sendPushNotificationHandler,
+   getNotificationInbox,
+   getSpecifyNotificationInbox,
+   sendPushNotification,
+   markNotificationAsRead,
+   getUnreadNotificationCountHandler,
+};

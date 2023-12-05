@@ -8,6 +8,23 @@ async function getNotificationData(employee_id) {
       ORDER BY created_at DESC
    `;
    const result = await db2.query(query, [employee_id]);
+
+   if (result.length > 0) {
+      result[0].forEach((notification) => {
+         const createdAt = new Date(notification.created_at);
+         const formattedDate = createdAt.toLocaleDateString("id-ID", {
+            day: "2-digit",
+            month: "long",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+         });
+
+         notification.created_at = formattedDate;
+      });
+   }
+
    return result;
 }
 

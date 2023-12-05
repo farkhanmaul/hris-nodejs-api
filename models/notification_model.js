@@ -66,7 +66,7 @@ async function getSpecifyNotificationData(employee_id, notification_id) {
       notification.created_at = formattedDate;
 
       const msgData = JSON.parse(notification.msg_data);
-      if (msgData.booking_id) {
+      if (msgData && msgData.booking_id) {
          notification.booking_id = msgData.booking_id;
       }
    }

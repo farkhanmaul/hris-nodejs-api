@@ -12,7 +12,7 @@ async function getNotificationData(employee_id) {
    if (result.length > 0) {
       result[0].forEach((notification) => {
          const createdAt = new Date(notification.created_at);
-         const formattedDate = createdAt.toLocaleDateString("id-ID", {
+         const formattedDate = createdAt.toLocaleDateString("en-US", {
             day: "2-digit",
             month: "long",
             year: "numeric",
@@ -59,7 +59,7 @@ async function getSpecifyNotificationData(employee_id, notification_id) {
          minute: "2-digit",
          hour12: true,
       };
-      const formattedDate = dateNew.toLocaleDateString("id-ID", options);
+      const formattedDate = dateNew.toLocaleDateString("en-US", options);
 
       result[0][0].created_at = formattedDate;
    }

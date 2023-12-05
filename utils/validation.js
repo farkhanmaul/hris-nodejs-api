@@ -25,7 +25,7 @@ function formatDate(date) {
       month: "long",
       year: "numeric",
    };
-   return date.toLocaleDateString("id-ID", options);
+   return date.toLocaleDateString("en-US", options);
 }
 
 function validateUserInput(userInput) {

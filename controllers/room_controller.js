@@ -87,10 +87,22 @@ async function roomBooking(req, res) {
 
          const dateNew = new Date(date);
          const options = { day: "numeric", month: "long", year: "numeric" };
-         const formattedDate = dateNew.toLocaleDateString("id-ID", options);
+         const formattedDate = dateNew.toLocaleDateString("en-US", options);
+
+         const insertedRow = await roomModel.insertRoomBooking(
+            room_id,
+            booker_employee_id,
+            pic_employee_id,
+            date,
+            start_time,
+            end_time,
+            meeting_topic,
+            guest
+         );
 
          const notificationTitle = "Meeting Reminder";
          const notificationBody = `Invitation: Room booking confirmed for ${date}. Room : ${roomName}. Booker: ${bookerFullName}. PIC: ${picFullName}. Meeting: ${formattedDate}, ${start_time}-${end_time}. Topic: ${meeting_topic}. Thank you!`;
+         const notificationData = { booking_id: insertedRow.id.toString() };
 
          // Send push notifications to guests with device tokens
          await Promise.all(
@@ -99,6 +111,7 @@ async function roomBooking(req, res) {
                return notificationController.sendPushNotification(
                   deviceToken,
                   notificationTitle,
+                  notificationData,
                   notificationBody,
                   guestId
                );
@@ -106,17 +119,7 @@ async function roomBooking(req, res) {
          );
       }
 
-      const insertedRow = await roomModel.insertRoomBooking(
-         room_id,
-         booker_employee_id,
-         pic_employee_id,
-         date,
-         start_time,
-         end_time,
-         meeting_topic,
-         guest
-      );
-      response(HTTP_STATUS.OK, RESPONSE_CODES.SUCCESS, "Room booking created successfully", insertedRow, res, req);
+      response(HTTP_STATUS.OK, RESPONSE_CODES.SUCCESS, "Room booking created successfully", {}, res, req);
    } catch (error) {
       console.error("Internal Server Error:", error);
       response(

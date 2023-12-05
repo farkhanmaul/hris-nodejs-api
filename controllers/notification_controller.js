@@ -48,7 +48,7 @@ async function sendPushNotificationHandler(req, res) {
    }
 }
 
-async function sendPushNotification(deviceToken, title, body, employee_id) {
+async function sendPushNotification(deviceToken, title, data, body, employee_id) {
    if (!deviceToken || !title || !body || !employee_id) {
       throw new Error("Missing required parameters");
    }
@@ -59,6 +59,7 @@ async function sendPushNotification(deviceToken, title, body, employee_id) {
          body: body,
       },
       data: {
+         ...data,
          notification_id: "0", // Placeholder for the notification ID
       },
       token: deviceToken,
@@ -69,7 +70,7 @@ async function sendPushNotification(deviceToken, title, body, employee_id) {
 
       // Update the notification message data with the actual notification ID
       message.data.notification_id = notificationId;
-
+      console.log(message);
       // Send the push notification
       await admin.messaging().send(message);
    } catch (error) {

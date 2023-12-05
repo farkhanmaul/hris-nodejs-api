@@ -104,7 +104,7 @@ async function getAttendanceClock(req, res) {
          );
       } else {
          const clockTime = result[0].clockTime;
-         const clockDate = new Date(result[0].clockDate).toLocaleDateString("id-ID", {
+         const clockDate = new Date(result[0].clockDate).toLocaleDateString("en-US", {
             day: "numeric",
             month: "long",
             year: "numeric",

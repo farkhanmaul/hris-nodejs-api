@@ -199,16 +199,14 @@ async function insertUserDeviceId(employee_id, deviceId) {
    const selectQuery = `SELECT COUNT(*) AS count FROM user_device WHERE employee_id = ?`;
    const insertQuery = `INSERT INTO user_device (employee_id, device_id, inserted_at, updated_at) VALUES (?, ?, ?, ?)`;
    const updateQuery = `UPDATE user_device SET device_id = ?, updated_at = ? WHERE employee_id = ?`;
-   const created_at = new Date(); // Current datetime value for the inserted_at and updated_at columns
+   const created_at = new Date();
 
    const [rows] = await db2.query(selectQuery, [employee_id]);
    const count = rows[0].count;
 
    if (count > 0) {
-      // Employee ID already exists, perform an update
       await db2.query(updateQuery, [deviceId, created_at, employee_id]);
    } else {
-      // Employee ID does not exist, perform an insert
       await db2.query(insertQuery, [employee_id, deviceId, created_at, created_at]);
    }
 }

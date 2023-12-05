@@ -1,3 +1,6 @@
+// CODE IF you want to create a USER DEVICE TOKEN VERIFICATION
+//
+//
 // const db2 = require("../config/database");
 // const response = require("./response");
 // const { HTTP_STATUS, RESPONSE_CODES, RESPONSE_MESSAGES } = require("../utils/globals.js");

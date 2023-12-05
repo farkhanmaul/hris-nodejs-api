@@ -31,11 +31,28 @@ async function getSpecifyNotificationData(employee_id, notification_id) {
       ORDER BY created_at DESC
    `;
    const result = await db2.query(query, [employee_id, notification_id]);
+
+   if (result.length > 0) {
+      const dateNew = new Date(result[0][0].created_at);
+      const options = {
+         day: "2-digit",
+         month: "long",
+         year: "numeric",
+         hour: "2-digit",
+         minute: "2-digit",
+         hour12: true,
+      };
+      const formattedDate = dateNew.toLocaleDateString("id-ID", options);
+
+      result[0][0].created_at = formattedDate;
+   }
+
    return result[0];
 }
 
 async function storeFirebaseToken(employee_id, firebaseToken) {
    const selectQuery = `SELECT COUNT(*) AS count FROM user_fbtoken WHERE employee_id = ?`;
+   const insertQuery = `INSERT INTO user_fbtoken (employee_id, token, created_at, is_active) VALUES (?, ?, ?, true)`;
    const updateQuery = `UPDATE user_fbtoken SET token = ?, created_at = ?, is_active = true WHERE employee_id = ?`;
    const created_at = new Date();
 
@@ -43,11 +60,8 @@ async function storeFirebaseToken(employee_id, firebaseToken) {
    const count = rows[0].count;
 
    if (count > 0) {
-      // Employee ID already exists, perform an update
       await db2.query(updateQuery, [firebaseToken, created_at, employee_id]);
    } else {
-      // Employee ID does not exist, perform an insert
-      const insertQuery = `INSERT INTO user_fbtoken (employee_id, token, created_at, is_active) VALUES (?, ?, ?, true)`;
       await db2.query(insertQuery, [employee_id, firebaseToken, created_at]);
    }
 }

@@ -100,21 +100,12 @@ async function getActiveBookings(employee_id) {
       const query = `
         SELECT 
           rb.id, 
-          rb.room_id, 
-          rb.booker_employee_id, 
-          rb.pic_employee_id, 
           rb.date, 
           rb.start_time, 
           rb.end_time, 
-          rb.created_at, 
           rb.meeting_topic, 
           rh.room_name, 
           rh.location,
-          (
-            SELECT GROUP_CONCAT(employee_id SEPARATOR ', ')
-            FROM room_booking_guest
-            WHERE booking_id = rb.id
-          ) AS guest_ids,
           (
             SELECT COUNT(employee_id)
             FROM room_booking_guest
@@ -150,22 +141,10 @@ async function getActiveBookings(employee_id) {
       // Convert the date to the desired format for each booking
       const formattedBookings = activeBookings[0].map(async (booking) => {
          const formattedDate = validation.formatDate(new Date(booking.date));
-         const formattedCreatedAt = validation.formatDate(new Date(booking.created_at));
-
-         const bookerFullName = await userModel.getUserFullName(booking.booker_employee_id);
-         const picFullName = await userModel.getUserFullName(booking.pic_employee_id);
-
-         // Convert guest IDs to guest full names
-         const guestIds = booking.guest_ids ? booking.guest_ids.split(", ") : [];
-         const guestFullNames = await Promise.all(guestIds.map((guestId) => userModel.getUserFullName(guestId)));
 
          return {
             ...booking,
             date: formattedDate,
-            created_at: formattedCreatedAt,
-            booker_employee_fullname: bookerFullName,
-            pic_employee_fullname: picFullName,
-            guest_fullnames: guestFullNames,
          };
       });
 
@@ -185,40 +164,31 @@ async function getHistoryBookings(employee_id) {
       const query = `
       SELECT 
          rb.id, 
-         rb.room_id, 
-         rb.booker_employee_id, 
-         rb.pic_employee_id, 
          rb.date, 
          rb.start_time, 
          rb.end_time, 
-         rb.created_at, 
          rb.meeting_topic, 
          rh.room_name, 
-         rh.location, 
-      (
-        SELECT GROUP_CONCAT(employee_id SEPARATOR ', ')
-        FROM room_booking_guest
-        WHERE booking_id = rb.id
-      ) AS guest_ids,
-      (
-        SELECT COUNT(employee_id)
-        FROM room_booking_guest
-        WHERE booking_id = rb.id
-      ) AS guestAmount
+         rh.location,
+         (
+            SELECT COUNT(employee_id)
+            FROM room_booking_guest
+            WHERE booking_id = rb.id
+         ) AS guestAmount
       FROM 
          room_booking rb
          INNER JOIN room_header rh ON rb.room_id = rh.id
       WHERE (rb.booker_employee_id = ? OR rb.pic_employee_id = ? OR rb.id IN (
-        SELECT booking_id
-        FROM room_booking_guest
-        WHERE employee_id = ?
+         SELECT booking_id
+         FROM room_booking_guest
+         WHERE employee_id = ?
       )) AND (
          (rb.date < CURRENT_DATE)
          OR (
-             rb.date = CURRENT_DATE 
-             AND rb.start_time < CURRENT_TIME
+            rb.date = CURRENT_DATE 
+            AND rb.start_time < CURRENT_TIME
          )
-     )
+      )
       ORDER BY rb.date DESC, rb.start_time ASC
     `;
       const pastBookings = await db2.query(query, [
@@ -231,6 +201,60 @@ async function getHistoryBookings(employee_id) {
 
       // Convert the date to the desired format for each booking
       const formattedBookings = pastBookings[0].map(async (booking) => {
+         const formattedDate = validation.formatDate(new Date(booking.date));
+
+         return {
+            ...booking,
+            date: formattedDate,
+         };
+      });
+
+      return Promise.all(formattedBookings);
+   } catch (error) {
+      throw error;
+   }
+}
+
+async function getDetailBookings(booking_id) {
+   try {
+      // Retrieve the booking details for the specified booking ID from the database
+      const query = `
+        SELECT 
+          rb.id, 
+          rb.room_id, 
+          rb.booker_employee_id, 
+          rb.pic_employee_id, 
+          rb.date, 
+          rb.start_time, 
+          rb.end_time, 
+          rb.created_at, 
+          rb.meeting_topic, 
+          rh.room_name, 
+          rh.location,
+          (
+            SELECT GROUP_CONCAT(employee_id SEPARATOR ', ')
+            FROM room_booking_guest
+            WHERE booking_id = rb.id
+          ) AS guest_ids,
+          (
+            SELECT COUNT(employee_id)
+            FROM room_booking_guest
+            WHERE booking_id = rb.id
+          ) AS guestAmount
+        FROM 
+          room_booking rb
+          INNER JOIN room_header rh ON rb.room_id = rh.id
+        WHERE 
+          rb.id = ?  -- Select only where rb.id matches the booking_id parameter
+        ORDER BY rb.date ASC, rb.start_time ASC
+      `;
+
+      const activeBookings = await db2.query(query, [
+         booking_id, // Pass the booking_id parameter to the query
+      ]);
+
+      // Convert the date to the desired format for each booking
+      const formattedBookings = activeBookings[0].map(async (booking) => {
          const formattedDate = validation.formatDate(new Date(booking.date));
          const formattedCreatedAt = validation.formatDate(new Date(booking.created_at));
 
@@ -297,6 +321,7 @@ module.exports = {
    getAllEmployees,
    getActiveBookings,
    getHistoryBookings,
+   getDetailBookings,
    getBookingsByRoomAndDate,
    getRoomName,
 };

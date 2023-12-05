@@ -42,15 +42,17 @@ async function getUnreadNotificationCount(employee_id) {
 
 async function getSpecifyNotificationData(employee_id, notification_id) {
    const query = `
-      SELECT id, msg_title, msg_body, is_read, created_at
+      SELECT id, msg_title, msg_body, msg_data, is_read, created_at
       FROM notification_inbox
       WHERE employee_id = ? AND id = ? 
       ORDER BY created_at DESC
    `;
    const result = await db2.query(query, [employee_id, notification_id]);
 
-   if (result.length > 0) {
-      const dateNew = new Date(result[0][0].created_at);
+   if (result.length > 0 && result[0].length > 0) {
+      const notification = result[0][0];
+
+      const dateNew = new Date(notification.created_at);
       const options = {
          day: "2-digit",
          month: "long",
@@ -61,7 +63,12 @@ async function getSpecifyNotificationData(employee_id, notification_id) {
       };
       const formattedDate = dateNew.toLocaleDateString("en-US", options);
 
-      result[0][0].created_at = formattedDate;
+      notification.created_at = formattedDate;
+
+      const msgData = JSON.parse(notification.msg_data);
+      if (msgData.booking_id) {
+         notification.booking_id = msgData.booking_id;
+      }
    }
 
    return result[0];
@@ -95,14 +102,13 @@ async function getGuestDeviceTokens(guestIds) {
    }
 }
 
-async function insertNotification(employee_id, title, body) {
+async function insertNotification(employee_id, title, body, data) {
    const createdAt = new Date();
    const insertQuery = `
-      INSERT INTO notification_inbox (employee_id, msg_title, msg_body, is_read, created_at)
-      VALUES (?, ?, ?, false, ?)
+      INSERT INTO notification_inbox (employee_id, msg_title, msg_body, msg_data, is_read, created_at)
+      VALUES (?, ?, ?, ?, false, ?)
    `;
-   const result = await db2.query(insertQuery, [employee_id, title, body, createdAt]);
-
+   const result = await db2.query(insertQuery, [employee_id, title, body, JSON.stringify(data), createdAt]);
    const fetchQuery = `
       SELECT id FROM notification_inbox
       WHERE employee_id = ?

@@ -12,8 +12,9 @@ admin.initializeApp({
 });
 
 async function sendPushNotificationHandler(req, res) {
-   const { deviceToken, title, body, data } = req.body;
+   const { employee_id, deviceToken, title, body, data } = req.body;
    if (
+      !validation.validateUserInput(employee_id) ||
       !validation.validateUserInput(deviceToken) ||
       !validation.validateUserInput(title) ||
       !validation.validateUserInput(body) ||
@@ -48,7 +49,7 @@ async function sendPushNotificationHandler(req, res) {
    }
 }
 
-async function sendPushNotification(deviceToken, title, data, body, employee_id) {
+async function sendPushNotification(deviceToken, title, body, data, employee_id) {
    if (!deviceToken || !title || !body || !employee_id) {
       throw new Error("Missing required parameters");
    }
@@ -66,11 +67,11 @@ async function sendPushNotification(deviceToken, title, data, body, employee_id)
    };
    try {
       // Insert the notification into the notification_inbox table using the separate model function
-      const notificationId = await notificationModel.insertNotification(employee_id, title, body);
+      const notificationId = await notificationModel.insertNotification(employee_id, title, body, message.data);
 
       // Update the notification message data with the actual notification ID
       message.data.notification_id = notificationId;
-      console.log(message);
+
       // Send the push notification
       await admin.messaging().send(message);
    } catch (error) {

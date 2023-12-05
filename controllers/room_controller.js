@@ -7,10 +7,10 @@ const { HTTP_STATUS, RESPONSE_CODES, RESPONSE_MESSAGES } = require("../utils/glo
 const response = require("../middleware/response");
 
 async function roomBooking(req, res) {
-   const { room_id, booker_employee_id, pic_employee_id, date, start_time, end_time, meeting_topic, guest } = req.body;
+   const { room_id, employee_id, pic_employee_id, date, start_time, end_time, meeting_topic, guest } = req.body;
 
    const room_idValid = validation.validateUserInput(room_id);
-   const booker_employee_idValid = validation.validateUserInput(booker_employee_id);
+   const employee_idValid = validation.validateUserInput(employee_id);
    const pic_employee_idValid = validation.validateUserInput(pic_employee_id);
    const dateValid = validation.validateUserInput(date);
    const start_timeValid = validation.validateUserInput(start_time);
@@ -19,7 +19,7 @@ async function roomBooking(req, res) {
 
    if (
       !room_idValid ||
-      !booker_employee_idValid ||
+      !employee_idValid ||
       !pic_employee_idValid ||
       !dateValid ||
       !start_timeValid ||
@@ -81,7 +81,7 @@ async function roomBooking(req, res) {
          // No guests with device tokens
       } else {
          // Send push notifications to all guests with device tokens
-         const bookerFullName = await userModel.getUserFullName(booker_employee_id);
+         const bookerFullName = await userModel.getUserFullName(employee_id);
          const picFullName = await userModel.getUserFullName(pic_employee_id);
          const roomName = await roomModel.getRoomName(room_id);
 
@@ -91,7 +91,7 @@ async function roomBooking(req, res) {
 
          const insertedRow = await roomModel.insertRoomBooking(
             room_id,
-            booker_employee_id,
+            employee_id,
             pic_employee_id,
             date,
             start_time,
@@ -111,8 +111,8 @@ async function roomBooking(req, res) {
                return notificationController.sendPushNotification(
                   deviceToken,
                   notificationTitle,
-                  notificationData,
                   notificationBody,
+                  notificationData,
                   guestId
                );
             })
@@ -264,6 +264,39 @@ async function getHistoryBooking(req, res) {
    }
 }
 
+async function getDetailBookingHandler(req, res) {
+   const { employee_id, booking_id } = req.body;
+   if (!validation.validateUserInput(employee_id) || !validation.validateUserInput(booking_id)) {
+      response(HTTP_STATUS.BAD_REQUEST, RESPONSE_CODES.INVALID_INPUT, RESPONSE_MESSAGES.INVALID_INPUT, {}, res, req);
+      return;
+   }
+   try {
+      const detailBookings = await roomModel.getDetailBookings(booking_id);
+      if (!detailBookings || !detailBookings.length) {
+         response(HTTP_STATUS.NOT_FOUND, RESPONSE_CODES.NOT_FOUND, RESPONSE_MESSAGES.NOT_FOUND, {}, res, req);
+      } else {
+         response(
+            HTTP_STATUS.OK,
+            RESPONSE_CODES.SUCCESS,
+            "Detail bookings retrieved successfully",
+            detailBookings,
+            res,
+            req
+         );
+      }
+   } catch (error) {
+      console.error("Internal Server Error:", error);
+      response(
+         HTTP_STATUS.INTERNAL_SERVER_ERROR,
+         RESPONSE_CODES.SERVER_ERROR,
+         RESPONSE_MESSAGES.SERVER_ERROR,
+         {},
+         res,
+         req
+      );
+   }
+}
+
 async function getBookingByRoom(req, res) {
    const { employee_id, room_id, date } = req.body;
    if (
@@ -308,6 +341,7 @@ module.exports = {
    getRoom,
    getEmployee,
    getActiveBookingHandler,
+   getDetailBookingHandler,
    getHistoryBooking,
    getBookingByRoom,
 };

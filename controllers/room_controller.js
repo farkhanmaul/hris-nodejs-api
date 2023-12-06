@@ -75,9 +75,8 @@ async function roomBooking(req, res) {
       const roomName = await roomModel.getRoomName(room_id);
 
       const dateNew = new Date(date);
-      const options = { day: "numeric", month: "long", year: "numeric" };
 
-      const formattedDate = dateNew.toLocaleDateString("en-US", options);
+      const formattedDate = validation.formatDate(dateNew);
 
       const insertedRow = await roomModel.insertRoomBooking(
          room_id,

@@ -64,82 +64,78 @@ async function roomBooking(req, res) {
       // Retrieve guest device tokens
 
       let guestDeviceTokens = [];
-      if (guest.length > 0) {
+      if (Array.isArray(guest) && guest.length > 0) {
          const guestIds = guest;
          guestDeviceTokens = await notificationModel.getGuestDeviceTokens(guestIds);
       }
-      // Check if there are any guests with device tokens
-      if (guestDeviceTokens.length === 0) {
-         // No guests with device tokens
-      } else {
-         // Send push notifications to all guests with device tokens
-         const bookerFullName = await userModel.getUserFullName(employee_id);
-         const picFullName = await userModel.getUserFullName(pic_employee_id);
-         const roomName = await roomModel.getRoomName(room_id);
 
-         const dateNew = new Date(date);
-         const options = { day: "numeric", month: "long", year: "numeric" };
+      // Send push notifications to all guests with device tokens
+      const bookerFullName = await userModel.getUserFullName(employee_id);
+      const picFullName = await userModel.getUserFullName(pic_employee_id);
+      const roomName = await roomModel.getRoomName(room_id);
 
-         const formattedDate = dateNew.toLocaleDateString("en-US", options);
+      const dateNew = new Date(date);
+      const options = { day: "numeric", month: "long", year: "numeric" };
 
-         const insertedRow = await roomModel.insertRoomBooking(
-            room_id,
-            employee_id,
-            pic_employee_id,
-            date,
-            start_time,
-            end_time,
-            meeting_topic,
-            guest
-         );
+      const formattedDate = dateNew.toLocaleDateString("en-US", options);
 
-         const template_name = "room_booking";
-         const dynamicNotification = await notificationModel.getDynamicNotificationData(template_name);
+      const insertedRow = await roomModel.insertRoomBooking(
+         room_id,
+         employee_id,
+         pic_employee_id,
+         date,
+         start_time,
+         end_time,
+         meeting_topic,
+         guest
+      );
 
-         const notificationTitle = dynamicNotification.msg_title;
+      const template_name = "room_booking";
+      const dynamicNotification = await notificationModel.getDynamicNotificationData(template_name);
 
-         const variables = [
-            "${date}",
-            "${roomName}",
-            "${bookerFullName}",
-            "${picFullName}",
-            "${formattedDate}",
-            "${start_time}",
-            "${end_time}",
-            "${meeting_topic}",
-         ];
-         const values = [
-            formattedDate,
-            roomName,
-            bookerFullName,
-            picFullName,
-            formattedDate,
-            start_time,
-            end_time,
-            meeting_topic,
-         ];
+      const notificationTitle = dynamicNotification.msg_title;
 
-         let notificationBody = dynamicNotification.msg_body;
+      const variables = [
+         "${date}",
+         "${roomName}",
+         "${bookerFullName}",
+         "${picFullName}",
+         "${formattedDate}",
+         "${start_time}",
+         "${end_time}",
+         "${meeting_topic}",
+      ];
+      const values = [
+         formattedDate,
+         roomName,
+         bookerFullName,
+         picFullName,
+         formattedDate,
+         start_time,
+         end_time,
+         meeting_topic,
+      ];
 
-         variables.forEach((variable, index) => {
-            if (notificationBody.includes(variable)) {
-               notificationBody = notificationBody.replace(variable, values[index]);
-            }
-         });
-         const notificationData = { booking_id: insertedRow.id.toString() };
+      let notificationBody = dynamicNotification.msg_body;
 
-         // Send push notifications to guests with device tokens
-         for (let i = 0; i < guestDeviceTokens.length; i++) {
-            const deviceToken = guestDeviceTokens[i];
-            const guestId = guest[i];
-            await notificationController.sendPushNotification(
-               deviceToken,
-               notificationTitle,
-               notificationBody,
-               notificationData,
-               guestId
-            );
+      variables.forEach((variable, index) => {
+         if (notificationBody.includes(variable)) {
+            notificationBody = notificationBody.replace(variable, values[index]);
          }
+      });
+      const notificationData = { booking_id: insertedRow.id.toString() };
+
+      // Send push notifications to guests with device tokens
+      for (let i = 0; i < guestDeviceTokens.length; i++) {
+         const deviceToken = guestDeviceTokens[i];
+         const guestId = guest[i];
+         await notificationController.sendPushNotification(
+            deviceToken,
+            notificationTitle,
+            notificationBody,
+            notificationData,
+            guestId
+         );
       }
 
       response(HTTP_STATUS.OK, RESPONSE_CODES.SUCCESS, "Room booking created successfully", {}, res, req);

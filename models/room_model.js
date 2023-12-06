@@ -138,17 +138,17 @@ async function getActiveBookings(employee_id) {
          currentTime,
       ]);
 
-      // Convert the date to the desired format for each booking
-      const formattedBookings = activeBookings[0].map(async (booking) => {
+      const formattedBookings = [];
+      for (const booking of activeBookings[0]) {
          const formattedDate = validation.formatDate(new Date(booking.date));
 
-         return {
+         formattedBookings.push({
             ...booking,
             date: formattedDate,
-         };
-      });
+         });
+      }
 
-      return Promise.all(formattedBookings);
+      return formattedBookings;
    } catch (error) {
       throw error;
    }
@@ -199,17 +199,18 @@ async function getHistoryBookings(employee_id) {
          currentTime,
       ]);
 
-      // Convert the date to the desired format for each booking
-      const formattedBookings = pastBookings[0].map(async (booking) => {
+      // Format each booking individually
+      const formattedBookings = [];
+      for (const booking of pastBookings[0]) {
          const formattedDate = validation.formatDate(new Date(booking.date));
 
-         return {
+         formattedBookings.push({
             ...booking,
             date: formattedDate,
-         };
-      });
+         });
+      }
 
-      return Promise.all(formattedBookings);
+      return formattedBookings;
    } catch (error) {
       throw error;
    }
@@ -254,18 +255,25 @@ async function getDetailBookings(booking_id) {
       ]);
 
       // Convert the date to the desired format for each booking
-      const formattedBookings = activeBookings[0].map(async (booking) => {
+      const formattedBookings = [];
+
+      for (const booking of activeBookings[0]) {
          const formattedDate = validation.formatDate(new Date(booking.date));
-         const formattedCreatedAt = validation.formatDate(new Date(booking.created_at));
+         const formattedCreatedAt = validation.formatDateWithHour(new Date(booking.created_at));
 
          const bookerFullName = await userModel.getUserFullName(booking.booker_employee_id);
          const picFullName = await userModel.getUserFullName(booking.pic_employee_id);
 
          // Convert guest IDs to guest full names
          const guestIds = booking.guest_ids ? booking.guest_ids.split(", ") : [];
-         const guestFullNames = await Promise.all(guestIds.map((guestId) => userModel.getUserFullName(guestId)));
+         const guestFullNames = [];
 
-         return {
+         for (const guestId of guestIds) {
+            const guestFullName = await userModel.getUserFullName(guestId);
+            guestFullNames.push(guestFullName);
+         }
+
+         const formattedBooking = {
             ...booking,
             date: formattedDate,
             created_at: formattedCreatedAt,
@@ -273,9 +281,11 @@ async function getDetailBookings(booking_id) {
             pic_employee_fullname: picFullName,
             guest_fullnames: guestFullNames,
          };
-      });
 
-      return Promise.all(formattedBookings);
+         formattedBookings.push(formattedBooking);
+      }
+
+      return formattedBookings;
    } catch (error) {
       throw error;
    }
@@ -283,31 +293,32 @@ async function getDetailBookings(booking_id) {
 
 async function getBookingsByRoomAndDate(room_id, date) {
    try {
-      const query = `SELECT rh.room_name, rb.pic_employee_id, rb.start_time, rb.end_time, rb.meeting_topic
-               FROM room_booking rb
-               JOIN room_header rh ON rh.id = rb.room_id
-               WHERE rb.room_id = ? AND rb.date = ?
-               ORDER BY rb.date ASC, rb.start_time ASC`;
+      const query = `
+      SELECT rh.room_name, rb.pic_employee_id, TIME_FORMAT(rb.start_time, '%H:%i') AS start_time, TIME_FORMAT(rb.end_time, '%H:%i') AS end_time, rb.meeting_topic
+      FROM room_booking rb
+      JOIN room_header rh ON rh.id = rb.room_id
+      WHERE rb.room_id = ? AND rb.date = ?
+      ORDER BY rb.date ASC, rb.start_time ASC
+      `;
       const bookings = await db2.query(query, [room_id, date]);
 
       const transformedBookings = {};
-      const employee_ids = bookings[0].map((booking) => booking.pic_employee_id);
-      const employeeFullNames = await Promise.all(
-         employee_ids.map((employee_id) => userModel.getUserFullName(employee_id))
-      );
 
-      bookings[0].forEach((booking, index) => {
+      for (const booking of bookings[0]) {
+         const employeeFullNames = await userModel.getUserFullName(booking.pic_employee_id);
+
          if (!transformedBookings[date]) {
             transformedBookings[date] = [];
          }
+
          transformedBookings[date].push({
             room_name: booking.room_name,
             meeting_topic: booking.meeting_topic,
             start_time: booking.start_time,
             end_time: booking.end_time,
-            pic_employee_fullname: employeeFullNames[index],
+            pic_employee_fullname: employeeFullNames,
          });
-      });
+      }
 
       return transformedBookings;
    } catch (error) {

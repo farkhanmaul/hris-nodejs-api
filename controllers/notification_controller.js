@@ -61,7 +61,7 @@ async function sendPushNotification(deviceToken, title, body, data, employee_id)
       },
       data: {
          ...data,
-         notification_id: "0", // Placeholder for the notification ID
+         notification_id: "", // Placeholder for the notification ID
       },
       token: deviceToken,
    };

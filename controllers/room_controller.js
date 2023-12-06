@@ -128,18 +128,17 @@ async function roomBooking(req, res) {
          const notificationData = { booking_id: insertedRow.id.toString() };
 
          // Send push notifications to guests with device tokens
-         await Promise.all(
-            guestDeviceTokens.map((deviceToken, index) => {
-               const guestId = guest[index];
-               return notificationController.sendPushNotification(
-                  deviceToken,
-                  notificationTitle,
-                  notificationBody,
-                  notificationData,
-                  guestId
-               );
-            })
-         );
+         for (let i = 0; i < guestDeviceTokens.length; i++) {
+            const deviceToken = guestDeviceTokens[i];
+            const guestId = guest[i];
+            await notificationController.sendPushNotification(
+               deviceToken,
+               notificationTitle,
+               notificationBody,
+               notificationData,
+               guestId
+            );
+         }
       }
 
       response(HTTP_STATUS.OK, RESPONSE_CODES.SUCCESS, "Room booking created successfully", {}, res, req);

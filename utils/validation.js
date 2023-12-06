@@ -28,6 +28,18 @@ function formatDate(date) {
    return date.toLocaleDateString("en-US", options);
 }
 
+function formatDateWithHour(date) {
+   const options = {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+   };
+   return date.toLocaleDateString("en-US", options);
+}
+
 function validateUserInput(userInput) {
    if (userInput === null || userInput === undefined || userInput === "") {
       return false;
@@ -51,4 +63,5 @@ module.exports = {
    generateOTP,
    generateRandomToken,
    formatDate,
+   formatDateWithHour,
 };

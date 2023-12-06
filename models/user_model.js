@@ -197,7 +197,7 @@ async function getUserFullName(employee_id) {
 
 async function insertUserDeviceId(employee_id, deviceId) {
    const selectQuery = `SELECT COUNT(*) AS count FROM user_device WHERE employee_id = ?`;
-   const insertQuery = `INSERT INTO user_device (employee_id, device_id, inserted_at, updated_at) VALUES (?, ?, ?, ?)`;
+   const insertQuery = `INSERT INTO user_device (employee_id, device_id, created_at, updated_at) VALUES (?, ?, ?, ?)`;
    const updateQuery = `UPDATE user_device SET device_id = ?, updated_at = ? WHERE employee_id = ?`;
    const created_at = new Date();
 

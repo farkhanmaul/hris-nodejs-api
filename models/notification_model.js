@@ -1,4 +1,5 @@
 const db2 = require("../config/database2");
+const validation = require("../utils/validation");
 
 async function getNotificationData(employee_id) {
    const query = `
@@ -11,15 +12,7 @@ async function getNotificationData(employee_id) {
 
    if (result.length > 0) {
       result[0].forEach((notification) => {
-         const createdAt = new Date(notification.created_at);
-         const formattedDate = createdAt.toLocaleDateString("en-US", {
-            day: "2-digit",
-            month: "long",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: true,
-         });
+         const formattedDate = validation.formatDateWithHour(notification.created_at);
 
          notification.created_at = formattedDate;
       });
@@ -52,17 +45,7 @@ async function getSpecifyNotificationData(employee_id, notification_id) {
    if (result.length > 0 && result[0].length > 0) {
       const notification = result[0][0];
 
-      const dateNew = new Date(notification.created_at);
-      const options = {
-         day: "2-digit",
-         month: "long",
-         year: "numeric",
-         hour: "2-digit",
-         minute: "2-digit",
-         hour12: true,
-      };
-      const formattedDate = dateNew.toLocaleDateString("en-US", options);
-
+      const formattedDate = validation.formatDateWithHour(notification.created_at);
       notification.created_at = formattedDate;
 
       const msgData = JSON.parse(notification.msg_data);
@@ -76,17 +59,17 @@ async function getSpecifyNotificationData(employee_id, notification_id) {
 
 async function storeFirebaseToken(employee_id, firebaseToken) {
    const selectQuery = `SELECT COUNT(*) AS count FROM user_fbtoken WHERE employee_id = ?`;
-   const updateQuery = `UPDATE user_fbtoken SET token = ?, created_at = ?, is_active = true WHERE employee_id = ?`;
+   const updateQuery = `UPDATE user_fbtoken SET token = ?, updated_at = ?, is_active = true WHERE employee_id = ?`;
    const insertQuery = `INSERT INTO user_fbtoken (employee_id, token, created_at, is_active) VALUES (?, ?, ?, true)`;
-   const created_at = new Date();
+   const date = new Date();
 
    const [rows] = await db2.query(selectQuery, [employee_id]);
    const count = rows[0].count;
 
    if (count > 0) {
-      await db2.query(updateQuery, [firebaseToken, created_at, employee_id]);
+      await db2.query(updateQuery, [firebaseToken, date, employee_id]);
    } else {
-      await db2.query(insertQuery, [employee_id, firebaseToken, created_at]);
+      await db2.query(insertQuery, [employee_id, firebaseToken, date]);
    }
 }
 

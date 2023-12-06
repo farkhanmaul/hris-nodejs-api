@@ -72,14 +72,7 @@ async function getAttendanceClock(req, res) {
       !validation.validateUserInput(date) ||
       !validation.validateUserInput(action)
    ) {
-      response(
-         HTTP_STATUS.BAD_REQUEST,
-         RESPONSE_MESSAGES.INVALID_INPUT,
-         "User input contains potentially malicious characters",
-         null,
-         res,
-         req
-      );
+      response(HTTP_STATUS.BAD_REQUEST, RESPONSE_CODES.INVALID_INPUT, RESPONSE_MESSAGES.INVALID_INPUT, {}, res, req);
       return;
    }
    try {

@@ -236,12 +236,7 @@ async function getDetailBookings(booking_id) {
             SELECT GROUP_CONCAT(employee_id SEPARATOR ', ')
             FROM room_booking_guest
             WHERE booking_id = rb.id
-          ) AS guest_ids,
-          (
-            SELECT COUNT(employee_id)
-            FROM room_booking_guest
-            WHERE booking_id = rb.id
-          ) AS guest_amount
+          ) AS guest_ids
         FROM 
           room_booking rb
           INNER JOIN room_header rh ON rb.room_id = rh.id

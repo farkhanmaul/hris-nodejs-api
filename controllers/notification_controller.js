@@ -94,7 +94,7 @@ async function getNotificationInbox(req, res) {
             HTTP_STATUS.NOT_FOUND,
             RESPONSE_CODES.NOT_FOUND,
             "No notifications found for the specified employee ID",
-            null,
+            {},
             res,
             req
          );
@@ -114,7 +114,7 @@ async function getNotificationInbox(req, res) {
          HTTP_STATUS.INTERNAL_SERVER_ERROR,
          RESPONSE_CODES.SERVER_ERROR,
          "Failed to retrieve notification data",
-         null,
+         {},
          res,
          req
       );
@@ -185,7 +185,7 @@ async function getUnreadNotificationCountHandler(req, res) {
          HTTP_STATUS.INTERNAL_SERVER_ERROR,
          RESPONSE_CODES.SERVER_ERROR,
          "Failed to retrieve unread notification count",
-         null,
+         {},
          res,
          req
       );
@@ -206,7 +206,7 @@ async function markNotificationAsRead(req, res) {
             HTTP_STATUS.NOT_FOUND,
             RESPONSE_CODES.NOT_FOUND,
             "Notification not found or already marked as read",
-            null,
+            {},
             res,
             req
          );
@@ -219,7 +219,7 @@ async function markNotificationAsRead(req, res) {
          HTTP_STATUS.INTERNAL_SERVER_ERROR,
          RESPONSE_CODES.SERVER_ERROR,
          "Failed to mark notification as read",
-         null,
+         {},
          res,
          req
       );

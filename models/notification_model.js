@@ -12,7 +12,7 @@ async function getNotificationData(employee_id) {
 
    if (result.length > 0) {
       result[0].forEach((notification) => {
-         const formattedDate = validation.formatDateWithHour(notification.created_at);
+         const formattedDate = validation.formatDateToPastFormat(notification.created_at);
 
          notification.created_at = formattedDate;
       });

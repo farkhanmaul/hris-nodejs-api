@@ -161,14 +161,7 @@ async function getRoom(req, res) {
       const result = await roomModel.getRoomData();
 
       if (!result) {
-         response(
-            HTTP_STATUS.NOT_FOUND,
-            RESPONSE_CODES.NOT_FOUND,
-            "No room found with the specified ID",
-            null,
-            res,
-            req
-         );
+         response(HTTP_STATUS.NOT_FOUND, RESPONSE_CODES.NOT_FOUND, "No room found", {}, res, req);
       } else {
          response(HTTP_STATUS.OK, RESPONSE_CODES.SUCCESS, "Room data retrieved successfully", result, res, req);
       }
@@ -178,7 +171,7 @@ async function getRoom(req, res) {
          HTTP_STATUS.INTERNAL_SERVER_ERROR,
          RESPONSE_CODES.SERVER_ERROR,
          "Failed to retrieve room data",
-         null,
+         {},
          res,
          req
       );

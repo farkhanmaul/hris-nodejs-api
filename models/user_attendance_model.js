@@ -49,7 +49,7 @@ async function getClockTimeData(employee_id, date, action) {
 }
 
 async function getHistoryAttendanceData(employee_id, start_date, end_date) {
-   const query = `SELECT employee_id, longitude, altitude, latitude, datetime, location_name, action, notes FROM user_attendance WHERE employee_id = ? AND datetime >= ? AND datetime <= ? ORDER BY datetime DESC`;
+   const query = `SELECT employee_id, datetime, action FROM user_attendance WHERE employee_id = ? AND datetime >= ? AND datetime <= ? ORDER BY datetime DESC`;
    const result = await db2.query(query, [employee_id, start_date, end_date]);
    return result[0];
 }

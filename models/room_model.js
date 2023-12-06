@@ -101,8 +101,8 @@ async function getActiveBookings(employee_id) {
         SELECT 
           rb.id, 
           rb.date, 
-          rb.start_time, 
-          rb.end_time, 
+          TIME_FORMAT(rb.start_time, '%H:%i') AS start_time, 
+          TIME_FORMAT(rb.end_time, '%H:%i') AS end_time, 
           rb.meeting_topic, 
           rh.room_name, 
           rh.location,
@@ -110,7 +110,7 @@ async function getActiveBookings(employee_id) {
             SELECT COUNT(employee_id)
             FROM room_booking_guest
             WHERE booking_id = rb.id
-          ) AS guestAmount
+          ) AS guest_amount
         FROM 
           room_booking rb
           INNER JOIN room_header rh ON rb.room_id = rh.id
@@ -165,8 +165,8 @@ async function getHistoryBookings(employee_id) {
       SELECT 
          rb.id, 
          rb.date, 
-         rb.start_time, 
-         rb.end_time, 
+         TIME_FORMAT(rb.start_time, '%H:%i') AS start_time, 
+         TIME_FORMAT(rb.end_time, '%H:%i') AS end_time, 
          rb.meeting_topic, 
          rh.room_name, 
          rh.location,
@@ -174,7 +174,7 @@ async function getHistoryBookings(employee_id) {
             SELECT COUNT(employee_id)
             FROM room_booking_guest
             WHERE booking_id = rb.id
-         ) AS guestAmount
+         ) AS guest_amount
       FROM 
          room_booking rb
          INNER JOIN room_header rh ON rb.room_id = rh.id
@@ -225,9 +225,9 @@ async function getDetailBookings(booking_id) {
           rb.booker_employee_id, 
           rb.pic_employee_id, 
           rb.date, 
-          rb.start_time, 
-          rb.end_time, 
-          rb.created_at, 
+          TIME_FORMAT(rb.start_time, '%H:%i') AS start_time, 
+          TIME_FORMAT(rb.end_time, '%H:%i') AS end_time, 
+          rb.created_at,
           rb.meeting_topic, 
           rh.room_name, 
           rh.location,
@@ -240,12 +240,12 @@ async function getDetailBookings(booking_id) {
             SELECT COUNT(employee_id)
             FROM room_booking_guest
             WHERE booking_id = rb.id
-          ) AS guestAmount
+          ) AS guest_amount
         FROM 
           room_booking rb
           INNER JOIN room_header rh ON rb.room_id = rh.id
         WHERE 
-          rb.id = ?  -- Select only where rb.id matches the booking_id parameter
+          rb.id = ?  
         ORDER BY rb.date ASC, rb.start_time ASC
       `;
 

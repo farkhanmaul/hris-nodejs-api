@@ -6,9 +6,7 @@ const response = require("../middleware/response");
 async function getClaimCompleted(req, res) {
    const { employee_id } = req.body;
 
-   const isInputValid = validation.validateUserInput(employee_id);
-
-   if (!isInputValid) {
+   if (!validation.validateUserInput(employee_id)) {
       response(HTTP_STATUS.BAD_REQUEST, RESPONSE_CODES.INVALID_INPUT, RESPONSE_MESSAGES.INVALID_INPUT, {}, res, req);
       return;
    }
@@ -44,9 +42,7 @@ async function getClaimCompleted(req, res) {
 async function getClaimRejected(req, res) {
    const { employee_id } = req.body;
 
-   const isInputValid = validation.validateUserInput(employee_id);
-
-   if (!isInputValid) {
+   if (!validation.validateUserInput(employee_id)) {
       response(HTTP_STATUS.BAD_REQUEST, RESPONSE_CODES.INVALID_INPUT, RESPONSE_MESSAGES.INVALID_INPUT, {}, res, req);
       return;
    }
@@ -82,9 +78,7 @@ async function getClaimRejected(req, res) {
 async function getClaimOnProgress(req, res) {
    const { employee_id } = req.body;
 
-   const isInputValid = validation.validateUserInput(employee_id);
-
-   if (!isInputValid) {
+   if (!validation.validateUserInput(employee_id)) {
       response(HTTP_STATUS.BAD_REQUEST, RESPONSE_CODES.INVALID_INPUT, RESPONSE_MESSAGES.INVALID_INPUT, {}, res, req);
       return;
    }
@@ -120,9 +114,7 @@ async function getClaimOnProgress(req, res) {
 async function getClaimDetail(req, res) {
    const { employee_id, RequestFormId } = req.body;
 
-   const isInputValid = validation.validateUserInput(employee_id);
-
-   if (!isInputValid) {
+   if (!validation.validateUserInput(employee_id)) {
       response(HTTP_STATUS.BAD_REQUEST, RESPONSE_CODES.INVALID_INPUT, RESPONSE_MESSAGES.INVALID_INPUT, {}, res, req);
       return;
    }
@@ -158,9 +150,7 @@ async function getClaimDetail(req, res) {
 async function getMedicalPlafonds(req, res) {
    const { employee_id } = req.body;
 
-   const isInputValid = validation.validateUserInput(employee_id);
-
-   if (!isInputValid) {
+   if (!validation.validateUserInput(employee_id)) {
       response(HTTP_STATUS.BAD_REQUEST, RESPONSE_CODES.INVALID_INPUT, RESPONSE_MESSAGES.INVALID_INPUT, {}, res, req);
       return;
    }

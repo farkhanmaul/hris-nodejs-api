@@ -10,9 +10,7 @@ const response = require("../middleware/response");
 async function loginEmail(req, res) {
    const { employee_id } = req.body;
 
-   const isEmployeeIdValid = validation.validateUserInput(employee_id);
-
-   if (!isEmployeeIdValid) {
+   if (!validation.validateUserInput(employee_id)) {
       response(HTTP_STATUS.BAD_REQUEST, RESPONSE_CODES.INVALID_INPUT, RESPONSE_MESSAGES.INVALID_INPUT, {}, res, req);
       return;
    }
@@ -53,9 +51,7 @@ async function loginEmail(req, res) {
 async function loginWA(req, res) {
    const { employee_id } = req.body;
 
-   const isEmployeeIdValid = validation.validateUserInput(employee_id);
-
-   if (!isEmployeeIdValid) {
+   if (!validation.validateUserInput(employee_id)) {
       response(HTTP_STATUS.BAD_REQUEST, RESPONSE_CODES.INVALID_INPUT, RESPONSE_MESSAGES.INVALID_INPUT, {}, res, req);
       return;
    }
@@ -137,9 +133,7 @@ async function logout(req, res) {
 
    const { employee_id } = req.body;
 
-   const isInputValid = validation.validateUserInput(employee_id);
-
-   if (!isInputValid) {
+   if (!validation.validateUserInput(employee_id)) {
       response(HTTP_STATUS.BAD_REQUEST, RESPONSE_CODES.INVALID_INPUT, RESPONSE_MESSAGES.INVALID_INPUT, {}, res, req);
       return;
    }
@@ -251,9 +245,7 @@ async function verifyTokenHandler(req, res, next) {
 async function getProfile(req, res) {
    const { employee_id } = req.body;
 
-   const isInputValid = validation.validateUserInput(employee_id);
-
-   if (!isInputValid) {
+   if (!validation.validateUserInput(employee_id)) {
       response(HTTP_STATUS.BAD_REQUEST, RESPONSE_CODES.INVALID_INPUT, RESPONSE_MESSAGES.INVALID_INPUT, {}, res, req);
       return;
    }
@@ -299,9 +291,7 @@ async function getProfile(req, res) {
 async function getVersion(req, res) {
    const { employee_id } = req.body;
 
-   const isInputValid = validation.validateUserInput(employee_id);
-
-   if (!isInputValid) {
+   if (!validation.validateUserInput(employee_id)) {
       response(HTTP_STATUS.BAD_REQUEST, RESPONSE_CODES.INVALID_INPUT, RESPONSE_MESSAGES.INVALID_INPUT, {}, res, req);
       return;
    }

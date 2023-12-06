@@ -6,16 +6,12 @@ const { HTTP_STATUS, RESPONSE_CODES, RESPONSE_MESSAGES } = require("../utils/glo
 
 async function verifyToken(req, res, next) {
    const apiKey = req.headers["x-api-key"];
-   // const { employee_id } = req.body;
 
    if (!apiKey) {
       return response(HTTP_STATUS.UNAUTHORIZED, "90", "Unauthorized", {}, res, req);
    }
 
-   // const isEmployeeIdValid = validation.validateUserInput(employee_id);
-   const isAPIKeyValid = validation.validateUserInput(apiKey);
-
-   if (!isAPIKeyValid) {
+   if (!validation.validateUserInput(apiKey)) {
       response(HTTP_STATUS.BAD_REQUEST, RESPONSE_CODES.INVALID_INPUT, RESPONSE_MESSAGES.INVALID_INPUT, {}, res, req);
       return;
    }

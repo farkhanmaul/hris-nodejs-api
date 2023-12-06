@@ -9,22 +9,14 @@ const response = require("../middleware/response");
 async function roomBooking(req, res) {
    const { room_id, employee_id, pic_employee_id, date, start_time, end_time, meeting_topic, guest } = req.body;
 
-   const room_idValid = validation.validateUserInput(room_id);
-   const employee_idValid = validation.validateUserInput(employee_id);
-   const pic_employee_idValid = validation.validateUserInput(pic_employee_id);
-   const dateValid = validation.validateUserInput(date);
-   const start_timeValid = validation.validateUserInput(start_time);
-   const end_timeValid = validation.validateUserInput(end_time);
-   const meeting_topicValid = validation.validateUserInput(meeting_topic);
-
    if (
-      !room_idValid ||
-      !employee_idValid ||
-      !pic_employee_idValid ||
-      !dateValid ||
-      !start_timeValid ||
-      !end_timeValid ||
-      !meeting_topicValid
+      !validation.validateUserInput(room_id) ||
+      !validation.validateUserInput(employee_id) ||
+      !validation.validateUserInput(pic_employee_id) ||
+      !validation.validateUserInput(date) ||
+      !validation.validateUserInput(start_time) ||
+      !validation.validateUserInput(end_time) ||
+      !validation.validateUserInput(meeting_topic)
    ) {
       response(HTTP_STATUS.BAD_REQUEST, RESPONSE_CODES.INVALID_INPUT, RESPONSE_MESSAGES.INVALID_INPUT, {}, res, req);
       return;
@@ -100,8 +92,39 @@ async function roomBooking(req, res) {
             guest
          );
 
-         const notificationTitle = "Meeting Reminder";
-         const notificationBody = `Invitation: Room booking confirmed for ${date}. Room : ${roomName}. Booker: ${bookerFullName}. PIC: ${picFullName}. Meeting: ${formattedDate}, ${start_time}-${end_time}. Topic: ${meeting_topic}. Thank you!`;
+         const template_name = "room_booking";
+         const dynamicNotification = await notificationModel.getDynamicNotificationData(template_name);
+
+         const notificationTitle = dynamicNotification.msg_title;
+
+         const variables = [
+            "${date}",
+            "${roomName}",
+            "${bookerFullName}",
+            "${picFullName}",
+            "${formattedDate}",
+            "${start_time}",
+            "${end_time}",
+            "${meeting_topic}",
+         ];
+         const values = [
+            formattedDate,
+            roomName,
+            bookerFullName,
+            picFullName,
+            formattedDate,
+            start_time,
+            end_time,
+            meeting_topic,
+         ];
+
+         let notificationBody = dynamicNotification.msg_body;
+
+         variables.forEach((variable, index) => {
+            if (notificationBody.includes(variable)) {
+               notificationBody = notificationBody.replace(variable, values[index]);
+            }
+         });
          const notificationData = { booking_id: insertedRow.id.toString() };
 
          // Send push notifications to guests with device tokens
@@ -279,7 +302,7 @@ async function getDetailBookingHandler(req, res) {
             HTTP_STATUS.OK,
             RESPONSE_CODES.SUCCESS,
             "Detail bookings retrieved successfully",
-            detailBookings,
+            detailBookings[0],
             res,
             req
          );

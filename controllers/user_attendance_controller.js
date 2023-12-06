@@ -11,22 +11,14 @@ const path = require("path");
 async function attendance(req, res) {
    const { employee_id, longitude, altitude, latitude, location_name, action, notes } = req.body;
 
-   const employee_idValid = validation.validateUserInput(employee_id);
-   const longitudeValid = validation.validateUserInput(longitude);
-   const altitudeValid = validation.validateUserInput(altitude);
-   const latitudeValid = validation.validateUserInput(latitude);
-   const location_nameValid = validation.validateUserInput(location_name);
-   const actionValid = validation.validateUserInput(action);
-   const notesValid = validation.validateUserInput(notes);
-
    if (
-      !employee_idValid ||
-      !longitudeValid ||
-      !altitudeValid ||
-      !latitudeValid ||
-      !location_nameValid ||
-      !actionValid ||
-      !notesValid
+      !validation.validateUserInput(employee_id) ||
+      !validation.validateUserInput(longitude) ||
+      !validation.validateUserInput(altitude) ||
+      !validation.validateUserInput(latitude) ||
+      !validation.validateUserInput(location_name) ||
+      !validation.validateUserInput(action) ||
+      !validation.validateUserInput(notes)
    ) {
       // Handle the case where any of the user inputs are potentially malicious
       response(HTTP_STATUS.BAD_REQUEST, RESPONSE_CODES.INVALID_INPUT, RESPONSE_MESSAGES.INVALID_INPUT, {}, res, req);
@@ -316,9 +308,7 @@ async function getAttendanceToday(req, res) {
 async function getAttendanceRecent(req, res) {
    const { employee_id } = req.body;
 
-   const isInputValid = validation.validateUserInput(employee_id);
-
-   if (!isInputValid) {
+   if (!validation.validateUserInput(employee_id)) {
       response(HTTP_STATUS.BAD_REQUEST, RESPONSE_CODES.INVALID_INPUT, RESPONSE_MESSAGES.INVALID_INPUT, {}, res, req);
       return;
    }

@@ -76,8 +76,8 @@ async function getSpecifyNotificationData(employee_id, notification_id) {
 
 async function storeFirebaseToken(employee_id, firebaseToken) {
    const selectQuery = `SELECT COUNT(*) AS count FROM user_fbtoken WHERE employee_id = ?`;
-   const insertQuery = `INSERT INTO user_fbtoken (employee_id, token, created_at, is_active) VALUES (?, ?, ?, true)`;
    const updateQuery = `UPDATE user_fbtoken SET token = ?, created_at = ?, is_active = true WHERE employee_id = ?`;
+   const insertQuery = `INSERT INTO user_fbtoken (employee_id, token, created_at, is_active) VALUES (?, ?, ?, true)`;
    const created_at = new Date();
 
    const [rows] = await db2.query(selectQuery, [employee_id]);
@@ -115,10 +115,9 @@ async function insertNotification(employee_id, title, body, data) {
       ORDER BY created_at DESC
       LIMIT 1
    `;
+
    const fetchedResult = await db2.query(fetchQuery, [employee_id]);
-
    const newestId = fetchedResult[0][0].id.toString();
-
    return newestId;
 }
 
@@ -132,6 +131,18 @@ async function markNotificationAsRead(notification_id) {
    return result;
 }
 
+async function getDynamicNotificationData(templateName) {
+   try {
+      const query = "SELECT msg_title, msg_body FROM notification_template WHERE template_name = ? LIMIT 1;";
+      const result = await db2.query(query, [templateName]);
+
+      return result[0][0];
+   } catch (error) {
+      console.error("Error fetching dynamic notification data:", error);
+      throw error;
+   }
+}
+
 module.exports = {
    getNotificationData,
    getSpecifyNotificationData,
@@ -140,4 +151,5 @@ module.exports = {
    storeFirebaseToken,
    insertNotification,
    markNotificationAsRead,
+   getDynamicNotificationData,
 };

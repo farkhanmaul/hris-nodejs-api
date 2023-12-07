@@ -122,7 +122,17 @@ async function roomBooking(req, res) {
             notificationBody = notificationBody.replace(variable, values[index]);
          }
       });
-      const notificationData = { booking_id: insertedRow.id.toString() };
+      const notificationData = {
+         booking_id: insertedRow.id.toString(),
+         date: formattedDate,
+         room_name: roomName,
+         booker: bookerFullName,
+         pic: picFullName,
+         meeting_date: formattedDate,
+         start_time: start_time,
+         end_time: end_time,
+         meeting_topic: meeting_topic,
+      };
 
       // Send push notifications to guests with device tokens
       for (let i = 0; i < guestDeviceTokens.length; i++) {

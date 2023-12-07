@@ -35,22 +35,34 @@ async function getUnreadNotificationCount(employee_id) {
 
 async function getSpecifyNotificationData(employee_id, notification_id) {
    const query = `
-      SELECT id, msg_title, msg_body, msg_data, is_read, created_at
-      FROM notification_inbox
-      WHERE employee_id = ? AND id = ? 
-      ORDER BY created_at DESC
+     SELECT id, msg_title, msg_body, msg_data, is_read, created_at
+     FROM notification_inbox
+     WHERE employee_id = ? AND id = ?
+     ORDER BY created_at DESC
    `;
    const result = await db2.query(query, [employee_id, notification_id]);
 
    if (result.length > 0 && result[0].length > 0) {
       const notification = result[0][0];
-
       const formattedDate = validation.formatDateWithHour(notification.created_at);
       notification.created_at = formattedDate;
+
       const msgData = JSON.parse(notification.msg_data);
-      if (msgData && msgData.booking_id) {
-         notification.booking_id = msgData.booking_id;
+      if (msgData) {
+         Object.assign(msgData, {
+            booking_id: msgData.booking_id,
+            date: msgData.date,
+            room_name: msgData.room_name,
+            booker: msgData.booker,
+            pic: msgData.pic,
+            meeting_date: msgData.meeting_date,
+            start_time: msgData.start_time,
+            end_time: msgData.end_time,
+            meeting_topic: msgData.meeting_topic,
+         });
       }
+
+      notification.msg_data = msgData;
    }
 
    return result[0];

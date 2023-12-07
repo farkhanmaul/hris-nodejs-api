@@ -3,3 +3,4 @@ node_modules/
 .vscode/
 public/uploads/attendance_photos/*
 acamobiled-firebase-adminsdk.json
+.VSCodeCounter/

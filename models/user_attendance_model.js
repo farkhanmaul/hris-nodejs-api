@@ -23,10 +23,9 @@ async function recordEmployeePresence(
       notes,
    ]);
 
-   // Fetch the inserted row from the database using the attendance_id
    const fetchQuery = `SELECT id FROM user_attendance WHERE employee_id = ? AND action = ? ORDER BY id DESC LIMIT 1`;
    const fetchedResult = await db2.query(fetchQuery, [employee_id, action]);
-   // Return the inserted row's data
+
    return fetchedResult[0][0];
 }
 

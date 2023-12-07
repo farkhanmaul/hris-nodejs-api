@@ -3,7 +3,6 @@ const validation = require("../utils/validation");
 const { HTTP_STATUS, RESPONSE_CODES, RESPONSE_MESSAGES } = require("../utils/globals.js");
 const response = require("../middleware/response");
 
-// login endpoint
 async function loginEmailPortal(req, res) {
    const { employee_id } = req.body;
 
@@ -71,7 +70,6 @@ async function loginWAPortal(req, res) {
             const no_hp1 = result.MobilePhone1;
             const no_hp2 = result.MobilePhone2;
 
-            // no hp tujuan
             let destination = "";
 
             if (no_hp1) {
@@ -79,7 +77,6 @@ async function loginWAPortal(req, res) {
             } else if (no_hp2) {
                destination = no_hp2;
             } else {
-               // Mobile phone not found
                response(HTTP_STATUS.NOT_FOUND, "03", "Mobile phone not found, Please Contact HRD.", {}, res, req);
                return;
             }
@@ -145,20 +142,16 @@ async function verifyOTPportal(req, res) {
       const result = await portalModel.getUserOTPportal(employee_id);
 
       if (!result || result.length === 0 || result[0].length === 0) {
-         // Employee ID not found in user_otp table
          response(HTTP_STATUS.NOT_FOUND, RESPONSE_CODES.NOT_FOUND, "Employee ID not found", {}, res, req);
       } else {
          const { otp: storedOTP, expired_at } = result[0][0];
 
-         // Check if OTP is expired
          if (new Date() > new Date(expired_at)) {
             response(HTTP_STATUS.FORBIDDEN, "02", "OTP has expired", {}, res, req);
          } else {
-            // Verify the OTP (case-insensitive and ignore leading/trailing white spaces)
             if (otp === storedOTP) {
                response(HTTP_STATUS.OK, RESPONSE_CODES.SUCCESS, "OTP verified", {}, res, req);
             } else {
-               // OTP is incorrect
                response(HTTP_STATUS.NOT_FOUND, "03", "OTP is incorrect", {}, res, req);
             }
          }

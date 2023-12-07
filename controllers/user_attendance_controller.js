@@ -20,14 +20,12 @@ async function attendance(req, res) {
       !validation.validateUserInput(action) ||
       !validation.validateUserInput(notes)
    ) {
-      // Handle the case where any of the user inputs are potentially malicious
       response(HTTP_STATUS.BAD_REQUEST, RESPONSE_CODES.INVALID_INPUT, RESPONSE_MESSAGES.INVALID_INPUT, {}, res, req);
-      return; // Return early to prevent further processing
+      return;
    }
 
    try {
       const datetime = new Date();
-
       const insertedRow = await userAttendanceModel.recordEmployeePresence(
          employee_id,
          longitude,
@@ -43,7 +41,6 @@ async function attendance(req, res) {
          id: insertedRow.id,
       };
 
-      // Send the success response with the inserted row's data
       response(
          HTTP_STATUS.OK,
          RESPONSE_CODES.SUCCESS,
@@ -154,7 +151,7 @@ async function getAttendanceHistory(req, res) {
             res,
             req
          );
-         return; // Exit the function if no data found
+         return;
       }
 
       const attendanceByDay = {};
@@ -335,11 +332,11 @@ async function getAttendanceRecent(req, res) {
       const forceAttendancePhoto = "force_attendance_photo";
       const attendancePhotoStatus = await globalModel.specificSelectGlobalVariables(forceAttendancePhoto);
 
-      // Get the global variable  values
+      // Get the global variable onlyClockIn values
       const onlyClockIn = "only_clock_in";
       const onlyClockInStatus = await globalModel.specificSelectGlobalVariables(onlyClockIn);
 
-      // Get action if Only Clock In
+      // Pass action if Only Clock In
       let actionOnlyClockIn;
       if (onlyClockInStatus.value === "ON") {
          actionOnlyClockIn = "Clock In";
@@ -347,7 +344,7 @@ async function getAttendanceRecent(req, res) {
          actionOnlyClockIn = null;
       }
 
-      // Get the global variable  values
+      // Get the global variable intervalBookingTime values
       const intervalBookingTime = "interval_booking_time";
       const intervalStatus = await globalModel.specificSelectGlobalVariables(intervalBookingTime);
 
@@ -384,15 +381,14 @@ async function getAttendanceRecent(req, res) {
    }
 }
 
-// Multer configuration
 const storage = multer.diskStorage({
    destination: async (req, file, cb) => {
       try {
-         // Get the global variable values
-         const globalVariable = "destination_attendance_photo";
+         // Get the global variable for destination_attendance_photo values
+         const destinationAttendancePhoto = "destination_attendance_photo";
          let destination;
          try {
-            destination = await globalModel.specificSelectGlobalVariables(globalVariable);
+            destination = await globalModel.specificSelectGlobalVariables(destinationAttendancePhoto);
          } catch (error) {
             destination = { value: "./uploads/" };
          }
@@ -485,11 +481,7 @@ async function saveAttendancePhotoMulter(req, res) {
          try {
             const filePath = req.file.path; // Get the path of the uploaded photo
 
-            await userAttendanceModel.insertEmployeePhoto(
-               employee_id,
-               filePath,
-               id // Pass the file path to the insertEmployeePhoto function
-            );
+            await userAttendanceModel.insertEmployeePhoto(employee_id, filePath, id);
             response(HTTP_STATUS.OK, RESPONSE_CODES.SUCCESS, "Attendance photo saved successfully", {}, res, req);
          } catch (error) {
             console.error("Internal Server Error:", error);

@@ -90,7 +90,7 @@ async function getUserOTP(employee_id) {
 async function insertUserToken(employee_id, token, expirationDate) {
    const insertQuery = `INSERT INTO user_token (employee_id, token, expired_at, is_active, created_at) VALUES (?, ?, ?, ?, ?)`;
 
-   const created_at = new Date(); // Current datetime value for the created_at column
+   const created_at = new Date();
 
    await db2.query(insertQuery, [employee_id, token, expirationDate, true, created_at]);
 }
@@ -167,7 +167,7 @@ async function sendOTPbyWhatsApp(email, otp, expired_at, employee_id, created_at
       const insertQuery = `INSERT INTO user_otp (email, otp, expired_at, employee_id, created_at, no_hp) VALUES (?, ?, ?, ?, ?, ?)`;
       await db2.query(insertQuery, [email, otp, expired_at, employee_id, created_at, destination]);
 
-      // This Code For Send OTP, Hapus jika tidak perlu
+      // This Code For Send OTP, please comment if you don't want to use it
       const response = await axios.post(url, data, { headers });
       return response;
    } catch (error) {

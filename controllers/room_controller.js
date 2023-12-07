@@ -25,16 +25,16 @@ async function roomBooking(req, res) {
    const bookingDate = new Date(date);
    const dayOfWeek = bookingDate.getDay();
 
-   // Check if the booking date is a weekend (Saturday or Sunday)
+   // Check if the booking date is a Sunday
    if (dayOfWeek === 0) {
-      response(HTTP_STATUS.BAD_REQUEST, "96", "Failed to make booking on weekends", {}, res, req);
+      response(HTTP_STATUS.BAD_REQUEST, "96", "Failed to make booking on sunday", {}, res, req);
       return;
    }
 
    try {
       const existingBookings = await roomModel.getBookingsByRoomAndDate(room_id, date);
 
-      // Check if there are any existing bookings for the specified date
+      // Check if there are any existing bookings for the selected time
       if (existingBookings[date] && existingBookings[date].length > 0) {
          const overlappingBooking = existingBookings[date].find((booking) => {
             const bookingStartTime = new Date(`${date}T${booking.start_time}`);
@@ -62,14 +62,12 @@ async function roomBooking(req, res) {
       }
 
       // Retrieve guest device tokens
-
       let guestDeviceTokens = [];
       if (Array.isArray(guest) && guest.length > 0) {
          const guestIds = guest;
          guestDeviceTokens = await notificationModel.getGuestDeviceTokens(guestIds);
       }
 
-      // Send push notifications to all guests with device tokens
       const bookerFullName = await userModel.getUserFullName(employee_id);
       const picFullName = await userModel.getUserFullName(pic_employee_id);
       const roomName = await roomModel.getRoomName(room_id);

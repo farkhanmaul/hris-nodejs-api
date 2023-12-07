@@ -25,18 +25,16 @@ async function insertRoomBooking(
       meeting_topic,
    ]);
 
-   // Fetch the inserted row from the database using the room_booking_id
    const fetchQuery = `SELECT id FROM room_booking WHERE room_id = ? AND booker_employee_id = ? AND start_time = ? ORDER BY id DESC LIMIT 1`;
    const fetchedResult = await db2.query(fetchQuery, [room_id, booker_employee_id, start_time]);
    const bookingId = fetchedResult[0][0].id;
 
-   // Insert guest data into room_booking_guest table
    if (Array.isArray(guest) && guest.length > 0) {
       const guestValues = guest.map((employee_id) => [employee_id, bookingId]);
       const guestQuery = `INSERT INTO room_booking_guest (employee_id, booking_id) VALUES ?`;
       await db2.query(guestQuery, [guestValues]);
    }
-   // Return the inserted row's data
+
    return fetchedResult[0][0];
 }
 
@@ -96,7 +94,6 @@ async function getActiveBookings(employee_id) {
       currentDatetime.setHours(0, 0, 0, 0);
       const currentTime = new Date().toLocaleTimeString("en-US", { hour12: false });
 
-      // Retrieve active bookings for the specified employee ID from the database
       const query = `
         SELECT 
           rb.id, 
@@ -160,7 +157,6 @@ async function getHistoryBookings(employee_id) {
       currentDatetime.setHours(0, 0, 0, 0);
       const currentTime = new Date().toLocaleTimeString("en-US", { hour12: false });
 
-      // Retrieve past bookings for the specified employee ID from the database
       const query = `
       SELECT 
          rb.id, 
@@ -199,7 +195,6 @@ async function getHistoryBookings(employee_id) {
          currentTime,
       ]);
 
-      // Format each booking individually
       const formattedBookings = [];
       for (const booking of pastBookings[0]) {
          const formattedDate = validation.formatDate(new Date(booking.date));
@@ -218,7 +213,6 @@ async function getHistoryBookings(employee_id) {
 
 async function getDetailBookings(booking_id) {
    try {
-      // Retrieve the booking details for the specified booking ID from the database
       const query = `
         SELECT 
           rb.id, 
@@ -245,13 +239,10 @@ async function getDetailBookings(booking_id) {
         ORDER BY rb.date ASC, rb.start_time ASC
       `;
 
-      const activeBookings = await db2.query(query, [
-         booking_id, // Pass the booking_id parameter to the query
-      ]);
+      const activeBookings = await db2.query(query, [booking_id]);
 
       // Convert the date to the desired format for each booking
       const formattedBookings = [];
-
       for (const booking of activeBookings[0]) {
          const formattedDate = validation.formatDate(new Date(booking.date));
          const formattedCreatedAt = validation.formatDateWithHour(new Date(booking.created_at));

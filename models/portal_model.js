@@ -124,7 +124,7 @@ async function sendOTPbyWhatsAppPortal(
       const insertQuery = `INSERT INTO user_otp_web (email, otp, expired_at, employee_id, created_at, no_hp) VALUES (?, ?, ?, ?, ?, ?)`;
       await db3.query(insertQuery, [email, otp, expired_at, employee_id, created_at, destination]);
 
-      // This Code For Send OTP, Hapus jika tidak perlu
+      // This Code For Send OTP, please comment if you don't want to use it
       const response = await axios.post(url, data, { headers });
       return response;
    } catch (error) {

@@ -26,10 +26,6 @@ async function verifyToken(req, res, next) {
 
       const { expired_at, is_active } = result[0][0];
 
-      // if (employee_id !== req.body.employee_id) {
-      //    return response(HTTP_STATUS.FORBIDDEN, "92", "Token does not match employee ID", {}, res, req);
-      // }
-
       if (new Date() > new Date(expired_at)) {
          await userModel.closeToken(apiKey);
          return response(HTTP_STATUS.FORBIDDEN, "93", "Token has expired", {}, res, req);

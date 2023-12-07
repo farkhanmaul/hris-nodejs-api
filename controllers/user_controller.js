@@ -6,7 +6,6 @@ const { HTTP_STATUS, RESPONSE_CODES, RESPONSE_MESSAGES } = require("../utils/glo
 const verifyToken = require("../middleware/verify_token.js");
 const response = require("../middleware/response");
 
-// login endpoint
 async function loginEmail(req, res) {
    const { employee_id } = req.body;
 
@@ -65,7 +64,6 @@ async function loginWA(req, res) {
          const no_hp1 = result.MobilePhone1;
          const no_hp2 = result.MobilePhone2;
 
-         // no hp tujuan
          let destination = "";
 
          if (no_hp1) {
@@ -73,7 +71,6 @@ async function loginWA(req, res) {
          } else if (no_hp2) {
             destination = no_hp2;
          } else {
-            // Mobile phone not found
             response(HTTP_STATUS.NOT_FOUND, "02", "Mobile phone not found, Please Contact HRD.", {}, res, req);
             return;
          }
@@ -176,28 +173,18 @@ async function verifyOTP(req, res) {
       const result = await userModel.getUserOTP(employee_id);
 
       if (!result || result.length === 0 || result[0].length === 0) {
-         // Employee ID not found in user_otp table
          response(HTTP_STATUS.NOT_FOUND, RESPONSE_CODES.NOT_FOUND, "Employee ID not found", {}, res, req);
       } else {
          const { otp: storedOTP, expired_at } = result[0][0];
 
-         // Check if OTP is expired
          if (new Date() > new Date(expired_at)) {
             response(HTTP_STATUS.FORBIDDEN, "02", "OTP has expired", {}, res, req);
          } else {
-            // Verify the OTP (case-insensitive and ignore leading/trailing white spaces)
             if (otp === storedOTP) {
-               // OTP is correct
-               // Generate a random 30-digit string token
                const token = validation.generateRandomToken();
-
-               // Generate the expiration date (3 months from the current date)
                const expirationDate = validation.generateExpirationDate();
-
-               // Store the employee_id, token, and expiration date in the database
                await userModel.insertUserToken(employee_id, token, expirationDate);
 
-               // Store the Firebase token in the user_fbtoken table
                const { fbtoken } = req.body;
                if (fbtoken) {
                   await notificationModel.storeFirebaseToken(employee_id, fbtoken);
@@ -208,7 +195,6 @@ async function verifyOTP(req, res) {
                }
                response(HTTP_STATUS.OK, RESPONSE_CODES.SUCCESS, "OTP verified", { token }, res, req);
             } else {
-               // OTP is incorrect
                response(HTTP_STATUS.NOT_FOUND, "03", "OTP is incorrect", {}, res, req);
             }
          }
@@ -228,7 +214,7 @@ async function verifyOTP(req, res) {
 
 async function verifyTokenHandler(req, res, next) {
    try {
-      await verifyToken(req, res); // Pass req, res, and next as separate arguments
+      await verifyToken(req, res);
    } catch (error) {
       console.error("Failed to verify token:", error);
       return response(
@@ -270,8 +256,8 @@ async function getProfile(req, res) {
             days: diffInDays % 30,
          };
          profile.workingPeriod = workingPeriod;
-         profile.BirthDate = validation.formatDate(birthDate); // Format BirthDate
-         profile.JoinCompany = validation.formatDate(joinCompanyDate); // Format JoinCompany
+         profile.BirthDate = validation.formatDate(birthDate);
+         profile.JoinCompany = validation.formatDate(joinCompanyDate);
 
          response(HTTP_STATUS.OK, RESPONSE_CODES.SUCCESS, "Profile retrieved successfully", profile, res, req);
       }
@@ -296,11 +282,9 @@ async function getVersion(req, res) {
       return;
    }
    try {
-      // Get the API version
       const apiVersionKey = "api_version";
       const apiVersion = await globalModel.specificSelectGlobalVariables(apiVersionKey);
 
-      // Get the API version
       const forceUpdateVersion = "force_mobile_update_version";
       const updateVersion = await globalModel.specificSelectGlobalVariables(forceUpdateVersion);
 

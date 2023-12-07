@@ -3,12 +3,10 @@ const notificationModel = require("../models/notification_model");
 const validation = require("../utils/validation");
 const { HTTP_STATUS, RESPONSE_CODES, RESPONSE_MESSAGES } = require("../utils/globals.js");
 const response = require("../middleware/response");
-const serviceAccount = require("../acamobiled-firebase-adminsdk.json");
 
-// Initialize Firebase Admin SDK with your service account credentials
+const serviceAccount = require("../acamobiled-firebase-adminsdk.json");
 admin.initializeApp({
    credential: admin.credential.cert(serviceAccount),
-   // Replace `serviceAccount` with the path to your service account JSON file
 });
 
 async function sendPushNotificationHandler(req, res) {
@@ -61,18 +59,15 @@ async function sendPushNotification(deviceToken, title, body, data, employee_id)
       },
       data: {
          ...data,
-         notification_id: "", // Placeholder for the notification ID
+         notification_id: "",
       },
       token: deviceToken,
    };
    try {
-      // Insert the notification into the notification_inbox table using the separate model function
       const notificationId = await notificationModel.insertNotification(employee_id, title, body, message.data);
 
-      // Update the notification message data with the actual notification ID
       message.data.notification_id = notificationId;
 
-      // Send the push notification
       await admin.messaging().send(message);
    } catch (error) {
       console.error("Error sending push notification:", error);

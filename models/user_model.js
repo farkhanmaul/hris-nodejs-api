@@ -88,11 +88,11 @@ async function getUserOTP(employee_id) {
 }
 
 async function insertUserToken(employee_id, token, expirationDate) {
-   const insertQuery = `INSERT INTO user_token (employee_id, token, expired_at, status, created_at) VALUES (?, ?, ?, ?, ?)`;
-   const status = "open"; // Default value for the status column
+   const insertQuery = `INSERT INTO user_token (employee_id, token, expired_at, is_active, created_at) VALUES (?, ?, ?, ?, ?)`;
+
    const created_at = new Date(); // Current datetime value for the created_at column
 
-   await db2.query(insertQuery, [employee_id, token, expirationDate, status, created_at]);
+   await db2.query(insertQuery, [employee_id, token, expirationDate, true, created_at]);
 }
 
 async function getUserProfile(employee_id) {
@@ -125,13 +125,13 @@ async function getUserProfile(employee_id) {
 }
 
 async function getTokenStatus(token) {
-   const selectQuery = `SELECT status FROM user_token WHERE token = ?`;
+   const selectQuery = `SELECT is_active FROM user_token WHERE token = ?`;
    const result = await db2.query(selectQuery, [token]);
    return result;
 }
 
 async function closeToken(token) {
-   const updateQuery = `UPDATE user_token SET status = 'closed' WHERE token = ?`;
+   const updateQuery = `UPDATE user_token SET is_active = false WHERE token = ?`;
    await db2.query(updateQuery, [token]);
 }
 

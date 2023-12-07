@@ -143,9 +143,9 @@ async function logout(req, res) {
       if (!result || result.length === 0 || result[0].length === 0) {
          response(HTTP_STATUS.NOT_FOUND, RESPONSE_CODES.NOT_FOUND, "Token not found", {}, res, req);
       } else {
-         const { status } = result[0][0];
+         const { is_active } = result[0][0];
 
-         if (status === "closed") {
+         if (is_active === false) {
             response(HTTP_STATUS.FORBIDDEN, "02", "Token is already closed", {}, res, req);
          } else {
             await userModel.closeToken(token);

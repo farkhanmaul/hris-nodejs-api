@@ -17,14 +17,14 @@ async function verifyToken(req, res, next) {
    }
 
    try {
-      const query = `SELECT token, expired_at, status FROM user_token WHERE token = '${apiKey}' `;
+      const query = `SELECT token, expired_at, is_active FROM user_token WHERE token = '${apiKey}' `;
       const result = await db2.query(query);
 
       if (!result || !result.length || !result[0].length) {
          return response(HTTP_STATUS.FORBIDDEN, "91", "Forbidden", {}, res, req);
       }
 
-      const { expired_at, status } = result[0][0];
+      const { expired_at, is_active } = result[0][0];
 
       // if (employee_id !== req.body.employee_id) {
       //    return response(HTTP_STATUS.FORBIDDEN, "92", "Token does not match employee ID", {}, res, req);
@@ -34,7 +34,7 @@ async function verifyToken(req, res, next) {
          await userModel.closeToken(apiKey);
          return response(HTTP_STATUS.FORBIDDEN, "93", "Token has expired", {}, res, req);
       }
-      if (status === "closed") {
+      if (is_active === false) {
          return response(HTTP_STATUS.FORBIDDEN, "94", "Token is closed", {}, res, req);
       }
 

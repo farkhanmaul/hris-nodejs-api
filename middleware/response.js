@@ -7,16 +7,16 @@ const response = (status, responseCode, responseMessage, data, res, req) => {
       respMsg: responseMessage,
       data: data,
    };
-
    const logData = {
+      employee_id: req.body.employee_id ?? "",
+      ip_address: req.ip,
       timestamp: moment().format("YYYY-MM-DD HH:mm:ss"),
       endpoint: req.path,
       method: req.method,
+      response_status: status,
       request_headers: req.headers ? JSON.stringify(req.headers) : "",
       request_body: JSON.stringify(req.body),
-      response_status: status,
       response_message: JSON.stringify(payload),
-      employee_id: req.body.employee_id ?? "",
    };
 
    logAPICall(logData);

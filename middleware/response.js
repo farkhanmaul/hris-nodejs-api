@@ -7,9 +7,14 @@ const response = (status, responseCode, responseMessage, data, res, req) => {
       respMsg: responseMessage,
       data: data,
    };
+
+   const xForwardedFor = req.headers["x-forwarded-for"];
+   // Extract the client IP address from the header
+   const clientIP = xForwardedFor ? xForwardedFor.split(",")[0].trim() : req.ip;
+
    const logData = {
       employee_id: req.body.employee_id ?? "",
-      ip_address: req.ip,
+      ip_address: clientIP,
       timestamp: moment().format("YYYY-MM-DD HH:mm:ss"),
       endpoint: req.path,
       method: req.method,

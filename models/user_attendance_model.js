@@ -57,7 +57,7 @@ async function getAttendanceTimeRangeByTime(current_time) {
    try {
       const query = `
        SELECT range_name, start_time, end_time
-       FROM attendance_time_range
+       FROM time_range
        WHERE ? >= start_time AND ? <= end_time
      `;
       const result = await db2.query(query, [current_time, current_time]);
@@ -89,7 +89,7 @@ async function getWorkingHour() {
    try {
       const query = `
        SELECT range_name, start_time, end_time
-       FROM attendance_time_range
+       FROM time_range
        WHERE range_name="Work Time"
      `;
       const result = await db2.query(query);

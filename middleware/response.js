@@ -9,7 +9,6 @@ const response = (status, responseCode, responseMessage, data, res, req) => {
    };
 
    const xForwardedFor = req.headers["x-forwarded-for"];
-   // Extract the client IP address from the header
    const clientIP = xForwardedFor ? xForwardedFor.split(",")[0].trim() : req.ip;
 
    const logData = {

@@ -5,6 +5,7 @@ const userController = require("../controllers/user_controller.js");
 const userAttendanceController = require("../controllers/user_attendance_controller.js");
 const userLeaveController = require("../controllers/user_leave_controller.js");
 const userClaimController = require("../controllers/user_claim_controller.js");
+const holidayController = require("../controllers/holiday_controller.js");
 const portalController = require("../controllers/portal_controller.js");
 const roomController = require("../controllers/room_controller.js");
 const notificationController = require("../controllers/notification_controller.js");
@@ -35,46 +36,50 @@ router.post("/user/get-version", verifyToken, userController.getVersion);
 
 // ATTENDANCE
 router.post("/user/attendance", verifyToken, userAttendanceController.attendance);
-router.post("/user/get-attendance-today", verifyToken, userAttendanceController.getAttendanceToday);
-router.post("/user/get-attendance-clock", verifyToken, userAttendanceController.getAttendanceClock);
-router.post("/user/get-attendance-history", verifyToken, userAttendanceController.getAttendanceHistory);
-router.post("/user/save-attendance-photo", verifyToken, userAttendanceController.saveAttendancePhotoMulter);
-router.post("/user/get-attendance-status", verifyToken, userAttendanceController.getAttendanceRecent);
+router.post("/user/attendance/today", verifyToken, userAttendanceController.getAttendanceToday);
+router.post("/user/attendance/clock", verifyToken, userAttendanceController.getAttendanceClock);
+router.post("/user/attendance/history", verifyToken, userAttendanceController.getAttendanceHistory);
+router.post("/user/attendance/photo", verifyToken, userAttendanceController.saveAttendancePhotoMulter);
+router.post("/user/attendance/status", verifyToken, userAttendanceController.getAttendanceRecent);
+
+// CLAIM
+router.post("/user/claim/completed", verifyToken, userClaimController.getClaimCompleted);
+router.post("/user/claim/detail", verifyToken, userClaimController.getClaimDetail);
+router.post("/user/claim/rejected", verifyToken, userClaimController.getClaimRejected);
+router.post("/user/claim/progress", verifyToken, userClaimController.getClaimOnProgress);
+
+// LEAVE
+router.post("/user/leave/approved", verifyToken, userLeaveController.getLeaveListApproved);
+router.post("/user/leave/not-approved", verifyToken, userLeaveController.getLeaveListNotApproved);
+router.post("/user/leave/detail", verifyToken, userLeaveController.getLeaveDetails);
+router.post("/user/leave/plafonds", verifyToken, userLeaveController.getLeavePlafonds);
 
 // ROOM
+router.post("/room", verifyToken, roomController.getRoom);
 router.post("/room/booking", verifyToken, roomController.roomBooking);
-router.post("/room/get-room", verifyToken, roomController.getRoom);
-router.post("/room/get-booking-active", verifyToken, roomController.getActiveBookingHandler);
-router.post("/room/get-booking-history", verifyToken, roomController.getHistoryBooking);
-router.post("/room/get-booking-details", verifyToken, roomController.getDetailBookingHandler);
-router.post("/room/get-booking-by-room", verifyToken, roomController.getBookingByRoom);
-router.post("/room/get-all-employee", verifyToken, roomController.getEmployee);
+router.post("/room/booking/active", verifyToken, roomController.getActiveBookingHandler);
+router.post("/room/booking/history", verifyToken, roomController.getHistoryBooking);
+router.post("/room/booking/detail", verifyToken, roomController.getDetailBookingHandler);
+router.post("/room/booking/by-room", verifyToken, roomController.getBookingByRoom);
+router.post("/room/employee", verifyToken, roomController.getEmployee);
 
 // NOTIFICATION
-router.post("/notification/try-notif", verifyToken, notificationController.sendPushNotificationHandler);
-router.post("/notification/get-inbox", verifyToken, notificationController.getNotificationInbox);
-router.post("/notification/get-inbox-unread", verifyToken, notificationController.getUnreadNotificationCountHandler);
-router.post("/notification/get-inbox-detail", verifyToken, notificationController.getSpecifyNotificationInbox);
+router.post("/notification", verifyToken, notificationController.sendPushNotificationHandler);
+router.post("/notification/inbox", verifyToken, notificationController.getNotificationInbox);
+router.post("/notification/inbox/unread", verifyToken, notificationController.getUnreadNotificationCountHandler);
+router.post("/notification/inbox/detail", verifyToken, notificationController.getSpecifyNotificationInbox);
 router.post("/notification/mark-as-read", verifyToken, notificationController.markNotificationAsRead);
 
 // GLOBAL VARIABLES
-router.post("/global/insert-global-variable", verifyToken, globalController.insertGlobalVariables);
-router.post("/global/update-global-variable", verifyToken, globalController.updateGlobalVariables);
-router.post("/global/select-global-variable", verifyToken, globalController.selectGlobalVariables);
-router.post("/global/delete-global-variable", verifyToken, globalController.deleteGlobalVariables);
+router.post("/global/variable/insert", verifyToken, globalController.insertGlobalVariables);
+router.post("/global/variable/update", verifyToken, globalController.updateGlobalVariables);
+router.post("/global/variable/select", verifyToken, globalController.selectGlobalVariables);
+router.post("/global/variable/delete", verifyToken, globalController.deleteGlobalVariables);
 
-// CLAIM
-router.post("/user/get-claim-completed", verifyToken, userClaimController.getClaimCompleted);
-router.post("/user/get-claim-detail", verifyToken, userClaimController.getClaimDetail);
-router.post("/user/get-claim-rejected", verifyToken, userClaimController.getClaimRejected);
-router.post("/user/get-claim-progress", verifyToken, userClaimController.getClaimOnProgress);
+// HOLIDAY
+router.post("/holiday", verifyToken, holidayController.getHolidayCalendar);
 
-// LEAVE
-router.post("/user/get-leave-list-approved", verifyToken, userLeaveController.getLeaveListApproved);
-router.post("/user/get-leave-list-not-approved", verifyToken, userLeaveController.getLeaveListNotApproved);
-router.post("/user/get-leave-detail", verifyToken, userLeaveController.getLeaveDetails);
-router.post("/user/get-leave-plafonds", verifyToken, userLeaveController.getLeavePlafonds);
-
-router.post("/user/get-medical-plafonds", verifyToken, userClaimController.getMedicalPlafonds);
+// DUMMY
+router.post("/user/medical/plafonds", verifyToken, userClaimController.getMedicalPlafonds);
 
 module.exports = router;

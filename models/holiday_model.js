@@ -60,14 +60,19 @@ async function getHolidayCalendar() {
             "December",
          ];
 
-         const groupedHolidays = {};
+         const groupedHolidays = [];
          holidays.forEach((holiday) => {
             const eventStart = new Date(holiday.EventStart);
-            const monthKey = months[eventStart.getMonth()];
-            if (!groupedHolidays[monthKey]) {
-               groupedHolidays[monthKey] = [];
+            const monthKey = `${months[eventStart.getMonth()]} ${eventStart.getFullYear()}`;
+            const monthIndex = groupedHolidays.findIndex((group) => group.month === monthKey);
+            if (monthIndex === -1) {
+               groupedHolidays.push({
+                  month: monthKey,
+                  holidays: [holiday],
+               });
+            } else {
+               groupedHolidays[monthIndex].holidays.push(holiday);
             }
-            groupedHolidays[monthKey].push(holiday);
          });
          return groupedHolidays;
       };

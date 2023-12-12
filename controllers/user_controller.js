@@ -3,8 +3,9 @@ const globalModel = require("../models/global_model");
 const notificationModel = require("../models/notification_model");
 const validation = require("../utils/validation");
 const { HTTP_STATUS, RESPONSE_CODES, RESPONSE_MESSAGES } = require("../utils/globals.js");
-const verifyToken = require("../middleware/verify_token.js");
+const verifyToken = require("../middleware/authentication.js");
 const response = require("../middleware/response");
+const path = require("path");
 
 async function loginEmail(req, res) {
    const { employee_id } = req.body;
@@ -314,6 +315,34 @@ async function getVersion(req, res) {
    }
 }
 
+async function getImage(req, res) {
+   const { employee_id, image_path } = req.body;
+
+   if (!validation.validateUserInput(image_path) || !validation.validateUserInput(image_path)) {
+      response(HTTP_STATUS.BAD_REQUEST, RESPONSE_CODES.INVALID_INPUT, RESPONSE_MESSAGES.INVALID_INPUT, {}, res, req);
+      return;
+   }
+
+   try {
+      if (!image_path) {
+         response(HTTP_STATUS.NOT_FOUND, RESPONSE_CODES.NOT_FOUND, RESPONSE_MESSAGES.NOT_FOUND, {}, res, req);
+      } else {
+         const absolutePath = path.resolve("public", image_path);
+         res.sendFile(absolutePath);
+      }
+   } catch (error) {
+      console.error("Failed to retrieve image:", error);
+      response(
+         HTTP_STATUS.INTERNAL_SERVER_ERROR,
+         RESPONSE_CODES.SERVER_ERROR,
+         RESPONSE_MESSAGES.SERVER_ERROR,
+         {},
+         res,
+         req
+      );
+   }
+}
+
 module.exports = {
    loginEmail,
    loginWA,
@@ -322,4 +351,5 @@ module.exports = {
    verifyTokenHandler,
    getProfile,
    getVersion,
+   getImage,
 };

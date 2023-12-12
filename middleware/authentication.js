@@ -1,7 +1,7 @@
-const db2 = require("../config/database2");
-const response = require("./response");
-const userModel = require("../models/user_model");
-const validation = require("../utils/validation");
+const db2 = require("../config/database2.js");
+const response = require("./response.js");
+const userModel = require("../models/user_model.js");
+const validation = require("../utils/validation.js");
 const { HTTP_STATUS, RESPONSE_CODES, RESPONSE_MESSAGES } = require("../utils/globals.js");
 
 async function verifyToken(req, res, next) {

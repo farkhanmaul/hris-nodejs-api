@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const verifyToken = require("../middleware/verify_token.js");
+const verifyToken = require("../middleware/authentication.js");
 const userController = require("../controllers/user_controller.js");
 const userAttendanceController = require("../controllers/user_attendance_controller.js");
 const userLeaveController = require("../controllers/user_leave_controller.js");
@@ -81,5 +81,6 @@ router.post("/holiday", verifyToken, holidayController.getHolidayCalendar);
 
 // DUMMY
 router.post("/user/medical/plafonds", verifyToken, userClaimController.getMedicalPlafonds);
+router.post("/user/get-image", verifyToken, userController.getImage);
 
 module.exports = router;

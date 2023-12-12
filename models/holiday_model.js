@@ -11,7 +11,7 @@ async function getHolidayCalendar() {
             ,[EventStart]
          FROM [LiteErp].[dbo].[HrReferenceHolidayCalendar]
          WHERE YEAR([EventStart]) = '${formattedCurrentYear}'
-         ORDER BY [EventStart] DESC;
+         ORDER BY [EventStart] ASC;
       `;
 
       const data = await db1(query); // Assuming the result is an object with the `data` property
@@ -75,6 +75,12 @@ async function getHolidayCalendar() {
                groupedHolidays[monthIndex].holidays.push(holiday);
             }
          });
+
+         // Sort holidays within each month in ascending order
+         groupedHolidays.forEach((group) => {
+            group.holidays.sort((a, b) => new Date(a.EventStart) - new Date(b.EventStart));
+         });
+
          return groupedHolidays;
       };
 

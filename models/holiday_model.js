@@ -6,8 +6,8 @@ async function getHolidayCalendar() {
       const formattedCurrentYear = currentYear.toString();
 
       const query = `
-         SELECT TOP (1000)
-            [HolidayCalendarTitle]
+         SELECT TOP (1000)[HolidayCalendarId]
+            ,[HolidayCalendarTitle]
             ,[EventStart]
          FROM [LiteErp].[dbo].[HrReferenceHolidayCalendar]
          WHERE YEAR([EventStart]) = '${formattedCurrentYear}'
@@ -32,6 +32,7 @@ async function getHolidayCalendar() {
          const dayName = eventStart.toLocaleDateString("en-US", { weekday: "long" }); // Get the day name
 
          const holidayData = {
+            HolidayCalendarId: holiday.HolidayCalendarId,
             HolidayCalendarTitle: holiday.HolidayCalendarTitle,
             EventStart: formattedDate,
             DayName: dayName,

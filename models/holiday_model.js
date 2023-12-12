@@ -2,16 +2,15 @@ const db1 = require("../config/database1");
 
 async function getHolidayCalendar() {
    try {
-      const oneYearAgo = new Date();
-      oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-      const formattedOneYearAgo = oneYearAgo.toISOString();
+      const currentYear = new Date().getFullYear();
+      const formattedCurrentYear = currentYear.toString();
 
       const query = `
          SELECT TOP (1000)
             [HolidayCalendarTitle]
             ,[EventStart]
          FROM [LiteErp].[dbo].[HrReferenceHolidayCalendar]
-         WHERE [EventStart] >= '${formattedOneYearAgo}'
+         WHERE YEAR([EventStart]) = '${formattedCurrentYear}'
          ORDER BY [EventStart] DESC;
       `;
 
@@ -46,10 +45,25 @@ async function getHolidayCalendar() {
       });
 
       const groupByMonth = (holidays) => {
+         const months = [
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December",
+         ];
+
          const groupedHolidays = {};
          holidays.forEach((holiday) => {
             const eventStart = new Date(holiday.EventStart);
-            const monthKey = `${eventStart.getFullYear()}-${eventStart.getMonth() + 1}`;
+            const monthKey = months[eventStart.getMonth()];
             if (!groupedHolidays[monthKey]) {
                groupedHolidays[monthKey] = [];
             }

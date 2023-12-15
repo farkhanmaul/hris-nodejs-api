@@ -81,6 +81,5 @@ router.post("/holiday", verifyToken, holidayController.getHolidayCalendar);
 
 // DUMMY
 router.post("/user/medical/plafonds", verifyToken, userClaimController.getMedicalPlafonds);
-router.post("/user/get-image", verifyToken, userController.getImage);
 
 module.exports = router;

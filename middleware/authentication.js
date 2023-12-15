@@ -27,7 +27,6 @@ async function verifyToken(req, res, next) {
       const { expired_at, is_active } = result[0][0];
 
       if (new Date() > new Date(expired_at)) {
-         await userModel.closeToken(apiKey);
          return response(HTTP_STATUS.FORBIDDEN, "93", "Token has expired", {}, res, req);
       }
       if (is_active === false) {

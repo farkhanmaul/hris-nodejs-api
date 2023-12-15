@@ -87,14 +87,6 @@ async function getUserOTP(employee_id) {
    return result;
 }
 
-async function insertUserToken(employee_id, token, expirationDate) {
-   const insertQuery = `INSERT INTO user_token (employee_id, token, expired_at, is_active, created_at) VALUES (?, ?, ?, ?, ?)`;
-
-   const created_at = new Date();
-
-   await db2.query(insertQuery, [employee_id, token, expirationDate, true, created_at]);
-}
-
 async function getUserProfile(employee_id) {
    try {
       const query = `
@@ -123,7 +115,11 @@ async function getUserProfile(employee_id) {
       throw error;
    }
 }
+async function insertUserToken(employee_id, token, expirationDate) {
+   const insertQuery = `INSERT INTO user_token (employee_id, token, expired_at) VALUES (?, ?, ? )`;
 
+   await db2.query(insertQuery, [employee_id, token, expirationDate]);
+}
 async function getTokenStatus(token) {
    const selectQuery = `SELECT is_active FROM user_token WHERE token = ?`;
    const result = await db2.query(selectQuery, [token]);
